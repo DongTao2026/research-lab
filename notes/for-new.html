@@ -28,9 +28,31 @@
     display: flex; flex-direction: column; z-index: 100;
     transition: transform 0.3s;
   }
-  .sidebar-header { padding: 24px 16px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-  .sidebar-header h2 { font-size: 14px; font-weight: 700; line-height: 1.4; }
-  .sidebar-header p { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+  .sidebar-header { padding: 16px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .sidebar-back {
+    display: flex; align-items: center; gap: 6px;
+    color: rgba(255,255,255,0.85); text-decoration: none;
+    font-size: 13px; font-weight: 500;
+    padding: 6px 8px; border-radius: 8px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .sidebar-back:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  .sidebar-back .back-arrow { font-size: 15px; }
+
+  /* Page footer */
+  .page-footer {
+    margin-left: 0; padding: 28px 40px;
+    background: var(--primary); color: rgba(255,255,255,0.7);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 13px;
+  }
+  .footer-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: rgba(255,255,255,0.85); text-decoration: none; font-weight: 500;
+    padding: 7px 16px; border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px; transition: all 0.2s;
+  }
+  .footer-back:hover { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.5); }
   .nav-list { list-style: none; padding: 8px 0; flex: 1; }
   .nav-list li a {
     display: flex; align-items: center; gap: 10px;
@@ -259,8 +281,9 @@
 <!-- Sidebar -->
 <nav id="sidebar">
   <div class="sidebar-header">
-    <h2>兼职投资人(日股散户)<br>入门手册</h2>
-    <p>2026年版 · 日本股市指南</p>
+    <a href="index.html" class="sidebar-back">
+      <span class="back-arrow">←</span> 返回资料库
+    </a>
   </div>
   <ul class="nav-list">
     <li><a href="#hero" class="active"><span class="nav-icon">🏠</span>首页</a></li>
@@ -1175,6 +1198,12 @@
       </div>
     </div>
   </section>
+
+  <footer class="page-footer">
+    <a href="index.html" class="footer-back">← 返回资料库</a>
+    <span>© 2026 DongTao 日股研究室</span>
+    <a href="index.html" class="footer-back">← 返回资料库</a>
+  </footer>
 
 </main>
 
