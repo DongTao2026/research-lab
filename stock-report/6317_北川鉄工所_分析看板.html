@@ -142,12 +142,30 @@ table.data-table tr:hover td { background: #f8fafc; }
 /* ── Waterfall placeholder ── */
 #chart-wf { min-height: 280px; }
 
+/* ── Back button ── */
+.back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: rgba(255,255,255,.85); text-decoration: none;
+  font-size: 12px; font-weight: 500;
+  padding: 5px 12px; border: 1px solid rgba(255,255,255,.3);
+  border-radius: 20px; transition: all .2s; white-space: nowrap;
+  margin-left: auto;
+}
+.back-btn:hover { background: rgba(255,255,255,.15); color: #fff; border-color: rgba(255,255,255,.6); }
+
 /* ── Footer ── */
 footer {
   text-align: center; padding: 20px;
   color: var(--muted); font-size: 12px;
   border-top: 1px solid var(--border); margin-top: 10px;
 }
+.footer-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--muted); text-decoration: none; font-size: 12px; font-weight: 500;
+  padding: 6px 14px; border: 1px solid var(--border);
+  border-radius: 20px; transition: all .2s; margin-bottom: 10px;
+}
+.footer-back:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
 
 @media(max-width:900px){
   .grid-2 { grid-template-columns: 1fr; }
@@ -174,6 +192,7 @@ footer {
     <a href="#s11">⑪BS</a>
     <a href="#s12">⑫PL</a>
   </div>
+  <a href="https://dongtao2026.github.io/research-lab/index.html" class="back-btn">← 返回资料库</a>
 </nav>
 
 <!-- ── KPI Strip ── -->
@@ -694,6 +713,7 @@ footer {
 </div><!-- end .main -->
 
 <footer>
+  <div><a href="https://dongtao2026.github.io/research-lab/index.html" class="footer-back">← 返回资料库</a></div>
   <p>データ出典: IRBank / Yahoo Finance Japan / 有価証券報告書 / 決算短信 | 6317 北川鉄工所 (Kitagawa Iron Works) | 分析看板生成日: 2026-04-13</p>
   <p style="margin-top:4px;">免責事項: 本資料は情報提供目的のみ。投資判断の根拠となるものではありません。</p>
 </footer>
