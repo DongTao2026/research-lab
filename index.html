@@ -435,6 +435,70 @@
     transform: translateY(-1px);
   }
 
+  /* ── SEARCH ── */
+  .search-wrap {
+    position: relative;
+    max-width: 480px;
+    margin: 28px auto 0;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 10px 40px 10px 40px;
+    background: rgba(255,255,255,0.6);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    letter-spacing: 0.03em;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: inset 0 1px 3px rgba(26,26,46,0.06);
+  }
+
+  .search-input::placeholder { color: var(--muted); }
+
+  .search-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(184,150,46,0.12), inset 0 1px 3px rgba(26,26,46,0.06);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 13px; top: 50%;
+    transform: translateY(-50%);
+    width: 15px; height: 15px;
+    stroke: var(--muted);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    pointer-events: none;
+    transition: stroke 0.2s;
+  }
+
+  .search-wrap:focus-within .search-icon { stroke: var(--gold); }
+
+  .search-clear {
+    position: absolute;
+    right: 10px; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--muted); font-size: 16px; line-height: 1;
+    padding: 2px 4px; display: none;
+  }
+
+  .search-clear:hover { color: var(--red-light); }
+
+  .search-no-result {
+    display: none;
+    font-size: 12px; color: var(--muted);
+    text-align: center; padding: 12px 0 4px;
+    letter-spacing: 1px;
+  }
+
+  .link-list li.search-hidden { display: none !important; }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 640px) {
     .header-buttons {
@@ -466,6 +530,11 @@
     </h1>
     <p class="site-subtitle">个股研究 · 数据分析 · 宏观政策 · </p>
     <div class="header-rule"></div>
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="search-input" class="search-input" type="text" placeholder="搜索资料库…" autocomplete="off" spellcheck="false">
+      <button class="search-clear" id="search-clear" title="清除">×</button>
+    </div>
     <div class="header-buttons">
       <a href="support.html" class="btn-header btn-support">支持 DongTao</a>
       <a href="https://discord.gg/YAXgA7Dx6c" target="_blank" class="btn-header btn-discord">加入DongTao日股研究室</a>
@@ -596,6 +665,43 @@
 </div>
 
 <script>
+  /* ── SEARCH ── */
+  (function () {
+    const input = document.getElementById('search-input');
+    const clear = document.getElementById('search-clear');
+    const cards = document.querySelectorAll('.card');
+
+    function doSearch(q) {
+      q = q.trim().toLowerCase();
+      clear.style.display = q ? 'block' : 'none';
+
+      cards.forEach(function (card) {
+        let anyVisible = false;
+        card.querySelectorAll('.link-list li').forEach(function (li) {
+          const text = li.textContent.toLowerCase();
+          const match = !q || text.includes(q);
+          li.classList.toggle('search-hidden', !match);
+          if (match) anyVisible = true;
+        });
+        let noResult = card.querySelector('.search-no-result');
+        if (!noResult) {
+          noResult = document.createElement('p');
+          noResult.className = 'search-no-result';
+          noResult.textContent = '无匹配结果';
+          card.appendChild(noResult);
+        }
+        noResult.style.display = (q && !anyVisible) ? 'block' : 'none';
+      });
+    }
+
+    input.addEventListener('input', function () { doSearch(this.value); });
+    clear.addEventListener('click', function () {
+      input.value = '';
+      input.focus();
+      doSearch('');
+    });
+  })();
+
   /* ── VISIT COUNTER ── */
   (function () {
     const el = document.getElementById('visit-count');
