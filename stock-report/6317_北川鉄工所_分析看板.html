@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6317 北川鉄工所 分析看板</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.2/dist/apexcharts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --blue:   #1a56db;
+  --amber:  #f59e0b;
+  --green:  #10b981;
+  --red:    #ef4444;
+  --bg:     #f0f4f8;
+  --card:   #ffffff;
+  --border: #e2e8f0;
+  --text:   #1e293b;
+  --muted:  #64748b;
+  --nav-h:  60px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.insight {
+  margin-top: 14px;
+  padding: 9px 14px 9px 14px;
+  background: #f8faff;
+  border-left: 3px solid #1a56db;
+  border-radius: 0 6px 6px 0;
+  font-size: 12.5px;
+  color: #334155;
+  line-height: 1.7;
+}
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+}
+
+/* ── Navbar ── */
+#navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  height: var(--nav-h);
+  background: var(--blue);
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+}
+#navbar .brand {
+  color: #fff; font-weight: 700; font-size: 16px; white-space: nowrap;
+}
+#navbar .nav-links {
+  display: flex; gap: 4px; flex-wrap: wrap; overflow: hidden;
+}
+#navbar .nav-links a {
+  color: rgba(255,255,255,.85);
+  text-decoration: none; font-size: 12px;
+  padding: 4px 8px; border-radius: 4px;
+  white-space: nowrap;
+  transition: background .15s;
+}
+#navbar .nav-links a:hover { background: rgba(255,255,255,.2); }
+
+/* ── KPI strip ── */
+#kpi-strip {
+  margin-top: var(--nav-h);
+  background: #1e3a5f;
+  padding: 12px 20px;
+  display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
+}
+.kpi-item {
+  display: flex; flex-direction: column; align-items: center;
+  color: #fff; min-width: 90px;
+}
+.kpi-label { font-size: 11px; color: rgba(255,255,255,.7); }
+.kpi-value { font-size: 20px; font-weight: 700; }
+.kpi-sub   { font-size: 11px; color: rgba(255,255,255,.6); }
+
+/* ── Main layout ── */
+.main { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+/* ── Cards ── */
+.card {
+  background: var(--card);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.card-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(90deg, #f8fafc, #fff);
+}
+.section-badge {
+  background: var(--blue); color: #fff;
+  border-radius: 20px; padding: 2px 10px;
+  font-size: 12px; font-weight: 700;
+  white-space: nowrap;
+}
+.card-title { font-size: 15px; font-weight: 700; }
+.card-title span { font-size: 12px; color: var(--muted); margin-left: 8px; font-weight: 400; }
+.card-body { padding: 20px; }
+
+/* ── Two-column grid ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* ── Table ── */
+table.data-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+table.data-table th {
+  background: #f1f5f9; padding: 8px 12px;
+  text-align: center; font-weight: 600;
+  border-bottom: 2px solid var(--border);
+}
+table.data-table td {
+  padding: 7px 12px; text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+table.data-table tr:hover td { background: #f8fafc; }
+.neg { color: var(--red); }
+.pos { color: var(--green); }
+
+/* ── Progress bars ── */
+.prog-wrap { margin-bottom: 12px; }
+.prog-label { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; }
+.prog-bar { height: 20px; background: #e2e8f0; border-radius: 6px; overflow: hidden; position: relative; }
+.prog-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; color: #fff; font-size: 12px; font-weight: 700; transition: width .4s; }
+
+/* ── BS visual ── */
+.bs-container { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+.bs-side { display: flex; flex-direction: column; gap: 2px; }
+.bs-block { border-radius: 4px; padding: 8px 10px; position: relative; cursor: default; transition: opacity .15s; }
+.bs-block:hover { opacity: .88; }
+.bs-block .bs-label { font-size: 12px; font-weight: 700; color: #fff; }
+.bs-block .bs-val { font-size: 11px; color: rgba(255,255,255,.85); }
+
+/* ── Waterfall placeholder ── */
+#chart-wf { min-height: 280px; }
+
+/* ── Footer ── */
+footer {
+  text-align: center; padding: 20px;
+  color: var(--muted); font-size: 12px;
+  border-top: 1px solid var(--border); margin-top: 10px;
+}
+
+@media(max-width:900px){
+  .grid-2 { grid-template-columns: 1fr; }
+  .bs-container { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Navbar ── -->
+<nav id="navbar">
+  <div class="brand">6317 北川鉄工所</div>
+  <div class="nav-links">
+    <a href="#s1">①株価</a>
+    <a href="#s2">②業績</a>
+    <a href="#s3">③利益率</a>
+    <a href="#s4">④バリュ</a>
+    <a href="#s5">⑤EPS/BPS</a>
+    <a href="#s6">⑥流動</a>
+    <a href="#s7">⑦負債</a>
+    <a href="#s8">⑧回転</a>
+    <a href="#s9">⑨CF</a>
+    <a href="#s10">⑩四半期</a>
+    <a href="#s11">⑪BS</a>
+    <a href="#s12">⑫PL</a>
+  </div>
+</nav>
+
+<!-- ── KPI Strip ── -->
+<div id="kpi-strip">
+  <div class="kpi-item">
+    <span class="kpi-label">株価 (直近)</span>
+    <span class="kpi-value">¥1,666.0</span>
+    <span class="kpi-sub">週足終値</span>
+  </div>
+  <div class="kpi-item">
+    <span class="kpi-label">売上高 (25/03)</span>
+    <span class="kpi-value">573億</span>
+    <span class="kpi-sub">Revenue</span>
+  </div>
+  <div class="kpi-item">
+    <span class="kpi-label">営業利益 (25/03)</span>
+    <span class="kpi-value">18.7億</span>
+    <span class="kpi-sub">Op Profit</span>
+  </div>
+  <div class="kpi-item">
+    <span class="kpi-label">純利益 (25/03)</span>
+    <span class="kpi-value">12.5億</span>
+    <span class="kpi-sub">Net Income</span>
+  </div>
+  <div class="kpi-item">
+    <span class="kpi-label">ROE (25/03)</span>
+    <span class="kpi-value">2.99%</span>
+    <span class="kpi-sub">Return on Equity</span>
+  </div>
+  <div class="kpi-item">
+    <span class="kpi-label">PBR (25/03期末)</span>
+    <span class="kpi-value">0.23x</span>
+    <span class="kpi-sub">Price/Book</span>
+  </div>
+  <div class="kpi-item">
+    <span class="kpi-label">配当 (25/03)</span>
+    <span class="kpi-value">¥50</span>
+    <span class="kpi-sub">DPS</span>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ══ SECTION 1: 株価チャート ══ -->
+<div class="card" id="s1">
+  <div class="card-header">
+    <span class="section-badge">Section 1</span>
+    <span class="card-title">10年株価週足チャート <span>10-Year Weekly OHLC</span></span>
+  </div>
+  <div class="card-body">
+    <div id="chart-candle"></div>
+    <p class="insight">💡 股价过去10年在¥800〜¥2,500区间内运行，当前¥1,666处于中间位置。尽管业绩处于回升阶段，PBR仍维持在0.23x的低位，市场尚未充分定价盈利能力的结构性改善预期。</p>
+  </div>
+</div>
+
+<!-- ══ SECTION 2: 業績推移 ══ -->
+<div class="card" id="s2">
+  <div class="card-header">
+    <span class="section-badge">Section 2</span>
+    <span class="card-title">10年業績推移 <span>Revenue / Operating Profit / Net Income (億円)</span></span>
+  </div>
+  <div class="card-body">
+    <canvas id="chart-perf" height="90"></canvas>
+    <p class="insight">💡 营收在500〜600亿日元区间保持稳定，但营业利润因固定成本结构僵化，从19/03峰值54.6亿骤降至21/03的5.5亿，22〜23/03出现净亏损。25/03虽回升至18.7亿，但利润率仍不及峰值的一半。单靠维持营收规模难以实现盈利能力的根本性恢复，削减固定成本与向高附加值产品转型是核心课题。</p>
+  </div>
+</div>
+
+<!-- ══ SECTION 3: 利益率・ROE ══ -->
+<div class="card" id="s3">
+  <div class="card-header">
+    <span class="section-badge">Section 3</span>
+    <span class="card-title">10年利益率・ROE <span>Margin & Return on Equity (%)</span></span>
+  </div>
+  <div class="card-body">
+    <canvas id="chart-margin" height="90"></canvas>
+    <p class="insight">💡 营业利润率从19/03的9.1%峰值降至25/03的3.3%，ROE仅2.99%，大幅低于资本成本。只要低ROE状态持续，PBR低于1倍便有其合理性。利润率的结构性回升才是股价重估最重要的催化剂。</p>
+  </div>
+</div>
+
+<!-- ══ SECTION 4: PBR・PER・EV/EBITDA ══ -->
+<div class="card" id="s4">
+  <div class="card-header">
+    <span class="section-badge">Section 4</span>
+    <span class="card-title">10年 PBR・PER・EV/EBITDA <span>Valuation Multiples</span></span>
+  </div>
+  <div class="card-body">
+    <canvas id="chart-val" height="90"></canvas>
+    <div style="margin-top:16px;overflow-x:auto;">
+      <table class="data-table">
+        <thead><tr>
+          <th>期末</th>
+          <th>期末株価(円)</th>
+          <th>EPS(円)</th>
+          <th>BPS(円)</th>
+          <th>PER(x)</th>
+          <th>PBR(x)</th>
+          <th>EV/EBITDA(x)</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td>16/03</td>
+            <td>1475.3</td>
+            <td class="">275.15</td>
+            <td>3133.82</td>
+            <td>5.36</td>
+            <td>0.47</td>
+            <td>2.67</td>
+          </tr><tr>
+            <td>17/03</td>
+            <td>1566.8</td>
+            <td class="">213.78</td>
+            <td>3344.12</td>
+            <td>7.33</td>
+            <td>0.47</td>
+            <td>2.71</td>
+          </tr><tr>
+            <td>18/03</td>
+            <td>2043.3</td>
+            <td class="">372.03</td>
+            <td>3719.17</td>
+            <td>5.49</td>
+            <td>0.55</td>
+            <td>2.95</td>
+          </tr><tr>
+            <td>19/03</td>
+            <td>1835.8</td>
+            <td class="">411.53</td>
+            <td>3873.48</td>
+            <td>4.46</td>
+            <td>0.47</td>
+            <td>2.49</td>
+          </tr><tr>
+            <td>20/03</td>
+            <td>1129.3</td>
+            <td class="">175.68</td>
+            <td>3920.85</td>
+            <td>6.43</td>
+            <td>0.29</td>
+            <td>2.0</td>
+          </tr><tr>
+            <td>21/03</td>
+            <td>1324.1</td>
+            <td class="">26.06</td>
+            <td>3971.62</td>
+            <td>50.81</td>
+            <td>0.33</td>
+            <td>4.17</td>
+          </tr><tr>
+            <td>22/03</td>
+            <td>1136.7</td>
+            <td class="neg">-101.59</td>
+            <td>3880.45</td>
+            <td style="color:#94a3b8;">—</td>
+            <td>0.29</td>
+            <td>2.93</td>
+          </tr><tr>
+            <td>23/03</td>
+            <td>951.9</td>
+            <td class="neg">-45.15</td>
+            <td>3993.08</td>
+            <td style="color:#94a3b8;">—</td>
+            <td>0.24</td>
+            <td>4.42</td>
+          </tr><tr>
+            <td>24/03</td>
+            <td>1444.2</td>
+            <td class="">137.25</td>
+            <td>4336.29</td>
+            <td>10.52</td>
+            <td>0.33</td>
+            <td>4.03</td>
+          </tr><tr>
+            <td>25/03</td>
+            <td>1029.4</td>
+            <td class="">134.9</td>
+            <td>4516.94</td>
+            <td>7.63</td>
+            <td>0.23</td>
+            <td>2.45</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="insight">💡 PBR 0.23x、EV/EBITDA 2.45x均处于历史低位，资产层面的低估显而易见。但若ROE持续低迷，则存在价值陷阱风险，利润率改善进展是投资决策的关键观察点。有效年份的PER中位数约在6〜7倍，远低于制造业平均水平。</p>
+  </div>
+</div>
+
+<!-- ══ SECTION 5: EPS・BPS・配当 ══ -->
+<div class="card" id="s5">
+  <div class="card-header">
+    <span class="section-badge">Section 5</span>
+    <span class="card-title">10年 EPS・BPS・配当・配当性向・DOE <span>Per-Share Metrics & Dividends</span></span>
+  </div>
+  <div class="card-body">
+    <canvas id="chart-eps" height="90"></canvas>
+    <div style="margin-top:16px;overflow-x:auto;">
+      <table class="data-table">
+        <thead><tr>
+          <th>期末</th>
+          <th>16/03</th><th>17/03</th><th>18/03</th><th>19/03</th><th>20/03</th><th>21/03</th><th>22/03</th><th>23/03</th><th>24/03</th><th>25/03</th><th>26/03E</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>DPS(円)</td><td>60</td><td>60</td><td>77</td><td>90</td><td>100</td><td>20</td><td>50</td><td>30</td><td>40</td><td>50</td><td>85</td></tr>
+          <tr><td>配当性向(%)</td><td>21.8</td><td>28.1</td><td>20.7</td><td>21.9</td><td>56.9</td><td>76.5</td><td>—</td><td>—</td><td>—</td><td>37.1</td><td>—</td></tr>
+          <tr><td>DOE(%)</td><td>1.95</td><td>1.92</td><td>2.23</td><td>2.44</td><td>2.63</td><td>0.51</td><td>1.31</td><td>0.82</td><td>0.11</td><td>1.11</td><td>—</td></tr>
+          <tr><td>自社株買い(百万円)</td><td>2</td><td>2</td><td>3</td><td>2</td><td>3</td><td>1</td><td>1</td><td>2</td><td>0</td><td>1</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="insight">💡 BPS十年间增长44%（3,134→4,517日元），资产积累稳健。26/03E计划增派（50→85日元），显示出强化股东回报的姿态，但回购几乎为零，DOE仍在1%附近低位徘徊。要维持稳定的派息率，本业利润率的持续改善不可或缺。</p>
+  </div>
+</div>
+
+<!-- ══ SECTION 6: 流動資産/時価総額 ══ -->
+<div class="card" id="s6">
+  <div class="card-header">
+    <span class="section-badge">Section 6</span>
+    <span class="card-title">10年 時価総額/(流動資産−負債) <span>Market Cap vs Net Current Assets</span></span>
+  </div>
+  <div class="card-body">
+    <canvas id="chart-nca" height="90"></canvas>
+    <div style="margin-top:16px;overflow-x:auto;">
+      <table class="data-table">
+        <thead><tr>
+          <th>期末</th>
+          <th>16/03</th><th>17/03</th><th>18/03</th><th>19/03</th><th>20/03</th><th>21/03</th><th>22/03</th><th>23/03</th><th>24/03</th><th>25/03</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>流動資産(億)</td><td>341</td><td>364</td><td>361</td><td>380</td><td>353</td><td>380</td><td>406</td><td>400</td><td>421</td><td>415</td></tr>
+          <tr><td>流動負債(億)</td><td>200</td><td>220</td><td>228</td><td>250</td><td>208</td><td>208</td><td>220</td><td>239</td><td>250</td><td>254</td></tr>
+          <tr><td>流動資産-負債(億)</td><td>141</td><td>144</td><td>133</td><td>130</td><td>145</td><td>172</td><td>186</td><td>161</td><td>171</td><td>161</td></tr>
+          <tr><td>時価総額(億)</td><td>141.0</td><td>149.5</td><td>191.7</td><td>171.7</td><td>106.1</td><td>124.0</td><td>106.4</td><td>88.1</td><td>133.6</td><td>95.4</td></tr>
+          <tr><td>倍率(時価/NCA)</td><td>1.0</td><td>1.04</td><td>1.44</td><td>1.32</td><td>0.73</td><td>0.72</td><td>0.57</td><td>0.55</td><td>0.78</td><td>0.59</td></tr>
+          <tr><td>倍率(時価/NCA+投有)</td><td>0.73</td><td>0.76</td><td>1.02</td><td>0.92</td><td>0.52</td><td>0.54</td><td>0.44</td><td>0.4</td><td>0.58</td><td>0.43</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="insight">💡 市值（95亿日元）大幅低于流动资产减流动负债（161亿日元），达到格雷厄姆式"净净股"水平。加入投资性证券后的修正NCA比率降至0.43x，理论上以低于清算价值的价格交易。价值显现需要经营效率提升或政策持股出售来推动。</p>
+  </div>
+</div>
+
+<!-- ══ SECTION 7: 有利子負債 ══ -->
+<div class="card" id="s7">
+  <div class="card-header">
+    <span class="section-badge">Section 7</span>
+    <span class="card-title">10年 有利子負債/現金等価物 <span>Interest-Bearing Debt vs Cash (億円)</span></span>
+  </div>
+  <div class="card-body">
+    <canvas id="chart-debt" height="90"></canvas>
+    <p class="insight">💡 有息负债从158亿（16/03）逐步下降至139亿（25/03），扣除现金115亿后净有息负债仅24亿，接近实质无债状态。财务余力充裕，若FCF持续改善，具备进一步加强股东回报或布局成长投资的空间。</p>
+  </div>
+</div>
+
+<!-- ══ SECTION 8: 回転率 ══ -->
+<div class="card" id="s8">
+  <div class="card-header">
+    <span class="section-badge">Section 8</span>
+    <span class="card-title">10年 売掛金/棚卸資産 対売上原価 <span>Receivables & Inventory Turnover Ratios</span></span>
+  </div>
+  <div class="card-body">
+    <canvas id="chart-turn" height="90"></canvas>
+    <p style="margin-top:8px;font-size:12px;color:var(--muted);">比率 = 残高 ÷ 売上原価 (小さいほど回転が早い)</p>
+    <p class="insight">💡 应收账款周转比率从0.422（16/03）改善至0.313（25/03），回款效率提升。但存货比率在25/03达到0.284，接近近十年最高位，显示出需求放缓导致库存积压的迹象。库存管控的改善有望带来成本下降和利润率提升的双重红利。</p>
+  </div>
+</div>
+
+<!-- ══ SECTION 9: CF推移 ══ -->
+<div class="card" id="s9">
+  <div class="card-header">
+    <span class="section-badge">Section 9</span>
+    <span class="card-title">10年 CF推移 <span>Operating / Investing / Financing / FCF (億円)</span></span>
+  </div>
+  <div class="card-body">
+    <canvas id="chart-cf" height="90"></canvas>
+    <p class="insight">💡 经营性现金流连续10年为正（31〜76亿日元），现金创造能力稳健。25/03自由现金流大幅回升至34.2亿，在覆盖资本开支的同时兼顾了债务偿还与分红。即便在22〜23/03的亏损期，FCF也勉强维持正值，现金流层面的韧性值得肯定。</p>
+  </div>
+</div>
+
+<!-- ══ SECTION 10: 四半期進捗 ══ -->
+<div class="card" id="s10">
+  <div class="card-header">
+    <span class="section-badge">Section 10</span>
+    <span class="card-title">当年四半期進捗 FY2026/03 <span>Quarterly Progress</span></span>
+  </div>
+  <div class="card-body">
+    <div class="grid-2">
+      <div>
+        <h3 style="font-size:14px;margin-bottom:12px;">A) 四半期単独 (前期vs当期比較)</h3>
+        <canvas id="chart-qtr" height="160"></canvas>
+      </div>
+      <div>
+        <h3 style="font-size:14px;margin-bottom:12px;">B) 累計進捗 vs 通期予想</h3>
+        <div id="prog-section">
+          <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">FY2026/03 通期予想: 売上573億 / 営業利益19億 / 経常利益17億 / 純利益26億</p>
+
+          <div style="margin-bottom:16px;">
+            <p style="font-weight:700;margin-bottom:6px;">売上高 (億円)</p>
+            <div class="prog-wrap"><div class="prog-label"><span>Q1累計 135億</span><span>135/573 = 23.6%</span></div>
+              <div class="prog-bar"><div class="prog-fill" style="width:23.6%;background:var(--blue);">23.6%</div></div></div>
+            <div class="prog-wrap"><div class="prog-label"><span>Q2累計 291億</span><span>291/573 = 50.8%</span></div>
+              <div class="prog-bar"><div class="prog-fill" style="width:50.8%;background:var(--blue);">50.8%</div></div></div>
+            <div class="prog-wrap"><div class="prog-label"><span>Q3累計 418億</span><span>418/573 = 73.0%</span></div>
+              <div class="prog-bar"><div class="prog-fill" style="width:73.0%;background:var(--blue);">73.0%</div></div></div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <p style="font-weight:700;margin-bottom:6px;">営業利益 (億円)</p>
+            <div class="prog-wrap"><div class="prog-label"><span>Q1累計 5.16億</span><span>5.16/19 = 27.2%</span></div>
+              <div class="prog-bar"><div class="prog-fill" style="width:27.2%;background:var(--green);">27.2%</div></div></div>
+            <div class="prog-wrap"><div class="prog-label"><span>Q2累計 13.73億</span><span>13.73/19 = 72.3%</span></div>
+              <div class="prog-bar"><div class="prog-fill" style="width:72.3%;background:var(--green);">72.3%</div></div></div>
+            <div class="prog-wrap"><div class="prog-label"><span>Q3累計 17.32億</span><span>17.32/19 = 91.2%</span></div>
+              <div class="prog-bar"><div class="prog-fill" style="width:91.2%;background:var(--green);">91.2%</div></div></div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <p style="font-weight:700;margin-bottom:6px;">純利益 (億円)</p>
+            <div class="prog-wrap"><div class="prog-label"><span>Q1累計 19.84億</span><span>19.84/26 = 76.3%</span></div>
+              <div class="prog-bar"><div class="prog-fill" style="width:76.3%;background:var(--amber);">76.3%</div></div></div>
+            <div class="prog-wrap"><div class="prog-label"><span>Q2累計 23.55億</span><span>23.55/26 = 90.6%</span></div>
+              <div class="prog-bar"><div class="prog-fill" style="width:90.6%;background:var(--amber);">90.6%</div></div></div>
+            <div class="prog-wrap"><div class="prog-label"><span>Q3累計 26.12億</span><span>26.12/26 = 100.5%</span></div>
+              <div class="prog-bar"><div class="prog-fill" style="width:100%;background:var(--amber);">100.5% ✓</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;overflow-x:auto;">
+      <h3 style="font-size:14px;margin-bottom:10px;">FY2025 vs FY2026 四半期比較表</h3>
+      <table class="data-table">
+        <thead><tr>
+          <th>指標</th><th>FY25 Q1</th><th>FY25 Q2</th><th>FY25 Q3</th><th>FY25 Q4</th>
+          <th>FY26 Q1</th><th>FY26 Q2</th><th>FY26 Q3</th><th>FY26E Full</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td>売上(億)</td>
+            <td>136</td><td>141</td><td>148</td><td>148</td>
+            <td>135</td><td>156</td><td>127</td><td>573E</td>
+          </tr>
+          <tr>
+            <td>営業利益(億)</td>
+            <td>4.2</td><td>6.3</td><td>5.5</td><td>2.7</td>
+            <td>5.16</td><td>8.57</td><td>3.59</td><td>19E</td>
+          </tr>
+          <tr>
+            <td>経常利益(億)</td>
+            <td>4.8</td><td>7.1</td><td>6.7</td><td>4.6</td>
+            <td>5.51</td><td>7.80</td><td>4.63</td><td>17E</td>
+          </tr>
+          <tr>
+            <td>純利益(億)</td>
+            <td>3.0</td><td>4.3</td><td>4.2</td><td>1.0</td>
+            <td>19.84</td><td>3.71</td><td>2.57</td><td>26E</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="insight">💡 FY26/03截至Q3累计，营业利润达成率91.2%，净利润已达全年预期的100.5%，全年达标基本确定。但需注意Q1集中了大额一次性收益（权益法等），本业层面的进展应相对保守解读。26/03E计划增派（85日元）可作为股价下方支撑的积极因素。</p>
+  </div>
+</div>
+
+<!-- ══ SECTION 11: BS可視化 ══ -->
+<div class="card" id="s11">
+  <div class="card-header">
+    <span class="section-badge">Section 11</span>
+    <span class="card-title">最新BS可視化 2025/03 <span>Balance Sheet Visualization (820億円)</span></span>
+  </div>
+  <div class="card-body">
+
+    <!-- ── T字型 貸借対照表 ── -->
+    <div style="display:flex;gap:0;height:460px;border:2px solid #cbd5e1;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+
+      <!-- ═══ LEFT: Assets ═══ -->
+      <div style="flex:1;display:flex;flex-direction:column;min-width:0;">
+        <div style="padding:9px 12px;background:#1e40af;color:#fff;font-weight:700;font-size:13px;text-align:center;letter-spacing:.3px;flex-shrink:0;">
+          資産合計 &nbsp;820億円
+        </div>
+        <!-- Current Assets: flex=415 of 820 total -->
+        <div style="flex:415;display:flex;flex-direction:column;background:#eff6ff;border-bottom:2px dashed #93c5fd;min-height:0;">
+          <div style="padding:5px 10px;background:#1d4ed8;color:#fff;font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+            <span>▶ 流動資産</span><span>415億 &nbsp;50.6%</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:2px;padding:4px 6px;min-height:0;overflow:hidden;">
+            <div style="flex:115;background:#2563eb;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:#fff;font-size:11px;min-height:0;">
+              <span>現金・預金</span><span style="font-weight:700;">115億 &nbsp;14.0%</span>
+            </div>
+            <div style="flex:151;background:#3b82f6;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:#fff;font-size:11px;min-height:0;">
+              <span>売上債権</span><span style="font-weight:700;">151億 &nbsp;18.4%</span>
+            </div>
+            <div style="flex:137;background:#60a5fa;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:#1e293b;font-size:11px;min-height:0;">
+              <span>棚卸資産</span><span style="font-weight:700;">137億 &nbsp;16.7%</span>
+            </div>
+            <div style="flex:12;background:#bfdbfe;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:#1e293b;font-size:10px;min-height:0;">
+              <span>その他流動</span><span style="font-weight:700;">12億</span>
+            </div>
+          </div>
+        </div>
+        <!-- Fixed Assets: flex=405 of 820 total -->
+        <div style="flex:405;display:flex;flex-direction:column;background:#f0fdf4;min-height:0;">
+          <div style="padding:5px 10px;background:#065f46;color:#fff;font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+            <span>▶ 固定資産</span><span>405億 &nbsp;49.4%</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:2px;padding:4px 6px;min-height:0;overflow:hidden;">
+            <div style="flex:280;background:#059669;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:#fff;font-size:11px;min-height:0;">
+              <span>有形固定資産</span><span style="font-weight:700;">280億 &nbsp;34.1%</span>
+            </div>
+            <div style="flex:100;background:#10b981;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:#fff;font-size:11px;min-height:0;">
+              <span>投資有価証券</span><span style="font-weight:700;">100億 &nbsp;12.2%</span>
+            </div>
+            <div style="flex:25;background:#6ee7b7;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:#1e293b;font-size:10px;min-height:0;">
+              <span>無形・その他</span><span style="font-weight:700;">25億</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Centre divider ── -->
+      <div style="width:4px;background:linear-gradient(to bottom,#1e40af 50.6%,#065f46 50.6%);flex-shrink:0;"></div>
+
+      <!-- ═══ RIGHT: Liabilities + Equity ═══ -->
+      <div style="flex:1;display:flex;flex-direction:column;min-width:0;">
+        <div style="padding:9px 12px;background:#4c1d95;color:#fff;font-weight:700;font-size:13px;text-align:center;letter-spacing:.3px;flex-shrink:0;">
+          負債・純資産合計 &nbsp;820億円
+        </div>
+        <!-- Current Liab: flex=254 -->
+        <div style="flex:254;display:flex;flex-direction:column;background:#f5f3ff;border-bottom:2px dashed #a78bfa;min-height:0;">
+          <div style="padding:5px 10px;background:#6d28d9;color:#fff;font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+            <span>▶ 流動負債</span><span>254億 &nbsp;31.0%</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:2px;padding:4px 6px;min-height:0;overflow:hidden;">
+            <div style="flex:93;background:#7c3aed;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:#fff;font-size:11px;min-height:0;">
+              <span>仕入債務</span><span style="font-weight:700;">93億 &nbsp;11.3%</span>
+            </div>
+            <div style="flex:50;background:#8b5cf6;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:#fff;font-size:11px;min-height:0;">
+              <span>短期借入金</span><span style="font-weight:700;">50億 &nbsp;&nbsp;6.1%</span>
+            </div>
+            <div style="flex:111;background:#a78bfa;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:#fff;font-size:11px;min-height:0;">
+              <span>その他流動負債</span><span style="font-weight:700;">111億 &nbsp;13.5%</span>
+            </div>
+          </div>
+        </div>
+        <!-- Fixed Liab: flex=148 -->
+        <div style="flex:148;display:flex;flex-direction:column;background:#fff1f2;border-bottom:2px dashed #fca5a5;min-height:0;">
+          <div style="padding:5px 10px;background:#b91c1c;color:#fff;font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+            <span>▶ 固定負債</span><span>148億 &nbsp;18.0%</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:2px;padding:4px 6px;min-height:0;overflow:hidden;">
+            <div style="flex:89;background:#dc2626;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:#fff;font-size:11px;min-height:0;">
+              <span>長期借入金</span><span style="font-weight:700;">89億 &nbsp;10.9%</span>
+            </div>
+            <div style="flex:59;background:#fca5a5;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:#1e293b;font-size:11px;min-height:0;">
+              <span>その他固定負債</span><span style="font-weight:700;">59億 &nbsp;&nbsp;7.2%</span>
+            </div>
+          </div>
+        </div>
+        <!-- Equity: flex=418 -->
+        <div style="flex:418;display:flex;flex-direction:column;background:#fefce8;min-height:0;">
+          <div style="padding:5px 10px;background:#92400e;color:#fff;font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+            <span>▶ 純資産（自己資本）</span><span>418億 &nbsp;51.0%</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:2px;padding:4px 6px;min-height:0;overflow:hidden;">
+            <div style="flex:48;background:#d97706;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:#fff;font-size:11px;min-height:0;">
+              <span>資本金・資本剰余金</span><span style="font-weight:700;">48億 &nbsp;&nbsp;5.9%</span>
+            </div>
+            <div style="flex:220;background:#f59e0b;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:#fff;font-size:11px;min-height:0;">
+              <span>利益剰余金</span><span style="font-weight:700;">220億 &nbsp;26.8%</span>
+            </div>
+            <div style="flex:150;background:#fde68a;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:#1e293b;font-size:11px;min-height:0;">
+              <span>その他・評価差額等</span><span style="font-weight:700;">150億 &nbsp;18.3%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Key Ratios row ── -->
+    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
+      <div style="background:#eff6ff;border-left:3px solid #2563eb;border-radius:0 6px 6px 0;padding:8px 14px;font-size:12px;flex:1;min-width:130px;">
+        <div style="color:#1d4ed8;font-weight:700;margin-bottom:2px;">流動比率</div>
+        <div style="font-size:18px;font-weight:700;">163%</div>
+        <div style="color:#64748b;font-size:10px;">415÷254</div>
+      </div>
+      <div style="background:#f0fdf4;border-left:3px solid #059669;border-radius:0 6px 6px 0;padding:8px 14px;font-size:12px;flex:1;min-width:130px;">
+        <div style="color:#065f46;font-weight:700;margin-bottom:2px;">自己資本比率</div>
+        <div style="font-size:18px;font-weight:700;">50.9%</div>
+        <div style="color:#64748b;font-size:10px;">418÷820</div>
+      </div>
+      <div style="background:#f5f3ff;border-left:3px solid #7c3aed;border-radius:0 6px 6px 0;padding:8px 14px;font-size:12px;flex:1;min-width:130px;">
+        <div style="color:#6d28d9;font-weight:700;margin-bottom:2px;">有利子負債</div>
+        <div style="font-size:18px;font-weight:700;">139億円</div>
+        <div style="color:#64748b;font-size:10px;">短期50＋長期89</div>
+      </div>
+      <div style="background:#fefce8;border-left:3px solid #f59e0b;border-radius:0 6px 6px 0;padding:8px 14px;font-size:12px;flex:1;min-width:130px;">
+        <div style="color:#92400e;font-weight:700;margin-bottom:2px;">ネット有利子負債</div>
+        <div style="font-size:18px;font-weight:700;">24億円</div>
+        <div style="color:#64748b;font-size:10px;">139－115（現金）</div>
+      </div>
+    </div>
+    <p class="insight">💡 自有资本比率50.9%、净有息负债仅24亿，财务健康度高，下行风险有限。固定资产中占34%的投资性证券（100亿日元）应为政策持股，若推进出售压缩，可成为改善资本效率与强化股东回报的重要来源。流动比率163%，短期偿债能力无虞。</p>
+
+  </div>
+</div>
+
+<!-- ══ SECTION 12: PL瀑布図 ══ -->
+<div class="card" id="s12">
+  <div class="card-header">
+    <span class="section-badge">Section 12</span>
+    <span class="card-title">最新PL瀑布図 2025/03 <span>P&L Waterfall Chart (億円)</span></span>
+  </div>
+  <div class="card-body">
+    <div id="chart-wf"></div>
+    <p class="insight">💡 营收573亿日元对应毛利约114亿（毛利率约20%），在制造业中偏低。营业外收益（权益法利润、收取股息等）持续支撑净利润，25/03净利润12.5亿中本业贡献有限。本业营业利润率（3.3%）的持续改善，是中长期股价重估最关键的核心命题。</p>
+  </div>
+</div>
+
+</div><!-- end .main -->
+
+<footer>
+  <p>データ出典: IRBank / Yahoo Finance Japan / 有価証券報告書 / 決算短信 | 6317 北川鉄工所 (Kitagawa Iron Works) | 分析看板生成日: 2026-04-13</p>
+  <p style="margin-top:4px;">免責事項: 本資料は情報提供目的のみ。投資判断の根拠となるものではありません。</p>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════
+const candleData = [[1460300400000, 1425.0, 1489.7, 1425.0, 1475.3], [1460905200000, 1439.4, 1532.9, 1432.2, 1518.5], [1461510000000, 1525.7, 1525.7, 1381.8, 1417.8], [1462114800000, 1360.2, 1389.0, 1345.8, 1360.2], [1462719600000, 1381.8, 1432.2, 1353.0, 1360.2], [1463324400000, 1353.0, 1360.2, 1302.6, 1345.8], [1463929200000, 1353.0, 1360.2, 1288.2, 1295.4], [1464534000000, 1309.8, 1353.0, 1302.6, 1309.8], [1465138800000, 1295.4, 1317.0, 1273.8, 1281.0], [1465743600000, 1273.8, 1273.8, 1144.3, 1223.4], [1466348400000, 1230.6, 1324.2, 1173.1, 1245.0], [1466953200000, 1252.2, 1295.4, 1187.5, 1194.7], [1467558000000, 1187.5, 1187.5, 1137.1, 1151.5], [1468162800000, 1151.5, 1295.4, 1151.5, 1245.0], [1468767600000, 1245.0, 1273.8, 1223.4, 1245.0], [1469372400000, 1252.2, 1288.2, 1237.8, 1266.6], [1469977200000, 1259.4, 1273.8, 1180.3, 1194.7], [1470582000000, 1209.1, 1237.8, 1165.9, 1180.3], [1471186800000, 1180.3, 1180.3, 1137.1, 1144.3], [1471791600000, 1137.1, 1144.3, 1101.1, 1101.1], [1472396400000, 1115.5, 1209.1, 1108.3, 1180.3], [1473001200000, 1187.5, 1230.6, 1158.7, 1223.4], [1473606000000, 1209.1, 1209.1, 1173.1, 1194.7], [1474210800000, 1194.7, 1216.3, 1180.3, 1209.1], [1474815600000, 1201.9, 1209.1, 1146.4, 1193.9], [1475420400000, 1208.3, 1295.4, 1203.3, 1287.5], [1476025200000, 1287.5, 1294.7, 1238.6, 1255.8], [1476630000000, 1250.8, 1289.7, 1250.8, 1264.5], [1477234800000, 1262.3, 1276.0, 1246.5, 1257.3], [1477839600000, 1257.3, 1294.0, 1186.7, 1224.2], [1478444400000, 1245.0, 1292.5, 1144.3, 1292.5], [1479049200000, 1321.3, 1502.0, 1321.3, 1487.6], [1479654000000, 1491.2, 1650.2, 1480.4, 1648.8], [1480258800000, 1637.3, 1686.9, 1627.2, 1674.0], [1480863600000, 1641.6, 1720.7, 1639.4, 1720.0], [1481468400000, 1727.2, 1749.5, 1666.8, 1732.3], [1482073200000, 1704.9, 1709.2, 1660.3, 1682.6], [1482678000000, 1685.5, 1686.2, 1617.1, 1640.9], [1483282800000, 1640.9, 1762.5, 1640.9, 1748.8], [1483887600000, 1748.8, 1795.6, 1733.7, 1753.9], [1484492400000, 1743.8, 1767.5, 1689.1, 1760.3], [1485097200000, 1751.0, 1788.4, 1683.3, 1771.8], [1485702000000, 1763.9, 1794.2, 1727.2, 1738.7], [1486306800000, 1757.4, 1797.8, 1757.4, 1787.0], [1486911600000, 1799.2, 1806.4, 1759.6, 1798.5], [1487516400000, 1779.0, 1792.0, 1707.8, 1715.0], [1488121200000, 1714.3, 1748.8, 1684.8, 1722.2], [1488726000000, 1699.9, 1727.2, 1697.0, 1703.5], [1489330800000, 1704.9, 1710.0, 1640.9, 1643.7], [1489935600000, 1643.7, 1657.4, 1590.5, 1620.0], [1490540400000, 1617.8, 1620.0, 1576.1, 1578.2], [1491145200000, 1630.4, 1630.4, 1540.2, 1566.8], [1491750000000, 1569.8, 1588.3, 1490.7, 1504.7], [1492354800000, 1502.5, 1532.1, 1488.4, 1521.7], [1492959600000, 1523.9, 1609.7, 1516.5, 1591.2], [1493564400000, 1589.0, 1643.7, 1584.6, 1636.3], [1494169200000, 1640.8, 1699.9, 1640.8, 1699.9], [1494774000000, 1699.9, 1805.6, 1698.4, 1712.5], [1495378800000, 1719.1, 1766.5, 1719.1, 1722.8], [1495983600000, 1724.3, 1758.3, 1668.1, 1750.9], [1496588400000, 1747.2, 1747.2, 1688.8, 1714.7], [1497193200000, 1694.7, 1733.9, 1694.7, 1724.3], [1497798000000, 1725.8, 1765.0, 1714.0, 1742.1], [1498402800000, 1742.1, 1759.8, 1708.0, 1740.6], [1499007600000, 1741.3, 1804.2, 1729.5, 1790.1], [1499612400000, 1807.9, 1868.5, 1785.7, 1813.0], [1500217200000, 1813.0, 1813.0, 1770.9, 1799.0], [1500822000000, 1784.2, 1807.1, 1759.1, 1770.2], [1501426800000, 1759.1, 1790.9, 1714.0, 1782.7], [1502031600000, 1792.3, 1811.6, 1728.7, 1792.3], [1502636400000, 1779.0, 1858.1, 1753.9, 1787.9], [1503241200000, 1790.9, 1816.0, 1753.1, 1799.0], [1503846000000, 1799.0, 1887.7, 1779.8, 1881.1], [1504450800000, 1883.3, 1883.3, 1821.2, 1837.4], [1505055600000, 1848.5, 1935.8, 1844.8, 1935.8], [1505660400000, 1935.8, 1980.1, 1930.6, 1947.6], [1506265200000, 1952.0, 1966.8, 1926.2, 1958.7], [1506870000000, 1966.8, 2023.0, 1946.9, 2020.1], [1507474800000, 2020.1, 2102.9, 2020.1, 2081.4], [1508079600000, 2077.7, 2207.1, 2077.0, 2125.1], [1508684400000, 2128.8, 2240.4, 2100.7, 2225.6], [1509289200000, 2229.3, 2284.8, 2210.1, 2240.4], [1509894000000, 2244.1, 2358.7, 2212.3, 2299.6], [1510498800000, 2318.1, 2421.6, 2221.9, 2292.2], [1511103600000, 2270.0, 2299.6, 2181.3, 2195.3], [1511708400000, 2199.7, 2213.1, 2145.0, 2199.0], [1512313200000, 2218.2, 2277.4, 2187.2, 2273.7], [1512918000000, 2258.9, 2270.0, 2170.9, 2208.6], [1513522800000, 2225.6, 2318.1, 2225.6, 2318.1], [1514127600000, 2321.8, 2321.8, 2262.6, 2277.4], [1514732400000, 2277.4, 2343.9, 2277.4, 2343.9], [1515337200000, 2343.9, 2451.1, 2343.9, 2443.8], [1515942000000, 2477.0, 2488.1, 2318.1, 2355.0], [1516546800000, 2355.0, 2410.5, 2321.8, 2325.4], [1517151600000, 2355.0, 2355.0, 2292.2, 2343.9], [1517756400000, 2292.2, 2295.9, 2011.2, 2040.8], [1518361200000, 2040.8, 2077.7, 1997.2, 2017.9], [1518966000000, 2040.8, 2118.4, 2040.8, 2109.5], [1519570800000, 2126.5, 2126.5, 2003.8, 2013.4], [1520175600000, 1997.2, 2030.4, 1949.1, 2018.6], [1520780400000, 2064.4, 2104.4, 2023.8, 2094.0], [1521385200000, 2094.0, 2096.2, 1960.9, 1966.1], [1521990000000, 1968.3, 2092.5, 1927.6, 2004.5], [1522594800000, 2081.3, 2087.4, 2018.2, 2043.3], [1523199600000, 2066.9, 2082.8, 2022.8, 2041.8], [1523804400000, 2046.3, 2109.4, 2023.5, 2072.9], [1524409200000, 2113.2, 2151.2, 2104.1, 2123.1], [1525014000000, 2123.1, 2123.1, 2090.4, 2118.5], [1525618800000, 2118.5, 2184.7, 2102.6, 2168.0], [1526223600000, 2168.0, 2263.7, 2168.0, 2231.8], [1526828400000, 2226.5, 2249.3, 2101.8, 2104.1], [1527433200000, 2139.1, 2158.1, 2081.3, 2117.8], [1528038000000, 2133.0, 2189.2, 2105.6, 2155.8], [1528642800000, 2133.0, 2158.1, 2091.9, 2095.0], [1529247600000, 2085.9, 2088.1, 1971.1, 1986.3], [1529852400000, 2003.0, 2022.8, 1965.0, 1987.8], [1530457200000, 1984.0, 1996.2, 1817.5, 1872.3], [1531062000000, 1874.5, 1987.0, 1863.1, 1908.7], [1531666800000, 1908.7, 1979.4, 1908.7, 1946.0], [1532271600000, 1944.5, 2024.3, 1924.7, 1996.9], [1532876400000, 1995.4, 2108.7, 1995.4, 2037.2], [1533481200000, 2046.3, 2112.5, 2030.4, 2063.1], [1534086000000, 2063.1, 2076.7, 1925.5, 1927.7], [1534690800000, 1927.7, 1961.2, 1912.5, 1955.1], [1535295600000, 2143.6, 2233.3, 2104.9, 2180.1], [1535900400000, 2182.4, 2198.4, 2130.7, 2152.0], [1536505200000, 2140.6, 2166.4, 2046.3, 2122.3], [1537110000000, 2122.3, 2260.7, 2122.3, 2207.5], [1537714800000, 2207.5, 2329.9, 2207.5, 2299.5], [1538319600000, 2338.3, 2388.5, 2278.9, 2282.0], [1538924400000, 2282.0, 2287.4, 2133.8, 2192.5], [1539529200000, 2194.0, 2274.3, 2150.0, 2207.1], [1540134000000, 2201.7, 2211.8, 1977.2, 1983.3], [1540738800000, 2018.8, 2103.7, 1939.4, 2103.0], [1541343600000, 2081.4, 2175.5, 2057.4, 2172.4], [1541948400000, 2172.4, 2250.4, 1992.6, 1997.2], [1542553200000, 1989.5, 2011.1, 1906.9, 1944.0], [1543158000000, 1914.7, 2021.2, 1910.0, 1985.7], [1543762800000, 1991.1, 2018.8, 1869.1, 1906.2], [1544367600000, 1944.8, 1944.8, 1805.1, 1869.1], [1544972400000, 1866.0, 1874.5, 1598.2, 1670.0], [1545577200000, 1670.0, 1768.0, 1562.8, 1748.0], [1546182000000, 1748.0, 1748.0, 1636.1, 1693.9], [1546786800000, 1759.5, 1793.5, 1697.8, 1720.2], [1547391600000, 1720.2, 1778.1, 1709.4, 1731.8], [1547996400000, 1753.4, 1830.5, 1726.4, 1811.2], [1548601200000, 1813.6, 1817.4, 1697.8, 1697.8], [1549206000000, 1726.4, 1800.4, 1700.9, 1714.0], [1549810800000, 1714.0, 1839.8, 1698.6, 1827.5], [1550415600000, 1848.3, 1908.5, 1844.4, 1862.2], [1551020400000, 1859.1, 1866.0, 1825.9, 1844.4], [1551625200000, 1845.2, 1912.3, 1737.2, 1744.9], [1552230000000, 1748.7, 1750.3, 1680.1, 1698.6], [1552834800000, 1710.9, 1784.2, 1678.5, 1784.2], [1553439600000, 1737.2, 1819.7, 1721.7, 1735.6], [1554044400000, 1796.4, 1850.7, 1796.4, 1835.8], [1554649200000, 1850.7, 1858.6, 1803.5, 1824.0], [1555254000000, 1831.1, 1899.5, 1831.1, 1868.0], [1555858800000, 1868.0, 1868.0, 1802.7, 1824.8], [1556463600000, 1824.8, 1824.8, 1824.8, 1824.8], [1557068400000, 1824.8, 1826.3, 1683.9, 1713.8], [1557673200000, 1702.0, 1704.4, 1590.3, 1692.6], [1558278000000, 1695.7, 1702.0, 1603.6, 1623.3], [1558882800000, 1629.6, 1650.9, 1598.1, 1606.8], [1559487600000, 1583.2, 1672.1, 1554.9, 1662.7], [1560092400000, 1683.9, 1715.4, 1644.6, 1644.6], [1560697200000, 1644.6, 1672.1, 1584.8, 1656.4], [1561302000000, 1668.2, 1679.2, 1602.9, 1653.2], [1561906800000, 1692.6, 1814.5, 1679.2, 1791.7], [1562511600000, 1798.8, 1801.2, 1720.9, 1739.8], [1563116400000, 1739.8, 1739.8, 1616.2, 1683.9], [1563721200000, 1688.6, 1733.5, 1680.8, 1692.6], [1564326000000, 1695.7, 1703.6, 1594.2, 1594.2], [1564930800000, 1594.2, 1613.9, 1521.8, 1573.0], [1565535600000, 1573.0, 1573.0, 1422.7, 1445.5], [1566140400000, 1447.1, 1469.9, 1433.7, 1446.3], [1566745200000, 1417.2, 1426.6, 1354.2, 1416.4], [1567350000000, 1414.8, 1473.0, 1396.7, 1465.9], [1567954800000, 1462.8, 1597.4, 1459.7, 1596.6], [1568559600000, 1596.6, 1601.3, 1536.8, 1550.1], [1569164400000, 1550.1, 1600.5, 1513.2, 1538.3], [1569769200000, 1560.4, 1581.4, 1485.3, 1509.5], [1570374000000, 1520.0, 1604.0, 1507.9, 1587.8], [1570978800000, 1587.8, 1654.8, 1587.8, 1650.0], [1571583600000, 1650.0, 1660.5, 1625.0, 1650.0], [1572188400000, 1653.2, 1699.2, 1642.7, 1671.0], [1572793200000, 1671.0, 1767.9, 1671.0, 1744.4], [1573398000000, 1784.8, 1836.5, 1767.0, 1835.7], [1574002800000, 1833.2, 1858.3, 1746.9, 1784.0], [1574607600000, 1784.8, 1838.9, 1774.3, 1831.6], [1575212400000, 1830.0, 1893.0, 1804.2, 1869.6], [1575817200000, 1896.2, 1967.2, 1884.1, 1952.7], [1576422000000, 1960.8, 1982.6, 1925.3, 1970.5], [1577026800000, 1970.5, 1970.5, 1896.2, 1966.4], [1577631600000, 1970.5, 1970.5, 1934.1, 1946.3], [1578236400000, 1905.9, 1927.7, 1856.6, 1899.4], [1578841200000, 1899.4, 1914.8, 1857.5, 1883.3], [1579446000000, 1879.2, 1949.5, 1868.8, 1886.5], [1580050800000, 1828.4, 1855.8, 1725.9, 1780.8], [1580655600000, 1735.6, 1800.9, 1726.7, 1791.3], [1581260400000, 1750.9, 1774.3, 1672.6, 1686.3], [1581865200000, 1655.6, 1670.2, 1595.9, 1598.3], [1582470000000, 1598.3, 1598.3, 1390.9, 1394.9], [1583074800000, 1387.6, 1474.8, 1344.9, 1350.5], [1583679600000, 1331.9, 1353.7, 1120.4, 1162.4], [1584284400000, 1178.6, 1281.9, 1088.2, 1194.7], [1584889200000, 1170.5, 1372.3, 1152.7, 1372.3], [1585494000000, 1291.6, 1291.6, 1112.4, 1129.3], [1586098800000, 1153.6, 1344.0, 1129.4, 1337.4], [1586703600000, 1310.8, 1314.1, 1240.1, 1268.3], [1587308400000, 1251.7, 1296.6, 1228.4, 1275.8], [1587913200000, 1274.2, 1295.8, 1241.7, 1257.5], [1588518000000, 1257.5, 1303.3, 1233.4, 1303.3], [1589122800000, 1325.7, 1392.3, 1311.6, 1343.2], [1589727600000, 1358.2, 1392.3, 1329.9, 1348.2], [1590332400000, 1369.8, 1473.8, 1365.7, 1434.7], [1590937200000, 1426.4, 1478.8, 1392.3, 1453.8], [1591542000000, 1466.3, 1517.0, 1357.3, 1403.9], [1592146800000, 1405.6, 1419.7, 1353.2, 1359.0], [1592751600000, 1359.0, 1369.8, 1304.9, 1344.9], [1593356400000, 1343.2, 1352.3, 1240.1, 1265.0], [1593961200000, 1250.9, 1299.9, 1226.8, 1228.4], [1594566000000, 1246.7, 1319.9, 1246.7, 1294.1], [1595170800000, 1290.8, 1343.2, 1270.0, 1306.6], [1595775600000, 1306.6, 1352.3, 1201.0, 1201.0], [1596380400000, 1212.6, 1306.6, 1180.2, 1196.8], [1596985200000, 1196.8, 1230.1, 1150.2, 1215.1], [1597590000000, 1220.1, 1221.8, 1147.7, 1162.7], [1598194800000, 1161.9, 1173.5, 1138.6, 1153.6], [1598799600000, 1152.7, 1176.9, 1149.4, 1156.9], [1599404400000, 1156.9, 1261.7, 1155.2, 1261.7], [1600009200000, 1263.4, 1297.5, 1240.1, 1265.0], [1600614000000, 1265.0, 1283.3, 1238.4, 1266.7], [1601218800000, 1273.3, 1302.4, 1166.9, 1171.0], [1601823600000, 1175.2, 1204.3, 1167.7, 1185.2], [1602428400000, 1173.5, 1191.0, 1136.9, 1140.3], [1603033200000, 1140.3, 1164.4, 1117.0, 1136.1], [1603638000000, 1136.1, 1154.4, 1068.7, 1072.9], [1604242800000, 1072.9, 1132.8, 1070.4, 1132.8], [1604847600000, 1141.9, 1169.4, 1117.8, 1130.3], [1605452400000, 1136.1, 1154.4, 1096.2, 1106.2], [1606057200000, 1106.2, 1131.1, 1077.9, 1100.3], [1606662000000, 1102.0, 1132.8, 1059.6, 1132.8], [1607266800000, 1140.3, 1176.0, 1131.1, 1158.6], [1607871600000, 1162.7, 1195.2, 1147.7, 1171.9], [1608476400000, 1161.9, 1164.4, 1102.8, 1110.3], [1609081200000, 1110.3, 1132.8, 1095.3, 1106.2], [1609686000000, 1116.1, 1141.9, 1076.2, 1141.9], [1610290800000, 1141.9, 1148.6, 1118.6, 1118.6], [1610895600000, 1114.5, 1151.9, 1108.7, 1122.0], [1611500400000, 1127.0, 1159.4, 1112.0, 1115.3], [1612105200000, 1114.5, 1172.7, 1112.8, 1166.0], [1612710000000, 1164.4, 1260.9, 1162.7, 1259.2], [1613314800000, 1292.5, 1324.1, 1232.6, 1235.9], [1613919600000, 1260.9, 1283.3, 1216.8, 1216.8], [1614524400000, 1234.2, 1267.5, 1210.1, 1248.4], [1615129200000, 1278.3, 1299.9, 1254.2, 1280.0], [1615734000000, 1299.1, 1334.9, 1283.3, 1312.4], [1616338800000, 1321.6, 1402.2, 1295.8, 1324.9], [1616943600000, 1344.0, 1349.8, 1293.3, 1324.1], [1617548400000, 1342.4, 1370.2, 1324.7, 1336.5], [1618153200000, 1344.9, 1367.7, 1332.3, 1339.0], [1618758000000, 1350.0, 1364.3, 1273.4, 1273.4], [1619362800000, 1284.3, 1284.3, 1263.3, 1263.3], [1619967600000, 1263.3, 1334.0, 1263.3, 1333.2], [1620572400000, 1362.6, 1413.2, 1328.1, 1347.5], [1621177200000, 1363.5, 1394.6, 1303.7, 1383.7], [1621782000000, 1386.2, 1393.8, 1351.7, 1361.8], [1622386800000, 1431.7, 1515.1, 1386.2, 1513.4], [1622991600000, 1541.2, 1557.2, 1442.6, 1451.9], [1623596400000, 1451.9, 1467.1, 1406.4, 1440.1], [1624201200000, 1390.4, 1434.2, 1380.3, 1424.1], [1624806000000, 1431.7, 1456.1, 1407.3, 1439.3], [1625410800000, 1439.3, 1440.1, 1376.1, 1400.5], [1626015600000, 1402.2, 1452.7, 1402.2, 1449.4], [1626620400000, 1446.0, 1446.0, 1377.8, 1387.1], [1627225200000, 1408.9, 1428.3, 1396.3, 1396.3], [1627830000000, 1407.3, 1444.3, 1395.5, 1426.6], [1628434800000, 1426.6, 1426.6, 1366.8, 1377.8], [1629039600000, 1379.5, 1379.5, 1289.4, 1297.8], [1629644400000, 1297.8, 1350.8, 1297.8, 1323.9], [1630249200000, 1328.9, 1372.7, 1328.9, 1372.7], [1630854000000, 1381.2, 1403.1, 1368.5, 1403.1], [1631458800000, 1403.1, 1417.4, 1386.2, 1414.0], [1632063600000, 1414.0, 1421.6, 1376.9, 1419.9], [1632668400000, 1423.3, 1443.5, 1334.0, 1337.4], [1633273200000, 1372.5, 1372.5, 1301.6, 1335.8], [1633878000000, 1326.4, 1358.0, 1316.1, 1345.2], [1634482800000, 1345.2, 1367.4, 1328.1, 1337.5], [1635087600000, 1329.0, 1352.9, 1325.5, 1335.8], [1635692400000, 1360.6, 1370.0, 1338.4, 1340.1], [1636297200000, 1350.3, 1358.0, 1326.4, 1354.6], [1636902000000, 1338.4, 1343.5, 1236.7, 1242.6], [1637506800000, 1239.2, 1280.2, 1229.8, 1255.5], [1638111600000, 1240.9, 1240.9, 1187.9, 1229.8], [1638716400000, 1229.8, 1279.4, 1217.0, 1259.7], [1639321200000, 1264.9, 1312.7, 1252.0, 1299.0], [1639926000000, 1281.1, 1281.1, 1226.4, 1238.4], [1640530800000, 1239.2, 1279.4, 1231.5, 1279.4], [1641135600000, 1279.4, 1293.9, 1230.7, 1242.6], [1641740400000, 1242.6, 1246.9, 1205.0, 1217.0], [1642345200000, 1222.1, 1223.8, 1137.5, 1173.4], [1642950000000, 1176.8, 1182.8, 1123.0, 1152.0], [1643554800000, 1159.7, 1203.3, 1151.2, 1195.6], [1644159600000, 1193.1, 1235.8, 1193.1, 1216.1], [1644764400000, 1190.5, 1190.5, 1151.2, 1164.9], [1645369200000, 1164.9, 1164.9, 1106.8, 1106.8], [1645974000000, 1112.7, 1143.5, 1102.5, 1104.2], [1646578800000, 1085.4, 1099.1, 1042.7, 1091.4], [1647183600000, 1097.3, 1139.2, 1097.3, 1136.7], [1647788400000, 1136.7, 1182.0, 1136.7, 1163.2], [1648393200000, 1164.0, 1176.0, 1117.9, 1136.7], [1648998000000, 1157.7, 1161.2, 1091.5, 1105.5], [1649602800000, 1108.1, 1137.7, 1082.8, 1119.4], [1650207600000, 1109.0, 1132.5, 1088.1, 1088.1], [1650812400000, 1079.4, 1093.3, 1049.8, 1088.1], [1651417200000, 1088.1, 1120.3, 1084.6, 1120.3], [1652022000000, 1120.3, 1141.2, 1084.6, 1096.8], [1652626800000, 1156.0, 1178.6, 1135.9, 1172.5], [1653231600000, 1198.6, 1216.9, 1176.0, 1205.6], [1653836400000, 1218.6, 1303.9, 1215.1, 1288.3], [1654441200000, 1273.5, 1345.7, 1270.9, 1319.6], [1655046000000, 1317.0, 1317.0, 1256.1, 1265.6], [1655650800000, 1264.8, 1270.9, 1225.6, 1240.4], [1656255600000, 1249.1, 1287.4, 1176.0, 1182.9], [1656860400000, 1209.1, 1225.6, 1189.0, 1212.5], [1657465200000, 1232.6, 1248.2, 1203.0, 1228.2], [1658070000000, 1228.2, 1243.0, 1215.1, 1237.8], [1658674800000, 1236.0, 1258.7, 1222.1, 1224.7], [1659279600000, 1224.7, 1244.7, 1204.7, 1229.1], [1659884400000, 1229.1, 1231.7, 1144.6, 1179.5], [1660489200000, 1187.3, 1191.6, 1162.9, 1168.1], [1661094000000, 1168.1, 1198.6, 1168.1, 1187.3], [1661698800000, 1175.1, 1183.8, 1156.0, 1166.4], [1662303600000, 1162.0, 1182.9, 1149.9, 1181.2], [1662908400000, 1196.9, 1196.9, 1121.1, 1121.1], [1663513200000, 1121.1, 1143.8, 1109.8, 1115.0], [1664118000000, 1110.7, 1116.8, 1083.7, 1091.5], [1664722800000, 1117.7, 1181.9, 1109.7, 1180.1], [1665327600000, 1180.1, 1180.1, 1102.6, 1116.8], [1665932400000, 1108.8, 1136.4, 1108.8, 1116.8], [1666537200000, 1132.9, 1138.2, 1098.1, 1104.3], [1667142000000, 1105.2, 1138.2, 1105.2, 1118.6], [1667746800000, 1123.1, 1155.2, 1123.1, 1139.1], [1668351600000, 1063.3, 1069.6, 1033.9, 1039.3], [1668956400000, 1041.1, 1082.1, 1033.9, 1076.7], [1669561200000, 1082.1, 1082.1, 1048.2, 1051.8], [1670166000000, 1057.1, 1067.8, 1044.6, 1065.1], [1670770800000, 1070.5, 1090.1, 1065.1, 1066.0], [1671375600000, 1064.2, 1066.0, 1017.9, 1024.1], [1671980400000, 1020.6, 1028.6, 1001.8, 1018.8], [1672585200000, 1018.8, 1018.8, 988.5, 1001.8], [1673190000000, 1001.8, 1009.9, 999.2, 1001.8], [1673794800000, 998.3, 1037.5, 993.8, 1037.5], [1674399600000, 1041.1, 1057.1, 1035.7, 1056.2], [1675004400000, 1056.2, 1064.2, 1027.7, 1032.2], [1675609200000, 1038.4, 1058.0, 1034.8, 1055.3], [1676214000000, 1019.7, 1025.9, 981.3, 985.8], [1676818800000, 990.3, 1004.5, 980.5, 990.3], [1677423600000, 994.7, 1012.5, 990.3, 1010.8], [1678028400000, 1018.8, 1025.0, 1001.8, 1007.2], [1678633200000, 998.3, 998.3, 935.9, 950.1], [1679238000000, 940.3, 956.4, 932.3, 951.0], [1679842800000, 951.0, 965.3, 942.1, 960.0], [1680447600000, 961.7, 986.7, 940.3, 951.9], [1681052400000, 954.6, 976.0, 943.9, 971.5], [1681657200000, 976.0, 985.8, 971.5, 975.1], [1682262000000, 975.1, 998.3, 970.7, 996.5], [1682866800000, 1002.7, 1008.1, 991.2, 1007.2], [1683471600000, 1007.2, 1098.1, 1007.2, 1098.1], [1684076400000, 1071.4, 1078.5, 1008.1, 1040.2], [1684681200000, 1046.4, 1104.3, 1040.2, 1046.4], [1685286000000, 1050.9, 1080.3, 1033.9, 1067.8], [1685890800000, 1083.0, 1111.5, 1042.0, 1050.0], [1686495600000, 1055.3, 1074.9, 1051.8, 1062.5], [1687100400000, 1073.2, 1074.0, 1043.7, 1047.3], [1687705200000, 1044.6, 1045.5, 1016.1, 1017.9], [1688310000000, 1025.0, 1030.4, 993.8, 1016.1], [1688914800000, 1001.0, 1027.7, 989.4, 1005.4], [1689519600000, 1005.4, 1062.5, 1005.4, 1046.4], [1690124400000, 1050.9, 1083.0, 1044.6, 1059.8], [1690729200000, 1074.9, 1086.5, 1030.4, 1043.7], [1691334000000, 1046.4, 1087.4, 1039.3, 1067.8], [1691938800000, 1245.2, 1273.7, 1171.2, 1203.3], [1692543600000, 1205.1, 1238.0, 1185.5, 1194.4], [1693148400000, 1195.3, 1314.7, 1195.3, 1292.4], [1693753200000, 1293.3, 1378.0, 1270.1, 1300.4], [1694358000000, 1312.9, 1331.6, 1263.0, 1313.8], [1694962800000, 1313.8, 1411.9, 1313.8, 1340.5], [1695567600000, 1337.9, 1353.0, 1280.8, 1286.2], [1696172400000, 1354.8, 1448.4, 1330.7, 1382.4], [1696777200000, 1382.4, 1427.9, 1275.5, 1284.4], [1697382000000, 1285.3, 1325.4, 1275.5, 1288.0], [1697986800000, 1278.2, 1309.4, 1221.1, 1269.2], [1698591600000, 1272.8, 1304.0, 1230.0, 1283.5], [1699196400000, 1310.2, 1310.2, 1254.1, 1292.4], [1699801200000, 1189.0, 1189.0, 1119.5, 1154.3], [1700406000000, 1150.7, 1165.8, 1137.3, 1155.2], [1701010800000, 1162.3, 1178.3, 1141.8, 1165.0], [1701615600000, 1162.3, 1162.3, 1110.6, 1113.3], [1702220400000, 1115.0, 1126.6, 1083.0, 1097.2], [1702825200000, 1084.7, 1127.5, 1074.0, 1124.8], [1703430000000, 1137.3, 1251.4, 1127.5, 1239.8], [1704034800000, 1239.8, 1246.1, 1208.6, 1222.9], [1704639600000, 1222.9, 1238.9, 1185.5, 1210.4], [1705244400000, 1210.4, 1257.7, 1205.1, 1234.5], [1705849200000, 1308.5, 1384.2, 1301.3, 1367.3], [1706454000000, 1386.0, 1393.1, 1324.5, 1334.3], [1707058800000, 1334.3, 1359.3, 1293.3, 1321.8], [1707663600000, 1384.2, 1420.8, 1349.5, 1379.8], [1708268400000, 1381.5, 1417.2, 1364.6, 1417.2], [1708873200000, 1415.4, 1438.6, 1381.5, 1386.0], [1709478000000, 1394.9, 1465.3, 1361.9, 1452.9], [1710082800000, 1428.8, 1429.7, 1348.6, 1361.0], [1710687600000, 1370.9, 1550.0, 1364.6, 1507.2], [1711292400000, 1513.5, 1550.0, 1468.9, 1499.2], [1711897200000, 1542.8, 1543.7, 1420.5, 1444.2], [1712502000000, 1449.7, 1495.3, 1443.3, 1458.8], [1713106800000, 1440.6, 1454.3, 1355.7, 1369.4], [1713711600000, 1386.7, 1410.4, 1365.7, 1378.5], [1714316400000, 1378.5, 1426.9, 1378.5, 1426.9], [1714921200000, 1427.8, 1457.9, 1416.8, 1424.1], [1715526000000, 1306.4, 1309.1, 1226.9, 1260.7], [1716130800000, 1264.4, 1309.1, 1247.0, 1251.6], [1716735600000, 1257.1, 1293.6, 1221.5, 1272.6], [1717340400000, 1285.4, 1298.1, 1259.8, 1273.5], [1717945200000, 1273.5, 1310.9, 1261.6, 1295.4], [1718550000000, 1296.3, 1369.4, 1269.8, 1362.1], [1719154800000, 1362.1, 1424.1, 1345.6, 1405.9], [1719759600000, 1422.3, 1428.7, 1372.1, 1404.0], [1720364400000, 1404.0, 1466.1, 1383.0, 1436.9], [1720969200000, 1436.9, 1478.9, 1405.9, 1426.0], [1721574000000, 1426.9, 1444.2, 1366.6, 1371.2], [1722178800000, 1392.2, 1418.7, 1258.9, 1262.5], [1722783600000, 1180.4, 1214.2, 1051.7, 1198.6], [1723388400000, 1198.6, 1252.5, 1147.5, 1247.0], [1723993200000, 1243.4, 1246.1, 1198.6, 1206.9], [1724598000000, 1199.6, 1225.1, 1186.8, 1194.1], [1725202800000, 1197.7, 1212.3, 1138.4, 1160.3], [1725807600000, 1139.3, 1159.4, 1075.4, 1105.5], [1726412400000, 1111.9, 1155.7, 1096.4, 1149.3], [1727017200000, 1164.0, 1164.9, 1127.4, 1143.0], [1727622000000, 1138.0, 1156.6, 1119.3, 1152.9], [1728226800000, 1163.1, 1163.1, 1124.9, 1136.1], [1728831600000, 1140.7, 1151.0, 1131.4, 1139.8], [1729436400000, 1149.1, 1171.5, 1136.1, 1136.1], [1730041200000, 1135.2, 1175.2, 1115.6, 1132.4], [1730646000000, 1132.4, 1181.7, 1123.1, 1150.1], [1731250800000, 1178.0, 1178.0, 1128.6, 1129.6], [1731855600000, 1118.4, 1141.7, 1115.6, 1126.8], [1732460400000, 1130.5, 1140.7, 1090.5, 1104.4], [1733065200000, 1105.4, 1131.4, 1104.4, 1116.5], [1733670000000, 1117.5, 1154.7, 1091.4, 1101.6], [1734274800000, 1101.6, 1102.6, 1057.9, 1068.1], [1734879600000, 1070.9, 1118.4, 1055.1, 1117.5], [1735484400000, 1117.5, 1118.4, 1104.4, 1104.4], [1736089200000, 1114.7, 1114.7, 1075.6, 1078.4], [1736694000000, 1078.4, 1078.4, 1057.9, 1069.0], [1737298800000, 1072.8, 1131.4, 1072.8, 1114.7], [1737903600000, 1125.8, 1125.8, 1098.8, 1117.5], [1738508400000, 1115.6, 1129.6, 1082.1, 1124.9], [1739113200000, 1124.9, 1158.4, 1114.7, 1152.9], [1739718000000, 1149.1, 1151.9, 1112.8, 1129.6], [1740322800000, 1129.6, 1151.0, 1111.9, 1128.6], [1740927600000, 1142.6, 1159.4, 1117.5, 1151.9], [1741532400000, 1154.7, 1187.3, 1133.3, 1187.3], [1742137200000, 1192.0, 1199.4, 1178.0, 1194.8], [1742742000000, 1194.8, 1209.7, 1145.4, 1153.8], [1743346800000, 1163.3, 1165.2, 1013.2, 1029.4], [1743951600000, 952.5, 1072.1, 936.3, 1049.3], [1744556400000, 1064.5, 1087.3, 1031.3, 1075.0], [1745161200000, 1132.0, 1158.5, 1112.0, 1123.4], [1745766000000, 1138.6, 1233.6, 1135.8, 1179.4], [1746370800000, 1179.4, 1224.1, 1164.2, 1224.1], [1746975600000, 1223.1, 1282.0, 1164.2, 1236.4], [1747580400000, 1236.4, 1282.0, 1226.0, 1268.7], [1748185200000, 1281.0, 1362.7, 1277.2, 1346.6], [1748790000000, 1335.2, 1395.0, 1332.3, 1383.6], [1749394800000, 1384.6, 1386.5, 1342.8, 1350.4], [1749999600000, 1356.1, 1375.1, 1282.0, 1291.5], [1750604400000, 1297.2, 1320.0, 1273.4, 1314.3], [1751209200000, 1321.9, 1321.9, 1280.1, 1297.2], [1751814000000, 1297.2, 1353.2, 1274.4, 1323.8], [1752418800000, 1325.7, 1346.6, 1298.1, 1311.4], [1753023600000, 1324.7, 1358.0, 1311.4, 1335.2], [1753628400000, 1338.0, 1367.5, 1332.3, 1366.5], [1754233200000, 1349.4, 1375.1, 1349.4, 1374.1], [1754838000000, 1424.4, 1458.6, 1415.9, 1437.7], [1755442800000, 1437.7, 1490.9, 1429.2, 1486.2], [1756047600000, 1501.4, 1509.9, 1460.5, 1496.6], [1756652400000, 1498.5, 1570.7, 1493.8, 1570.7], [1757257200000, 1586.8, 1614.4, 1586.8, 1605.8], [1757862000000, 1613.4, 1649.5, 1561.2, 1572.6], [1758466800000, 1579.2, 1614.4, 1579.2, 1614.4], [1759071600000, 1582.1, 1590.6, 1492.8, 1522.2], [1759676400000, 1578.5, 1602.7, 1507.7, 1507.7], [1760281200000, 1487.3, 1572.7, 1470.9, 1572.7], [1760886000000, 1594.0, 1645.4, 1579.5, 1616.3], [1761490800000, 1638.6, 1659.9, 1546.5, 1566.9], [1762095600000, 1568.8, 1627.0, 1565.9, 1602.7], [1762700400000, 1602.7, 1771.4, 1588.2, 1665.7], [1763305200000, 1678.4, 1725.9, 1629.9, 1725.9], [1763910000000, 1724.9, 1729.7, 1687.1, 1709.4], [1764514800000, 1725.9, 1734.6, 1649.3, 1706.5], [1765119600000, 1706.5, 1732.7, 1648.3, 1694.8], [1765724400000, 1693.9, 1698.7, 1639.6, 1675.4], [1766329200000, 1691.0, 1704.5, 1665.7, 1680.3], [1766934000000, 1667.7, 1699.7, 1667.7, 1681.3], [1767538800000, 1686.1, 1727.8, 1663.8, 1727.8], [1768143600000, 1745.3, 1822.8, 1723.0, 1814.1], [1768748400000, 1822.8, 1822.8, 1737.5, 1792.8], [1769353200000, 1788.9, 1788.9, 1667.7, 1713.3], [1769958000000, 1715.2, 1761.7, 1679.3, 1746.2], [1770562800000, 1785.0, 1879.1, 1772.4, 1823.8], [1771167600000, 1794.7, 1803.4, 1703.6, 1736.5], [1771772400000, 1748.2, 1850.0, 1742.3, 1850.0], [1772377200000, 1798.6, 1807.3, 1631.8, 1735.6], [1772982000000, 1648.3, 1748.2, 1638.6, 1652.2], [1773586800000, 1639.6, 1681.3, 1633.8, 1642.5], [1774191600000, 1573.6, 1619.2, 1545.5, 1594.0], [1774796400000, 1512.6, 1581.4, 1469.9, 1556.2], [1775401200000, 1610.0, 1700.0, 1605.0, 1666.0]];
+
+const fiscalYears   = ["16/03", "17/03", "18/03", "19/03", "20/03", "21/03", "22/03", "23/03", "24/03", "25/03", "26/03E"];
+const fiscalHist    = ["16/03", "17/03", "18/03", "19/03", "20/03", "21/03", "22/03", "23/03", "24/03", "25/03"];
+const revenue       = [527,554,561,603,583,488,587,597,616,573,573];
+const opProfit      = [49,42.6,44.8,54.6,29.1,5.51,21,1.94,16.8,18.7,19];
+const netIncome     = [26.3,20.4,34.9,38.5,16.5,2.44,-9.51,-4.18,12.7,12.5,26];
+const opMargin      = [9.29,7.68,8.0,9.05,4.99,1.13,3.58,0.32,2.73,3.27,3.32];
+const netMargin     = [4.99,3.68,6.22,6.38,2.83,0.5,-1.62,-0.7,2.06,2.18,4.54];
+const roeData       = [8.77,6.43,10.02,10.62,4.48,0.66,null,null,3.17,2.99,6.01];
+const perData       = [5.36,7.33,5.49,4.46,6.43,50.81,null,null,10.52,7.63];
+const pbrData       = [0.47,0.47,0.55,0.47,0.29,0.33,0.29,0.24,0.33,0.23];
+const evEbitda      = [2.67,2.71,2.95,2.49,2.0,4.17,2.93,4.42,4.03,2.45];
+const epsList       = [275.15,213.78,372.03,411.53,175.68,26.06,-101.59,-45.15,137.25,134.9];
+const bpsList       = [3133.82,3344.12,3719.17,3873.48,3920.85,3971.62,3880.45,3993.08,4336.29,4516.94];
+const interestDebt  = [158,144,131,116,112,130,132,137,161,139];
+const cashEq        = [88,97,102,77,100,106,89,84,106,115];
+const netDebt       = [70,47,29,39,12,24,43,53,55,24];
+const recRatio      = [0.422,0.369,0.351,0.294,0.302,0.423,0.386,0.359,0.328,0.313];
+const invRatio      = [0.228,0.219,0.233,0.226,0.229,0.255,0.231,0.22,0.245,0.284];
+const opCF          = [58.9,56.3,75.6,47.3,75.5,31.1,35,28.1,48.8,61.5];
+const invCF         = [-32.1,-33.1,-50.3,-43.3,-42.8,-33,-47,-28,-30.8,-27.3];
+const finCF         = [-24.2,-17.5,-20.6,-28.3,-13.1,11,-6.75,-6.86,2.92,-28.4];
+const fcf           = [26.8,23.2,25.3,4,32.6,-1.96,-12,0.05,18,34.2];
+const mktcap        = [141.0,149.5,191.7,171.7,106.1,124.0,106.4,88.1,133.6,95.4];
+const ncaData       = [141,144,133,130,145,172,186,161,171,161];
+const ncaPlus       = [193.5,198.0,188.5,187.0,203.5,229.0,244.5,221.0,231.8,221.8];
+const ratioNca      = [1.0,1.04,1.44,1.32,0.73,0.72,0.57,0.55,0.78,0.59];
+const ratioNcaPlus  = [0.73,0.76,1.02,0.92,0.52,0.54,0.44,0.4,0.58,0.43];
+
+// ══════════════════════════════════════════════════════
+// CHART HELPERS
+// ══════════════════════════════════════════════════════
+const BLUE   = '#1a56db';
+const AMBER  = '#f59e0b';
+const GREEN  = '#10b981';
+const RED    = '#ef4444';
+const PURPLE = '#7c3aed';
+const TEAL   = '#0891b2';
+
+const baseChartOpts = {
+  responsive: true,
+  interaction: { mode: 'index', intersect: false },
+  plugins: {
+    legend: { position: 'top', labels: { font: { family: 'Noto Sans JP', size: 12 } } },
+    tooltip: { bodyFont: { family: 'Noto Sans JP' }, titleFont: { family: 'Noto Sans JP' } }
+  },
+  scales: {
+    x: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Noto Sans JP', size: 11 } } },
+    y: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Noto Sans JP', size: 11 } } }
+  }
+};
+
+// ══════════════════════════════════════════════════════
+// SECTION 1: Candlestick (ApexCharts)
+// ══════════════════════════════════════════════════════
+(function() {
+  const series = [{
+    name: '週足OHLC',
+    type: 'candlestick',
+    data: candleData.map(d => ({ x: d[0], y: [d[1], d[2], d[3], d[4]] }))
+  }];
+  const opts = {
+    series,
+    chart: { type: 'candlestick', height: 420, background: '#fff',
+      toolbar: { show: true },
+      zoom: { enabled: true } },
+    title: { text: '6317 北川鉄工所 週足株価 (2016-2026)', style: { fontFamily: 'Noto Sans JP', fontSize: '14px' } },
+    xaxis: { type: 'datetime',
+      labels: { datetimeUTC: false, format: 'yy/MM', style: { fontFamily: 'Noto Sans JP' } } },
+    yaxis: { tooltip: { enabled: true },
+      labels: { formatter: v => '¥' + v.toLocaleString(), style: { fontFamily: 'Noto Sans JP' } } },
+    plotOptions: {
+      candlestick: {
+        colors: { upward: GREEN, downward: RED },
+        wick: { useFillColor: true }
+      }
+    },
+    grid: { borderColor: '#f1f5f9' },
+    tooltip: { x: { format: 'yyyy年MM月dd日' } }
+  };
+  new ApexCharts(document.getElementById('chart-candle'), opts).render();
+})();
+
+// ══════════════════════════════════════════════════════
+// SECTION 2: Business Performance (Chart.js) — dual axis
+// ══════════════════════════════════════════════════════
+(function() {
+  const ctx = document.getElementById('chart-perf').getContext('2d');
+  new Chart(ctx, {
+    data: {
+      labels: fiscalYears,
+      datasets: [
+        { type: 'bar', label: '売上高 Revenue', data: revenue,
+           backgroundColor: 'rgba(26,86,219,0.65)', borderColor: 'rgba(26,86,219,0.9)',
+           borderWidth: 1, yAxisID: 'yL', order: 3 },
+        { type: 'line', label: '営業利益 Op.Profit', data: opProfit,
+           borderColor: AMBER, backgroundColor: 'rgba(245,158,11,0.12)',
+           borderWidth: 2.5, pointRadius: 5, pointBackgroundColor: AMBER,
+           fill: false, yAxisID: 'yR', order: 1, spanGaps: true },
+        { type: 'line', label: '純利益 Net Income', data: netIncome,
+           borderColor: GREEN, backgroundColor: 'rgba(16,185,129,0.1)',
+           borderWidth: 2.5, pointRadius: 5, pointBackgroundColor: GREEN,
+           fill: false, yAxisID: 'yR', order: 2, spanGaps: true }
+      ]
+    },
+    options: { ...baseChartOpts,
+      scales: {
+        x: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Noto Sans JP' } } },
+        yL: {
+          type: 'linear', position: 'left',
+          grid: { color: '#f1f5f9' },
+          title: { display: true, text: '売上高 (億円)', font: { family: 'Noto Sans JP', size: 12 }, color: '#1a56db' },
+          ticks: { font: { family: 'Noto Sans JP' }, color: '#1a56db' }
+        },
+        yR: {
+          type: 'linear', position: 'right',
+          grid: { drawOnChartArea: false },
+          title: { display: true, text: '利益 (億円)', font: { family: 'Noto Sans JP', size: 12 }, color: '#f59e0b' },
+          ticks: { font: { family: 'Noto Sans JP' }, color: '#64748b' }
+        }
+      }
+    }
+  });
+})();
+
+// ══════════════════════════════════════════════════════
+// SECTION 3: Margins & ROE
+// ══════════════════════════════════════════════════════
+(function() {
+  const ctx = document.getElementById('chart-margin').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: fiscalYears,
+      datasets: [
+        { label: '営業利益率 Op.Margin(%)', data: opMargin,
+           borderColor: BLUE, backgroundColor: 'rgba(26,86,219,.1)',
+           borderWidth: 2.5, pointRadius: 4, fill: false, spanGaps: true },
+        { label: '純利益率 Net.Margin(%)', data: netMargin,
+           borderColor: AMBER, backgroundColor: 'rgba(245,158,11,.1)',
+           borderWidth: 2.5, pointRadius: 4, fill: false, spanGaps: true },
+        { label: 'ROE(%)', data: roeData,
+           borderColor: GREEN, backgroundColor: 'rgba(16,185,129,.1)',
+           borderWidth: 2.5, pointRadius: 4, borderDash: [5,3], fill: false, spanGaps: true }
+      ]
+    },
+    options: { ...baseChartOpts,
+      scales: {
+        x: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Noto Sans JP' } } },
+        y: { grid: { color: '#f1f5f9' }, title: { display: true, text: '%', font: { family: 'Noto Sans JP' } },
+              ticks: { font: { family: 'Noto Sans JP' } } }
+      }
+    }
+  });
+})();
+
+// ══════════════════════════════════════════════════════
+// SECTION 4: Valuation multiples chart
+// ══════════════════════════════════════════════════════
+(function() {
+  const ctx = document.getElementById('chart-val').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: fiscalHist,
+      datasets: [
+        { label: 'PER(x)', data: perData,
+           borderColor: BLUE, borderWidth: 2.5, pointRadius: 4, fill: false, spanGaps: true },
+        { label: 'PBR(x)', data: pbrData,
+           borderColor: AMBER, borderWidth: 2.5, pointRadius: 4, fill: false, spanGaps: true,
+           yAxisID: 'y2' },
+        { label: 'EV/EBITDA(x)', data: evEbitda,
+           borderColor: GREEN, borderWidth: 2.5, pointRadius: 4, fill: false, spanGaps: true }
+      ]
+    },
+    options: { ...baseChartOpts,
+      scales: {
+        x: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Noto Sans JP' } } },
+        y: { grid: { color: '#f1f5f9' }, title: { display: true, text: '倍 (PER/EV)', font: { family: 'Noto Sans JP' } },
+              ticks: { font: { family: 'Noto Sans JP' } } },
+        y2: { position: 'right', grid: { drawOnChartArea: false },
+               title: { display: true, text: 'PBR(x)', font: { family: 'Noto Sans JP' } },
+               ticks: { font: { family: 'Noto Sans JP' } } }
+      }
+    }
+  });
+})();
+
+// ══════════════════════════════════════════════════════
+// SECTION 5: EPS & BPS bar chart
+// ══════════════════════════════════════════════════════
+(function() {
+  const ctx = document.getElementById('chart-eps').getContext('2d');
+  new Chart(ctx, {
+    data: {
+      labels: fiscalYears,
+      datasets: [
+        { type: 'bar', label: 'BPS(円)', data: bpsList,
+           backgroundColor: 'rgba(26,86,219,0.25)', yAxisID: 'y2', order: 2 },
+        { type: 'line', label: 'EPS(円)', data: epsList,
+           borderColor: AMBER, borderWidth: 2.5, pointRadius: 4, fill: false,
+           yAxisID: 'y', order: 1, spanGaps: true },
+        { type: 'bar', label: 'DPS(円)', data: [60,60,77,90,100,20,50,30,40,50,85],
+           backgroundColor: 'rgba(16,185,129,0.6)', yAxisID: 'y', order: 2 }
+      ]
+    },
+    options: { ...baseChartOpts,
+      scales: {
+        x: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Noto Sans JP' } } },
+        y: { grid: { color: '#f1f5f9' }, title: { display: true, text: 'EPS/DPS (円)', font: { family: 'Noto Sans JP' } },
+              ticks: { font: { family: 'Noto Sans JP' } } },
+        y2: { position: 'right', grid: { drawOnChartArea: false },
+               title: { display: true, text: 'BPS (円)', font: { family: 'Noto Sans JP' } },
+               ticks: { font: { family: 'Noto Sans JP' } } }
+      }
+    }
+  });
+})();
+
+// ══════════════════════════════════════════════════════
+// SECTION 6: Market Cap vs NCA
+// ══════════════════════════════════════════════════════
+(function() {
+  const ctx = document.getElementById('chart-nca').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: fiscalHist,
+      datasets: [
+        { label: '時価総額(億)', data: mktcap,
+           borderColor: BLUE, borderWidth: 2.5, pointRadius: 4, fill: false, spanGaps: true },
+        { label: '流動資産-負債NCA(億)', data: ncaData,
+           borderColor: GREEN, borderWidth: 2, pointRadius: 4, fill: false, borderDash: [4,3] },
+        { label: 'NCA+投有(億)', data: ncaPlus,
+           borderColor: AMBER, borderWidth: 2, pointRadius: 4, fill: false, borderDash: [4,3] },
+        { label: '時価/NCA倍率', data: ratioNca,
+           borderColor: RED, borderWidth: 2, pointRadius: 4, fill: false, yAxisID: 'y2', spanGaps: true }
+      ]
+    },
+    options: { ...baseChartOpts,
+      scales: {
+        x: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Noto Sans JP' } } },
+        y: { grid: { color: '#f1f5f9' }, title: { display: true, text: '億円', font: { family: 'Noto Sans JP' } },
+              ticks: { font: { family: 'Noto Sans JP' } } },
+        y2: { position: 'right', grid: { drawOnChartArea: false },
+               title: { display: true, text: '倍率(x)', font: { family: 'Noto Sans JP' } },
+               ticks: { font: { family: 'Noto Sans JP' } } }
+      }
+    }
+  });
+})();
+
+// ══════════════════════════════════════════════════════
+// SECTION 7: Debt vs Cash
+// ══════════════════════════════════════════════════════
+(function() {
+  const ctx = document.getElementById('chart-debt').getContext('2d');
+  new Chart(ctx, {
+    data: {
+      labels: fiscalHist,
+      datasets: [
+        { type: 'bar', label: '有利子負債(億)', data: interestDebt,
+           backgroundColor: 'rgba(239,68,68,0.7)', order: 2 },
+        { type: 'bar', label: '現金等価物(億)', data: cashEq,
+           backgroundColor: 'rgba(16,185,129,0.7)', order: 2 },
+        { type: 'line', label: 'ネット有利子負債(億)', data: netDebt,
+           borderColor: AMBER, borderWidth: 2.5, pointRadius: 4, fill: false, order: 1 }
+      ]
+    },
+    options: { ...baseChartOpts,
+      scales: {
+        x: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Noto Sans JP' } } },
+        y: { grid: { color: '#f1f5f9' }, title: { display: true, text: '億円', font: { family: 'Noto Sans JP' } },
+              ticks: { font: { family: 'Noto Sans JP' } } }
+      }
+    }
+  });
+})();
+
+// ══════════════════════════════════════════════════════
+// SECTION 8: Turnover Ratios
+// ══════════════════════════════════════════════════════
+(function() {
+  const ctx = document.getElementById('chart-turn').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: fiscalHist,
+      datasets: [
+        { label: '売掛金/売上原価', data: recRatio,
+           borderColor: BLUE, borderWidth: 2.5, pointRadius: 4, fill: false },
+        { label: '棚卸資産/売上原価', data: invRatio,
+           borderColor: AMBER, borderWidth: 2.5, pointRadius: 4, fill: false }
+      ]
+    },
+    options: { ...baseChartOpts,
+      scales: {
+        x: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Noto Sans JP' } } },
+        y: { grid: { color: '#f1f5f9' },
+              title: { display: true, text: '比率 (残高÷COGS)', font: { family: 'Noto Sans JP' } },
+              ticks: { font: { family: 'Noto Sans JP' }, callback: v => v.toFixed(2) } }
+      }
+    }
+  });
+})();
+
+// ══════════════════════════════════════════════════════
+// SECTION 9: CF
+// ══════════════════════════════════════════════════════
+(function() {
+  const ctx = document.getElementById('chart-cf').getContext('2d');
+  new Chart(ctx, {
+    data: {
+      labels: fiscalHist,
+      datasets: [
+        { type: 'bar', label: '営業CF OpCF', data: opCF,
+           backgroundColor: 'rgba(26,86,219,0.7)', order: 2 },
+        { type: 'bar', label: '投資CF InvCF', data: invCF,
+           backgroundColor: 'rgba(239,68,68,0.65)', order: 2 },
+        { type: 'bar', label: '財務CF FinCF', data: finCF,
+           backgroundColor: 'rgba(124,58,237,0.6)', order: 2 },
+        { type: 'line', label: 'FCF', data: fcf,
+           borderColor: AMBER, borderWidth: 2.5, pointRadius: 4, fill: false, order: 1 }
+      ]
+    },
+    options: { ...baseChartOpts,
+      scales: {
+        x: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Noto Sans JP' } } },
+        y: { grid: { color: '#f1f5f9' }, title: { display: true, text: '億円', font: { family: 'Noto Sans JP' } },
+              ticks: { font: { family: 'Noto Sans JP' } } }
+      }
+    }
+  });
+})();
+
+// ══════════════════════════════════════════════════════
+// SECTION 10: Quarterly chart
+// ══════════════════════════════════════════════════════
+(function() {
+  const qLabels = ['Q1','Q2','Q3','Q4'];
+  const fy25rev = [136, 141, 148, 148];
+  const fy26rev = [135, 156, 127, null];
+  const fy25op  = [4.2, 6.3, 5.5, 2.7];
+  const fy26op  = [5.16, 8.57, 3.59, null];
+
+  const ctx = document.getElementById('chart-qtr').getContext('2d');
+  new Chart(ctx, {
+    data: {
+      labels: qLabels,
+      datasets: [
+        { type: 'bar', label: 'FY25 売上(億)', data: fy25rev,
+           backgroundColor: 'rgba(26,86,219,0.4)', yAxisID: 'y' },
+        { type: 'bar', label: 'FY26 売上(億)', data: fy26rev,
+           backgroundColor: 'rgba(26,86,219,0.85)', yAxisID: 'y' },
+        { type: 'line', label: 'FY25 営業利益(億)', data: fy25op,
+           borderColor: AMBER, borderWidth: 2, pointRadius: 4, borderDash: [4,3], fill: false, yAxisID: 'y2' },
+        { type: 'line', label: 'FY26 営業利益(億)', data: fy26op,
+           borderColor: RED, borderWidth: 2.5, pointRadius: 5, fill: false, yAxisID: 'y2', spanGaps: true }
+      ]
+    },
+    options: { ...baseChartOpts,
+      scales: {
+        x: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Noto Sans JP' } } },
+        y: { grid: { color: '#f1f5f9' }, title: { display: true, text: '売上(億)', font: { family: 'Noto Sans JP' } },
+              ticks: { font: { family: 'Noto Sans JP' } } },
+        y2: { position: 'right', grid: { drawOnChartArea: false },
+               title: { display: true, text: '営業利益(億)', font: { family: 'Noto Sans JP' } },
+               ticks: { font: { family: 'Noto Sans JP' } } }
+      }
+    }
+  });
+})();
+
+// ══════════════════════════════════════════════════════
+// SECTION 12: Waterfall (ApexCharts)
+// ══════════════════════════════════════════════════════
+(function() {
+  const wfData = [
+    { x: '売上高', y: 573 },
+    { x: '売上原価', y: -482 },
+    { x: '売上総利益', y: [91, 91] },
+    { x: 'SG&A', y: -72.3 },
+    { x: '営業利益', y: [18.7, 18.7] },
+    { x: '営業外収支', y: 4.5 },
+    { x: '経常利益', y: [23.2, 23.2] },
+    { x: '特別損益', y: -10.7 },
+    { x: '純利益', y: [12.5, 12.5] }
+  ];
+
+  // Custom waterfall using ApexCharts bar chart
+  const labels  = ['売上高','売上原価','売上総利益','SG&A','営業利益','営業外','経常利益','特別損益','純利益'];
+  const values  = [573, -482, 91, -72.3, 18.7, 4.5, 23.2, -10.7, 12.5];
+  const milestones = new Set([0, 2, 4, 6, 8]);
+
+  // Build floating bar data: [bottom, top]
+  let running = 0;
+  const barData = values.map((v, i) => {
+    if (milestones.has(i)) {
+      running = v;
+      return { x: labels[i], y: [0, v], color: BLUE };
+    } else {
+      const bottom = running;
+      running += v;
+      return { x: labels[i], y: [Math.min(bottom, running), Math.max(bottom, running)],
+                color: v >= 0 ? GREEN : RED };
+    }
+  });
+
+  const opts = {
+    series: [{
+      name: '億円',
+      data: barData.map(d => ({ x: d.x, y: d.y }))
+    }],
+    chart: { type: 'rangeBar', height: 320, background: '#fff',
+              toolbar: { show: false } },
+    plotOptions: {
+      bar: { horizontal: false, columnWidth: '55%', borderRadius: 3,
+              colors: { ranges: [] } }
+    },
+    colors: barData.map(d => d.color),
+    fill: { type: 'solid', opacity: 0.85 },
+    dataLabels: {
+      enabled: true,
+      formatter: function(val) {
+        const v = Array.isArray(val) ? (val[1] - val[0]).toFixed(1) : val.toFixed(1);
+        return v + '億';
+      },
+      style: { fontFamily: 'Noto Sans JP', fontSize: '11px', fontWeight: '700' }
+    },
+    xaxis: { labels: { style: { fontFamily: 'Noto Sans JP', fontSize: '12px' } } },
+    yaxis: { labels: { formatter: v => v + '億', style: { fontFamily: 'Noto Sans JP' } },
+              title: { text: '億円', style: { fontFamily: 'Noto Sans JP' } } },
+    grid: { borderColor: '#f1f5f9' },
+    tooltip: {
+      custom: function({ series, seriesIndex, dataPointIndex, w }) {
+        const d = barData[dataPointIndex];
+        const diff = (d.y[1] - d.y[0]).toFixed(1);
+        return '<div style="padding:8px;font-family:Noto Sans JP">' +
+               '<b>' + d.x + '</b><br>' + diff + '億円</div>';
+      }
+    }
+  };
+  new ApexCharts(document.getElementById('chart-wf'), opts).render();
+})();
+
+</script>
+</body>
+</html>
