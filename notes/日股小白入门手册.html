@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>兼职投资人修炼手册 — 交互式看板</title>
+<style>
+  :root {
+    --primary: #1a3a5c;
+    --accent: #2d7dd2;
+    --accent2: #e8a838;
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --text: #1a2330;
+    --text2: #5a6a7a;
+    --border: #d8e4f0;
+    --sidebar-w: 240px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  #sidebar {
+    width: var(--sidebar-w); background: var(--primary); color: #fff;
+    position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto;
+    display: flex; flex-direction: column; z-index: 100;
+    transition: transform 0.3s;
+  }
+  .sidebar-header { padding: 16px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .sidebar-back {
+    display: flex; align-items: center; gap: 6px;
+    color: rgba(255,255,255,0.85); text-decoration: none;
+    font-size: 13px; font-weight: 500;
+    padding: 6px 8px; border-radius: 8px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .sidebar-back:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  .sidebar-back .back-arrow { font-size: 15px; }
+
+  /* Page footer */
+  .page-footer {
+    margin-left: 0; padding: 28px 40px;
+    background: var(--primary); color: rgba(255,255,255,0.7);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 13px;
+  }
+  .footer-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: rgba(255,255,255,0.85); text-decoration: none; font-weight: 500;
+    padding: 7px 16px; border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px; transition: all 0.2s;
+  }
+  .footer-back:hover { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.5); }
+  .nav-list { list-style: none; padding: 8px 0; flex: 1; }
+  .nav-list li a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; font-size: 13px; color: rgba(255,255,255,0.75);
+    text-decoration: none; transition: all 0.2s; border-left: 3px solid transparent;
+  }
+  .nav-list li a:hover, .nav-list li a.active {
+    background: rgba(255,255,255,0.1); color: #fff; border-left-color: var(--accent2);
+  }
+  .nav-list li a .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+  .nav-badge {
+    margin-left: auto; background: var(--accent2); color: #fff;
+    font-size: 10px; padding: 1px 6px; border-radius: 10px;
+  }
+
+  /* Main content */
+  #main { margin-left: var(--sidebar-w); flex: 1; padding: 0 0 60px; }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, #2d5a8e 100%);
+    color: #fff; padding: 48px 40px 40px; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '📈'; font-size: 200px; position: absolute; right: -20px; top: -30px;
+    opacity: 0.06; line-height: 1;
+  }
+  .hero .tag { display: inline-block; background: var(--accent2); color: #fff; font-size: 11px; padding: 3px 10px; border-radius: 12px; margin-bottom: 12px; }
+  .hero h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+  .hero p { font-size: 15px; color: rgba(255,255,255,0.8); max-width: 600px; line-height: 1.6; }
+  .hero-meta { display: flex; gap: 24px; margin-top: 20px; }
+  .hero-meta span { font-size: 13px; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 6px; }
+
+  /* Section */
+  section { padding: 32px 40px 0; }
+  .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text2); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* Cards grid */
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+  .card {
+    background: var(--card); border-radius: 12px; border: 1px solid var(--border);
+    padding: 20px; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); border-color: var(--accent); }
+  .card-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+  .card-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .card-title { font-size: 15px; font-weight: 700; line-height: 1.3; }
+  .card-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .card-body { font-size: 13px; color: var(--text2); line-height: 1.6; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .tag-chip { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--bg); color: var(--text2); border: 1px solid var(--border); }
+
+  /* Expandable card content */
+  .card-expand { display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .card-expand.open { display: block; }
+  .card-expand ul { padding-left: 18px; }
+  .card-expand ul li { font-size: 13px; color: var(--text2); line-height: 1.8; }
+
+  /* Path cards */
+  .path-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .path-card { background: var(--card); border-radius: 12px; border: 2px solid var(--border); padding: 20px; transition: all 0.2s; }
+  .path-card:hover { border-color: var(--accent); }
+  .path-card.recommended { border-color: var(--accent2); }
+  .path-card.recommended::before { content: '推荐'; position: absolute; top: 12px; right: 12px; background: var(--accent2); color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 10px; }
+  .path-card { position: relative; }
+  .path-num { font-size: 28px; font-weight: 900; color: var(--accent); opacity: 0.3; }
+  .path-name { font-size: 15px; font-weight: 700; margin: 4px 0 10px; }
+  .path-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+  .path-fit { margin-top: 12px; font-size: 12px; padding: 8px 10px; background: var(--bg); border-radius: 8px; color: var(--text2); }
+
+  /* Table */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table th { background: var(--primary); color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
+  .data-table th:first-child { border-radius: 8px 0 0 0; }
+  .data-table th:last-child { border-radius: 0 8px 0 0; }
+  .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .data-table tr:hover td { background: #f7fafc; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .table-wrap { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+
+  /* Bias cards */
+  .bias-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+  .bias-card { background: var(--card); border-radius: 10px; border: 1px solid var(--border); padding: 16px; border-left: 4px solid var(--red); }
+  .bias-name { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .bias-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+  /* Loss chart */
+  .loss-bars { display: flex; flex-direction: column; gap: 8px; }
+  .loss-row { display: flex; align-items: center; gap: 10px; }
+  .loss-label { width: 80px; font-size: 12px; color: var(--text2); text-align: right; flex-shrink: 0; }
+  .loss-bar-wrap { flex: 1; background: #fee; border-radius: 4px; height: 28px; position: relative; }
+  .loss-bar { height: 100%; background: linear-gradient(90deg, var(--red), #ff8080); border-radius: 4px; display: flex; align-items: center; padding-left: 8px; transition: width 1s ease; }
+  .loss-bar span { font-size: 11px; font-weight: 700; color: #fff; white-space: nowrap; }
+  .loss-need { width: 100px; font-size: 12px; color: var(--red); font-weight: 600; flex-shrink: 0; }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 32px; }
+  .timeline::before { content: ''; position: absolute; left: 12px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+  .tl-item { position: relative; padding-bottom: 28px; }
+  .tl-dot { position: absolute; left: -26px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--accent); }
+  .tl-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 4px; }
+  .tl-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .tl-body { font-size: 13px; color: var(--text2); line-height: 1.6; }
+  .tl-actions { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .tl-action { font-size: 12px; padding: 4px 10px; border-radius: 8px; background: var(--bg); border: 1px solid var(--border); color: var(--text2); }
+
+  /* Books */
+  .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .book-card {
+    background: var(--card); border-radius: 12px; border: 1px solid var(--border);
+    padding: 16px; display: flex; gap: 14px; align-items: flex-start;
+    transition: all 0.2s; cursor: default;
+  }
+  .book-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); border-color: var(--accent); }
+  .book-cover-wrap {
+    flex-shrink: 0; width: 72px; height: 100px;
+    border-radius: 6px; overflow: hidden;
+    box-shadow: 2px 3px 10px rgba(0,0,0,0.2);
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .book-cover-wrap img {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block;
+  }
+  .book-cover-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+  }
+  .book-num { width: 24px; height: 24px; border-radius: 5px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-bottom: 6px; }
+  .book-meta { flex: 1; min-width: 0; }
+  .book-title { font-size: 13px; font-weight: 700; margin-bottom: 5px; line-height: 1.4; }
+  .book-cat { font-size: 11px; padding: 2px 7px; border-radius: 8px; display: inline-block; margin-bottom: 5px; }
+  .cat-intro { background: #e3f2fd; color: #1565c0; }
+  .cat-philosophy { background: #fce4ec; color: #c62828; }
+  .cat-stock { background: #e8f5e9; color: #2e7d32; }
+  .cat-trade { background: #fff3e0; color: #e65100; }
+
+  /* Progress checklist */
+  .checklist { list-style: none; }
+  .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .checklist li:last-child { border-bottom: none; }
+  .check-box {
+    width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 5px;
+    flex-shrink: 0; cursor: pointer; transition: all 0.2s; margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .check-box.checked { background: var(--green); border-color: var(--green); color: #fff; }
+  .check-box.checked::after { content: '✓'; font-size: 12px; font-weight: 700; }
+  .check-text { font-size: 13px; line-height: 1.5; color: var(--text); }
+  .check-text.done { text-decoration: line-through; color: var(--text2); }
+
+  /* Quote */
+  .quote-block {
+    background: linear-gradient(135deg, #f0f7ff, #e8f4fd);
+    border-left: 4px solid var(--accent); border-radius: 0 10px 10px 0;
+    padding: 16px 20px; margin: 16px 0; font-size: 14px; font-style: italic;
+    color: var(--primary); line-height: 1.7;
+  }
+  .quote-block cite { display: block; margin-top: 8px; font-size: 12px; font-style: normal; color: var(--text2); font-weight: 600; }
+
+  /* Warning box */
+  .warning-box {
+    background: #fff8e1; border: 1px solid #ffcc02; border-radius: 10px;
+    padding: 14px 18px; font-size: 13px; color: #5d4037; line-height: 1.6;
+    display: flex; gap: 10px; align-items: flex-start; margin-top: 16px;
+  }
+  .warning-icon { font-size: 18px; flex-shrink: 0; }
+
+  /* Formula box */
+  .formula {
+    background: var(--primary); color: #fff; border-radius: 10px;
+    padding: 16px 20px; font-size: 13px; line-height: 1.8; margin: 16px 0;
+  }
+  .formula strong { color: var(--accent2); }
+
+  /* Stats row */
+  .stats-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; flex: 1; min-width: 140px; }
+  .stat-value { font-size: 28px; font-weight: 800; color: var(--accent); }
+  .stat-label { font-size: 12px; color: var(--text2); margin-top: 4px; }
+
+  /* Scroll-to-top */
+  #scrollTop {
+    position: fixed; bottom: 24px; right: 24px; width: 44px; height: 44px;
+    background: var(--accent); color: #fff; border: none; border-radius: 50%;
+    font-size: 18px; cursor: pointer; box-shadow: 0 4px 12px rgba(45,125,210,0.4);
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+    opacity: 0; pointer-events: none; z-index: 200;
+  }
+  #scrollTop.visible { opacity: 1; pointer-events: auto; }
+  #scrollTop:hover { transform: translateY(-2px); background: var(--primary); }
+
+  /* Progress bar at top */
+  #progress-bar { position: fixed; top: 0; left: var(--sidebar-w); right: 0; height: 3px; background: var(--accent2); transform: scaleX(0); transform-origin: left; z-index: 200; transition: transform 0.1s; }
+
+  /* Color variants */
+  .c1 { background: #e3f2fd; } .c1 .card-icon { background: #1565c0; }
+  .c2 { background: #e8f5e9; } .c2 .card-icon { background: #2e7d32; }
+  .c3 { background: #fff3e0; } .c3 .card-icon { background: #e65100; }
+  .c4 { background: #fce4ec; } .c4 .card-icon { background: #c62828; }
+  .c5 { background: #f3e5f5; } .c5 .card-icon { background: #6a1b9a; }
+  .c6 { background: #e0f7fa; } .c6 .card-icon { background: #00695c; }
+  .c7 { background: #f1f8e9; } .c7 .card-icon { background: #33691e; }
+  .c8 { background: #fff8e1; } .c8 .card-icon { background: #f57f17; }
+
+  @media (max-width: 768px) {
+    :root { --sidebar-w: 0px; }
+    #sidebar { transform: translateX(-240px); }
+    #sidebar.open { transform: translateX(0); --sidebar-w: 240px; }
+    .hero h1 { font-size: 24px; }
+    section { padding: 20px 20px 0; }
+    .path-grid { grid-template-columns: 1fr; }
+    .hero { padding: 32px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- Sidebar -->
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <a href="https://dongtao2026.github.io/research-lab/index.html" class="sidebar-back">
+      <span class="back-arrow">←</span> 返回资料库
+    </a>
+  </div>
+  <ul class="nav-list">
+    <li><a href="#hero" class="active"><span class="nav-icon">🏠</span>首页</a></li>
+    <li><a href="#ch0"><span class="nav-icon">📖</span>前言</a></li>
+    <li><a href="#ch1"><span class="nav-icon">💡</span>第一章 打破幻觉</a></li>
+    <li><a href="#ch2"><span class="nav-icon">🎯</span>第二章 定位与优势</a></li>
+    <li><a href="#ch3"><span class="nav-icon">🔱</span>第三章 投资哲学</a></li>
+    <li><a href="#ch4"><span class="nav-icon">🧠</span>第四章 心理建设</a></li>
+    <li><a href="#ch5"><span class="nav-icon">🧰</span>第五章 基础工具箱</a></li>
+    <li><a href="#ch6"><span class="nav-icon">🔍</span>第六章 选股方法</a></li>
+    <li><a href="#ch7"><span class="nav-icon">🛡️</span>第七章 风险管理</a></li>
+    <li><a href="#ch8"><span class="nav-icon">🗺️</span>第八章 成长路线图</a></li>
+    <li><a href="#appendix"><span class="nav-icon">📚</span>附录 书单</a></li>
+    <li><a href="#checklist"><span class="nav-icon">✅</span>进度打卡</a></li>
+  </ul>
+</nav>
+
+<!-- Main -->
+<main id="main">
+
+  <!-- Hero -->
+  <div class="hero" id="hero">
+    <div class="tag">2026年版 · 综合框架</div>
+    <h1>兼职投资人(日股散户)入门手册</h1>
+    <p>基于12本经典投资书籍  ·  从入门到建立属于自己的投资体系</p>
+    <div class="hero-meta">
+      <span>📚 12本经典书籍</span>
+      <span>📋 8个核心章节</span>
+      <span>🗾 专注日本市场</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <section>
+    <div class="stats-row" style="margin-top:8px;">
+      <div class="stat-card">
+        <div class="stat-value">7~10%</div>
+        <div class="stat-label">全球股市历史年化回报率</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">&gt;80%</div>
+        <div class="stat-label">主动基金10年内跑输指数</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">2~3x</div>
+        <div class="stat-label">亏损的痛苦 远大于 盈利的快乐</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">5~8只</div>
+        <div class="stat-label">初期投资组合推荐规模</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Preface -->
+  <section id="ch0">
+    <div class="section-title">📖 前言</div>
+    <div class="card" style="max-width:100%;">
+      <div class="card-header">
+        <div class="card-icon" style="background:#1a3a5c; font-size:22px;">💬</div>
+        <div>
+          <div class="card-title">为什么需要这本手册？</div>
+          <div class="card-sub">写给有正职工作、每周只有5~15小时投入研究的投资者</div>
+        </div>
+      </div>
+      <div class="card-body">
+        绝大多数投资书籍是为职业投资者或全职交易者写的，假设读者每天有大量时间盯盘。这本手册的目标，是帮助<strong>兼职投资人</strong>构建一套真正适合自己的投资体系。
+      </div>
+      <div style="margin-top:14px; display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px;">
+        <div style="background:#f0f7ff;border-radius:8px;padding:12px;font-size:13px;"><strong>✅ 有稳定主业收入</strong><br><span style="color:var(--text2)">投资是副业</span></div>
+        <div style="background:#f0f7ff;border-radius:8px;padding:12px;font-size:13px;"><strong>⏱ 时间有限</strong><br><span style="color:var(--text2)">每周5~15小时</span></div>
+        <div style="background:#f0f7ff;border-radius:8px;padding:12px;font-size:13px;"><strong>🎯 长期积累财富</strong><br><span style="color:var(--text2)">非短期暴利</span></div>
+        <div style="background:#f0f7ff;border-radius:8px;padding:12px;font-size:13px;"><strong>📖 愿意学习</strong><br><span style="color:var(--text2)">但不过度消耗精力</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chapter 1 -->
+  <section id="ch1">
+    <div class="section-title">💡 第一章 · 打破三个幻觉</div>
+    <div class="cards-grid">
+
+      <div class="card c1" onclick="toggleExpand(this)">
+        <div class="card-header">
+          <div class="card-icon">💸</div>
+          <div>
+            <div class="card-title">幻觉一：股票是快速致富捷径</div>
+            <div class="card-sub">来源：《漫步华尔街》《胆小鬼的亿万富翁入门》</div>
+          </div>
+        </div>
+        <div class="card-body">80%的主动管理型基金在任意10年内跑输大盘指数。人类大脑偏好暴富故事，忽略同等数量的亏损案例。</div>
+        <div class="card-expand">
+          <div class="quote-block">
+            股票市场不是财富的印钞机，它是财富的再分配机器。短期博弈中，一个人的收益必然对应另一个人的损失。
+            <cite>— 整合自《漫步华尔街》</cite>
+          </div>
+          <p style="font-size:13px;color:var(--text2)"><strong>正确认知：</strong>全球股市历史年化回报约7~10%，扣除通胀后5~7%。通过复利积累，20~30年可让资产翻数倍。</p>
+        </div>
+        <div class="card-tags"><span class="tag-chip">点击展开</span><span class="tag-chip">认知重建</span></div>
+      </div>
+
+      <div class="card c2" onclick="toggleExpand(this)">
+        <div class="card-header">
+          <div class="card-icon">👔</div>
+          <div>
+            <div class="card-title">幻觉二：分析师比个人更可靠</div>
+            <div class="card-sub">来源：《败者的游戏》</div>
+          </div>
+        </div>
+        <div class="card-body">机构投资者掌控80%以上市场交易量，公开信息几乎瞬间被定价。主动投资策略扣除费用后长期难以战胜指数基金。</div>
+        <div class="card-expand">
+          <p style="font-size:13px;color:var(--text2)"><strong>正确认知：</strong>不要盲目崇拜分析师，也不要完全忽视研报。学会用批判性思维阅读，关注分析师的推理过程，而非直接相信结论。</p>
+        </div>
+        <div class="card-tags"><span class="tag-chip">点击展开</span><span class="tag-chip">信息优势</span></div>
+      </div>
+
+      <div class="card c3" onclick="toggleExpand(this)">
+        <div class="card-header">
+          <div class="card-icon">📊</div>
+          <div>
+            <div class="card-title">幻觉三：技术分析能预测走势</div>
+            <div class="card-sub">来源：《漫步华尔街》《市场奇才》</div>
+          </div>
+        </div>
+        <div class="card-body">随机游走理论：股价短期波动本质上是随机的，历史价格模式没有可靠的预测能力。黑猩猩随机选股结果与技术分析师相当。</div>
+        <div class="card-expand">
+          <p style="font-size:13px;color:var(--text2)"><strong>正确认知：</strong>技术分析是辅助工具，不是水晶球。它可辅助理解市场情绪、确定买卖时机，但不能给你确定性。概率思维比确定性思维更接近市场真相。</p>
+        </div>
+        <div class="card-tags"><span class="tag-chip">点击展开</span><span class="tag-chip">技术分析</span></div>
+      </div>
+
+    </div>
+    <div class="formula" style="margin-top:16px;">
+      <strong>本章核心结论：</strong> 股票市场没有简单的致富公式 → 投资本质是在不确定中管理概率 → 长期持有优质资产 + 控制风险和情绪 = 可持续投资体系
+    </div>
+  </section>
+
+  <!-- Chapter 2 -->
+  <section id="ch2">
+    <div class="section-title">🎯 第二章 · 兼职投资人的定位与独特优势</div>
+    <div class="cards-grid">
+      <div class="card" style="background:#fff9f0; border-color:#f0d090;">
+        <div class="card-header">
+          <div class="card-icon" style="background:#e65100;">⚠️</div>
+          <div>
+            <div class="card-title">面临的真实挑战</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <ul style="padding-left:18px; font-size:13px; color:var(--text2);">
+            <li style="padding:3px 0">时间限制：研究时间远少于职业投资者</li>
+            <li style="padding:3px 0">信息劣势：无法第一时间获取一手调研</li>
+            <li style="padding:3px 0">情绪干扰：白天工作压力影响投资判断</li>
+            <li style="padding:3px 0">资金规模小：单笔绝对收益有限</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="background:#f0fff4; border-color:#90e0a0;">
+        <div class="card-header">
+          <div class="card-icon" style="background:#2e7d32;">🌟</div>
+          <div>
+            <div class="card-title">彼得·林奇的洞见：普通人的优势</div>
+          </div>
+        </div>
+        <div class="card-body">
+          你比基金经理更早「活在」这个世界里。林奇认为普通人能在财务报告出现前6~18个月发现商业机会——通过日常生活观察。
+        </div>
+        <div class="quote-block" style="margin-top:10px; font-size:13px;">
+          「在找到那家你认为会大涨的公司之前，你早就在生活中遇到过它了。」
+          <cite>— 彼得·林奇</cite>
+        </div>
+      </div>
+
+      <div class="card" style="background:#f0f0ff; border-color:#9090e0;">
+        <div class="card-header">
+          <div class="card-icon" style="background:#283593;">⏳</div>
+          <div>
+            <div class="card-title">「耐心」是最难复制的竞争优势</div>
+          </div>
+        </div>
+        <div class="card-body">
+          机构投资者面临季度业绩压力，被迫做出短视决策。你可以持有被低估的股票2~3年，等待市场认识其价值——这是机构<strong>结构性无法拥有</strong>的优势。
+        </div>
+      </div>
+    </div>
+
+    <div class="formula" style="margin-top:16px;">
+      <strong>兼职投资人的成功公式：</strong><br>
+      选择与时间做朋友的策略（长期持有）
+      + 发挥生活观察力（发现机会）
+      + 控制交易频率（减少成本）
+      + 保持耐心（等待价值实现）
+      = <strong>可持续的长期回报</strong>
+    </div>
+  </section>
+
+  <!-- Chapter 3 -->
+  <section id="ch3">
+    <div class="section-title">🔱 第三章 · 投资哲学的抉择——三条路</div>
+    <div class="path-grid">
+
+      <div class="path-card recommended">
+        <div class="path-num">01</div>
+        <div class="path-name">被动指数投资</div>
+        <div style="font-size:11px; color:var(--text2); margin-bottom:8px;">《漫步华尔街》《败者的游戏》《超简单投资法》</div>
+        <div class="path-desc">市场大多有效 → 长期指数战胜主动基金 → 定期定额系统性积累 → 最小化费用</div>
+        <div style="margin:12px 0; font-size:13px; padding:10px; background:#e8f5e9; border-radius:8px;">
+          <strong>极简实操：</strong><br>
+          50% eMAXIS Slim 全日本株式<br>
+          50% eMAXIS Slim 全世界株式<br>
+          每年再平衡一次
+        </div>
+        <div class="path-fit">✅ <strong>最适合：</strong>时间最有限、追求稳健积累财富、不希望大量研究个股</div>
+      </div>
+
+      <div class="path-card">
+        <div class="path-num">02</div>
+        <div class="path-name">基本面主动投资</div>
+        <div style="font-size:11px; color:var(--text2); margin-bottom:8px;">《彼得·林奇》《读懂巴菲特财务报表》《四季报达人》</div>
+        <div class="path-desc">市场存在错误定价 → 深入研究企业基本面 → 发现被低估优质企业 → 获取超额收益</div>
+        <div style="margin:12px 0; font-size:13px;">
+          <strong>林奇六类股票：</strong>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-top:6px;">
+            <span style="font-size:11px; padding:3px 7px; background:#e3f2fd; border-radius:5px;">缓慢增长型</span>
+            <span style="font-size:11px; padding:3px 7px; background:#e8f5e9; border-radius:5px;">稳定增长型</span>
+            <span style="font-size:11px; padding:3px 7px; background:#fff3e0; border-radius:5px;">快速增长型</span>
+            <span style="font-size:11px; padding:3px 7px; background:#fce4ec; border-radius:5px;">景气循环型</span>
+            <span style="font-size:11px; padding:3px 7px; background:#f3e5f5; border-radius:5px;">困境反转型</span>
+            <span style="font-size:11px; padding:3px 7px; background:#e0f7fa; border-radius:5px;">隐性资产型</span>
+          </div>
+        </div>
+        <div class="path-fit">✅ <strong>适合：</strong>每周可投入5~10小时、对企业经营有浓厚兴趣</div>
+      </div>
+
+      <div class="path-card">
+        <div class="path-num">03</div>
+        <div class="path-name">技术分析与主动交易</div>
+        <div style="font-size:11px; color:var(--text2); margin-bottom:8px;">《日内交易》《市场奇才》</div>
+        <div class="path-desc">识别重复价格模式 → 频繁买卖获利 → 需要全天候盯盘 → 极强心理素质</div>
+        <div class="warning-box" style="margin-top:10px;">
+          <span class="warning-icon">⚠️</span>
+          <span>对兼职投资者<strong>最不适合</strong>的路径。统计上超过80%的日内交易者长期亏损。技术工具可作为辅助，不建议作为主要策略。</span>
+        </div>
+        <div class="path-fit" style="margin-top:10px;">⚙️ <strong>辅助用途：</strong>趋势判断、支撑/阻力位识别，优化买卖时机</div>
+      </div>
+
+    </div>
+    <div class="quote-block" style="margin-top:16px;">
+      投资最大的敌人不是市场，而是我们自己的操作欲望和对复杂策略的迷恋。简单的策略，往往是最有效的策略。
+      <cite>— 山崎元，《超简单投资法》</cite>
+    </div>
+  </section>
+
+  <!-- Chapter 4 -->
+  <section id="ch4">
+    <div class="section-title">🧠 第四章 · 心理建设——最难克服的敌人是自己</div>
+
+    <div class="bias-grid">
+      <div class="bias-card">
+        <div class="bias-name">损失厌恶（Loss Aversion）</div>
+        <div class="bias-desc">亏损的痛苦是同等盈利快乐的2~3倍 → 过早卖出盈利股票、死守亏损股票</div>
+      </div>
+      <div class="bias-card">
+        <div class="bias-name">过度自信（Overconfidence）</div>
+        <div class="bias-desc">80%的投资者认为自己高于平均水平 → 统计上这是不可能的</div>
+      </div>
+      <div class="bias-card">
+        <div class="bias-name">确认偏误（Confirmation Bias）</div>
+        <div class="bias-desc">只关注支持自己判断的信息 → 忽略反面证据</div>
+      </div>
+      <div class="bias-card">
+        <div class="bias-name">近因效应（Recency Bias）</div>
+        <div class="bias-desc">过度看重最近发生的事件 → 认为涨势会继续或跌势不会停止</div>
+      </div>
+      <div class="bias-card">
+        <div class="bias-name">羊群效应（Herding）</div>
+        <div class="bias-desc">跟风追涨杀跌 → 在市场高点买入、低点卖出</div>
+      </div>
+      <div class="bias-card">
+        <div class="bias-name">锚定效应（Anchoring）</div>
+        <div class="bias-desc">对买入成本过度执着 → 影响客观判断当前价值</div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px;">
+      <div class="card">
+        <div style="font-size:14px; font-weight:700; margin-bottom:10px;">⚾ 败者的游戏</div>
+        <div style="font-size:13px; color:var(--text2); line-height:1.7;">
+          <strong>职业网球：</strong>胜负由「精彩得分」决定<br>
+          <strong>业余网球：</strong>胜负由「错误失分」决定<br><br>
+          投资同理——对个人投资者来说，市场是「败者的游戏」：<strong>不是看谁能做出多少精彩决策，而是看谁能避免更多的灾难性错误。</strong>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size:14px; font-weight:700; margin-bottom:10px;">🧘 兼职投资者的「白天焦虑」</div>
+        <div style="font-size:13px; color:var(--text2); line-height:1.7;">
+          工作时无法盯盘，但大脑会「后台运行」持续计算浮盈浮亏，导致冲动决策。<br><br>
+          <strong>解决方案：</strong>只持有你深度理解、不需要每天监控的仓位。若一只股票让你工作时焦虑，要么仓位过重，要么研究不够深入。
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--card); border-radius:12px; border:1px solid var(--border); padding:20px; margin-top:16px;">
+      <div style="font-size:14px; font-weight:700; margin-bottom:12px;">🏆 《市场奇才》心理纪律黄金法则</div>
+      <ul class="checklist" id="mindset-list">
+        <li>
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <div class="check-text">承认不确定性：永远不要认为自己的判断是「一定正确的」，保持假设可能错误的心态</div>
+        </li>
+        <li>
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <div class="check-text">亏损不代表你是坏交易者：判断标准是决策质量，而非单次结果</div>
+        </li>
+        <li>
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <div class="check-text">建立交易日志：记录每次买卖的理由、预期、实际结果，定期复盘</div>
+        </li>
+        <li>
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <div class="check-text">预设止损，无条件执行：买入前决定好止损条件，坚决执行</div>
+        </li>
+        <li>
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <div class="check-text">区分「市场噪音」和「有效信号」：短期价格波动大多是噪音，不值得过度反应</div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Chapter 5 -->
+  <section id="ch5">
+    <div class="section-title">🧰 第五章 · 基础工具箱</div>
+    <div class="cards-grid">
+
+      <div class="card c5" onclick="toggleExpand(this)">
+        <div class="card-header">
+          <div class="card-icon">🏢</div>
+          <div>
+            <div class="card-title">工具一：理解股票的本质</div>
+          </div>
+        </div>
+        <div class="card-body">股票不是「可以涨跌的代码」，而是「企业所有权的证明」。你成为部分所有者，有权分享利润和资产增值。</div>
+        <div class="card-expand">
+          <ul>
+            <li>像企业所有者思考，而非赌徒博弈短期涨跌</li>
+            <li>股票长期价值来自企业盈利能力，而非市场情绪</li>
+            <li>好企业在低价时值得买入并长期持有</li>
+          </ul>
+        </div>
+        <div class="card-tags"><span class="tag-chip">点击展开</span></div>
+      </div>
+
+      <div class="card c6" onclick="toggleExpand(this)">
+        <div class="card-header">
+          <div class="card-icon">📈</div>
+          <div>
+            <div class="card-title">工具二：指数基金核心概念</div>
+          </div>
+        </div>
+        <div class="card-body">指数基金、ETF、定期定额（DCA）、再平衡、复利效应。管理费极低（0.1~0.3%/年），长期复利效果显著。</div>
+        <div class="card-expand">
+          <table class="data-table" style="margin-top:8px;">
+            <tr><th>概念</th><th>说明</th></tr>
+            <tr><td>指数（Index）</td><td>如日经225、TOPIX、S&P 500</td></tr>
+            <tr><td>指数基金</td><td>追踪指数，管理费0.1~0.3%/年</td></tr>
+            <tr><td>ETF</td><td>可在交易所买卖，流动性强</td></tr>
+            <tr><td>定期定额（DCA）</td><td>自动实现低价多买、高价少买</td></tr>
+            <tr><td>再平衡</td><td>定期调整比例，保持风险水平</td></tr>
+            <tr><td>复利效应</td><td>收益再投入滚雪球，时间越长越显著</td></tr>
+          </table>
+        </div>
+        <div class="card-tags"><span class="tag-chip">点击展开</span></div>
+      </div>
+
+      <div class="card c7" onclick="toggleExpand(this)">
+        <div class="card-header">
+          <div class="card-icon">📋</div>
+          <div>
+            <div class="card-title">工具三：财务报表速读法</div>
+          </div>
+        </div>
+        <div class="card-body">三张核心报表：损益表（公司赚钱了吗？）、资产负债表（财务健康吗？）、现金流量表（利润是真实的吗？）</div>
+        <div class="card-expand">
+          <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+            <div style="padding:10px; background:#e8f5e9; border-radius:8px; font-size:13px;">
+              <strong>📊 损益表关键：</strong>毛利率 = 毛利润 ÷ 营业收入<br>
+              <span style="color:var(--text2)">毛利率 &gt;40% → 拥有竞争优势（可口可乐~60%，软件公司60~80%）</span>
+            </div>
+            <div style="padding:10px; background:#e3f2fd; border-radius:8px; font-size:13px;">
+              <strong>🏦 资产负债表关键：</strong><br>
+              <span style="color:var(--text2)">负债/权益比率越低越好 · 流动比率 &gt;1.5 · 留存收益持续增长</span>
+            </div>
+            <div style="padding:10px; background:#fff3e0; border-radius:8px; font-size:13px;">
+              <strong>💰 现金流量表关键：</strong>「利润可以被美化，但现金流是真实的」<br>
+              <span style="color:var(--text2)">经营性现金流持续为正且与净利润匹配 → 安全信号</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-tags"><span class="tag-chip">点击展开</span></div>
+      </div>
+
+      <div class="card c8" onclick="toggleExpand(this)">
+        <div class="card-header">
+          <div class="card-icon">📰</div>
+          <div>
+            <div class="card-title">工具四：日本会社四季报</div>
+          </div>
+        </div>
+        <div class="card-body">每年出版4次（3/6/9/12月），包含东证所全部上市企业的财务数据、业绩预期、主要股东、分析师评级。</div>
+        <div class="card-expand">
+          <ul>
+            <li><strong>看「修正」：</strong>上调盈利预期 → 买入信号</li>
+            <li><strong>看「増収増益」：</strong>连续多期双增长的企业值得深研</li>
+            <li><strong>看「割安度（PER/PBR）」：</strong>低于历史均值或同行 → 可能存在低估</li>
+            <li><strong>看「机构持股变化」：</strong>优秀机构加仓具有参考价值</li>
+          </ul>
+        </div>
+        <div class="card-tags"><span class="tag-chip">点击展开</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Chapter 6 -->
+  <section id="ch6">
+    <div class="section-title">🔍 第六章 · 选股方法——日本股市实战指南</div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+      <div class="card">
+        <div style="font-size:14px; font-weight:700; margin-bottom:12px;">🚶 第一步：生活即是调研</div>
+        <ul style="font-size:13px; color:var(--text2); padding-left:18px; line-height:2;">
+          <li>你常光顾的餐厅/零售店是否快速扩张？</li>
+          <li>公司正在采购什么软件/设备？</li>
+          <li>老龄化趋势中哪些行业受益（医疗/护理/养老）？</li>
+          <li>年轻人消费习惯如何变化？哪些品牌在赢得新用户？</li>
+        </ul>
+        <div style="margin-top:12px; padding:10px; background:#f0f7ff; border-radius:8px; font-size:12px; color:var(--text2);">
+          💡 养成用手机备忘录随时记录「生活中发现的有趣商业现象」的习惯
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:14px; font-weight:700; margin-bottom:12px;">🔬 第三步：深度研究核心问题清单</div>
+        <ul class="checklist" id="research-list">
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">核心业务能否用一句话清晰描述？</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">护城河（Moat）是什么？（品牌/技术/规模效应）</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">竞争对手是谁？市场份额趋势如何？</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">未来3~5年成长动力来自哪里？</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">管理层诚信和能力如何？</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">经济衰退时业务受多大影响？</div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="table-wrap" style="margin-top:16px;">
+      <div style="padding:14px 16px; font-size:14px; font-weight:700; background:var(--card); border-bottom:1px solid var(--border);">
+        📊 第二步：量化筛选指标
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr><th>指标</th><th>推荐范围</th><th>说明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>PER（市盈率）</td><td><span style="color:var(--accent); font-weight:600;">10～25倍</span></td><td>过低可能是价值陷阱，过高需要高速增长支撑</td></tr>
+          <tr><td>PBR（市净率）</td><td><span style="color:var(--accent); font-weight:600;">1～3倍</span></td><td>低于1可能被低估，但需检查资产质量</td></tr>
+          <tr><td>ROE（净资产收益率）</td><td><span style="color:var(--green); font-weight:600;">&gt;15%</span></td><td>衡量企业用股东资本创造利润的效率</td></tr>
+          <tr><td>营收增长率</td><td><span style="color:var(--green); font-weight:600;">&gt;10%/年</span></td><td>连续3年以上的增长更具可信度</td></tr>
+          <tr><td>自由现金流</td><td><span style="color:var(--green); font-weight:600;">持续为正</span></td><td>企业真实盈利能力的最终证明</td></tr>
+          <tr><td>净利润率</td><td><span style="color:var(--green); font-weight:600;">&gt;8%</span></td><td>越高越好，稳定性比绝对值更重要</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; margin-top:16px;">
+      <div style="font-size:14px; font-weight:700; margin-bottom:10px;">🗾 日本市场的特殊考量</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px;">
+        <div style="padding:10px; background:#e3f2fd; border-radius:8px; font-size:12px;"><strong>交叉持股文化</strong><br>近年东证所推动改善，是正面催化剂</div>
+        <div style="padding:10px; background:#e8f5e9; border-radius:8px; font-size:12px;"><strong>PBR&lt;1企业比例高</strong><br>东证所2023年起要求提出改善方案</div>
+        <div style="padding:10px; background:#fff3e0; border-radius:8px; font-size:12px;"><strong>股东回报改善趋势</strong><br>回购股票和提升股息行为增多</div>
+        <div style="padding:10px; background:#fce4ec; border-radius:8px; font-size:12px;"><strong>汇率因素</strong><br>日元贬值利好汽车/电子出口型企业</div>
+        <div style="padding:10px; background:#f3e5f5; border-radius:8px; font-size:12px;"><strong>中小盘股机会</strong><br>研究覆盖少，信息不对称更大</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chapter 7 -->
+  <section id="ch7">
+    <div class="section-title">🛡️ 第七章 · 风险管理——生存才是第一原则</div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+      <div class="card">
+        <div style="font-size:14px; font-weight:700; margin-bottom:14px;">📉 亏损的不对称性</div>
+        <div class="loss-bars" id="loss-bars">
+          <div class="loss-row">
+            <div class="loss-label">亏损10%</div>
+            <div class="loss-bar-wrap">
+              <div class="loss-bar" style="width:10%"><span>-10%</span></div>
+            </div>
+            <div class="loss-need">需涨 11%</div>
+          </div>
+          <div class="loss-row">
+            <div class="loss-label">亏损25%</div>
+            <div class="loss-bar-wrap">
+              <div class="loss-bar" style="width:25%"><span>-25%</span></div>
+            </div>
+            <div class="loss-need">需涨 33%</div>
+          </div>
+          <div class="loss-row">
+            <div class="loss-label">亏损50%</div>
+            <div class="loss-bar-wrap">
+              <div class="loss-bar" style="width:50%"><span>-50%</span></div>
+            </div>
+            <div class="loss-need">需涨 100%</div>
+          </div>
+          <div class="loss-row">
+            <div class="loss-label">亏损75%</div>
+            <div class="loss-bar-wrap">
+              <div class="loss-bar" style="width:75%"><span>-75%</span></div>
+            </div>
+            <div class="loss-need">需涨 300%</div>
+          </div>
+          <div class="loss-row">
+            <div class="loss-label">亏损90%</div>
+            <div class="loss-bar-wrap">
+              <div class="loss-bar" style="width:90%"><span>-90%</span></div>
+            </div>
+            <div class="loss-need">需涨 900%</div>
+          </div>
+        </div>
+        <div style="font-size:12px; color:var(--text2); margin-top:12px;">控制单次亏损的幅度，比追求单次收益最大化更重要。</div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div class="card" style="flex:1;">
+          <div style="font-size:14px; font-weight:700; margin-bottom:10px;">🥚 仓位管理方案</div>
+          <div style="display:flex; gap:8px; margin-bottom:8px;">
+            <div style="flex:6; background:#2d7dd2; border-radius:6px; padding:10px; color:#fff; font-size:12px; text-align:center;">
+              <div style="font-size:20px; font-weight:800;">60~70%</div>
+              <div>核心持仓</div>
+              <div style="opacity:0.8; font-size:11px;">2~3只深研企业<br>每只≤25%</div>
+            </div>
+            <div style="flex:25; background:#e8a838; border-radius:6px; padding:10px; color:#fff; font-size:12px; text-align:center;">
+              <div style="font-size:20px; font-weight:800;">20~30%</div>
+              <div>卫星持仓</div>
+              <div style="opacity:0.8; font-size:11px;">3~5只每只≤10%</div>
+            </div>
+            <div style="flex:15; background:#2ecc71; border-radius:6px; padding:10px; color:#fff; font-size:12px; text-align:center;">
+              <div style="font-size:20px; font-weight:800;">10~20%</div>
+              <div>现金/债券</div>
+              <div style="opacity:0.8; font-size:11px;">安全垫+子弹</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="flex:1;">
+          <div style="font-size:14px; font-weight:700; margin-bottom:10px;">🛑 止损纪律</div>
+          <ul style="font-size:13px; color:var(--text2); padding-left:18px; line-height:1.9;">
+            <li>买入前先想清楚「何时承认判断错误」</li>
+            <li>基本面投资：公司基本面重大负面变化</li>
+            <li>技术/短线仓位：买入价 5~10% 以下</li>
+            <li>执行时不犹豫，避免「再等等看」侥幸</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px; background:#fff9f0; border-color:#f0d090;">
+      <div style="font-size:14px; font-weight:700; margin-bottom:10px;">😰 「胆小鬼」的风险管理（橘玲）</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px;">
+        <div style="padding:10px; background:#fff; border-radius:8px; font-size:13px; border:1px solid #f0d090;">保留3~6个月生活费的现金储备</div>
+        <div style="padding:10px; background:#fff; border-radius:8px; font-size:13px; border:1px solid #f0d090;">不投入3年内可能需要用到的钱</div>
+        <div style="padding:10px; background:#fff; border-radius:8px; font-size:13px; border:1px solid #f0d090;">绝对不借贷投资（杠杆放大亏损）</div>
+        <div style="padding:10px; background:#fff; border-radius:8px; font-size:13px; border:1px solid #f0d090;">如果组合明天-30%，生活还能承受吗？</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chapter 8 -->
+  <section id="ch8">
+    <div class="section-title">🗺️ 第八章 · 建立个人投资体系与成长路线图</div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+      <div class="card">
+        <div style="font-size:14px; font-weight:700; margin-bottom:12px;">🏗️ 投资体系的六个核心要素</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; gap:10px; align-items:flex-start; padding:8px; background:#f7faff; border-radius:8px;">
+            <span style="background:var(--accent); color:#fff; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0;">1</span>
+            <div><strong style="font-size:13px;">投资哲学</strong><br><span style="font-size:12px; color:var(--text2);">你相信市场的哪些规律？核心投资信念是什么？</span></div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:flex-start; padding:8px; background:#f7faff; border-radius:8px;">
+            <span style="background:var(--accent); color:#fff; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0;">2</span>
+            <div><strong style="font-size:13px;">机会识别</strong><br><span style="font-size:12px; color:var(--text2);">生活观察、四季报筛选、财务比率筛选</span></div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:flex-start; padding:8px; background:#f7faff; border-radius:8px;">
+            <span style="background:var(--accent); color:#fff; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0;">3</span>
+            <div><strong style="font-size:13px;">分析框架</strong><br><span style="font-size:12px; color:var(--text2);">如何评估机会？决策流程是什么？</span></div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:flex-start; padding:8px; background:#f7faff; border-radius:8px;">
+            <span style="background:var(--accent); color:#fff; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0;">4</span>
+            <div><strong style="font-size:13px;">买卖规则</strong><br><span style="font-size:12px; color:var(--text2);">什么条件买入？止损和止盈规则</span></div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:flex-start; padding:8px; background:#f7faff; border-radius:8px;">
+            <span style="background:var(--accent); color:#fff; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0;">5</span>
+            <div><strong style="font-size:13px;">仓位管理</strong><br><span style="font-size:12px; color:var(--text2);">每笔投入多少？如何构建组合？</span></div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:flex-start; padding:8px; background:#f7faff; border-radius:8px;">
+            <span style="background:var(--accent); color:#fff; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0;">6</span>
+            <div><strong style="font-size:13px;">复盘机制</strong><br><span style="font-size:12px; color:var(--text2);">如何定期复盘，不断改进体系？</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:14px; font-weight:700; margin-bottom:12px;">📓 投资日志模板</div>
+        <div style="font-size:13px;">
+          <div style="background:#e8f5e9; border-radius:8px; padding:10px; margin-bottom:8px;">
+            <strong>买入时记录：</strong>
+            <ul style="padding-left:16px; color:var(--text2); margin-top:4px; line-height:1.8;">
+              <li>买入理由（具体、可证伪）</li>
+              <li>预期持有时间和目标价</li>
+              <li>如果我错了，原因可能是什么？</li>
+              <li>止损条件</li>
+            </ul>
+          </div>
+          <div style="background:#fce4ec; border-radius:8px; padding:10px; margin-bottom:8px;">
+            <strong>卖出后记录：</strong>
+            <ul style="padding-left:16px; color:var(--text2); margin-top:4px; line-height:1.8;">
+              <li>实际结果与预期对比</li>
+              <li>亏损时：哪个判断错了？</li>
+              <li>盈利时：是运气还是判断正确？</li>
+            </ul>
+          </div>
+          <div style="background:#e3f2fd; border-radius:8px; padding:10px;">
+            <strong>季度复盘：</strong>
+            <ul style="padding-left:16px; color:var(--text2); margin-top:4px; line-height:1.8;">
+              <li>组合收益 vs 市场基准</li>
+              <li>识别重复犯的错误模式</li>
+              <li>更新需要改进的地方</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;">
+      <div style="font-size:14px; font-weight:700; margin-bottom:16px;">🎯 成长路线图</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot" style="background:#2ecc71;"></div>
+          <div class="tl-label">阶段一 · 入门期</div>
+          <div class="tl-title">0 ~ 12个月 — 建立正确认知，避免重大错误</div>
+          <div class="tl-body">核心目标：积累市场感觉，不亏大钱</div>
+          <div class="tl-actions">
+            <span class="tl-action">📖 优先读「投资观」三书（橘玲/埃利斯/马尔基尔）</span>
+            <span class="tl-action">💹 开立证券账户，小额资金实战</span>
+            <span class="tl-action">📊 50~80%资金放入指数基金不操作</span>
+            <span class="tl-action">🔍 用剩余资金选2~3只了解的企业跟踪</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background:#2d7dd2;"></div>
+          <div class="tl-label">阶段二 · 进阶期</div>
+          <div class="tl-title">1 ~ 3年 — 建立选股框架，积累深度研究经验</div>
+          <div class="tl-body">核心目标：能够独立研究企业，形成投资判断</div>
+          <div class="tl-actions">
+            <span class="tl-action">📚 精读选股能力类书目（林奇/巴菲特/四季报）</span>
+            <span class="tl-action">🗄️ 建立个人股票研究数据库</span>
+            <span class="tl-action">📈 个股仓位扩大到30~50%，每只≤10%</span>
+            <span class="tl-action">✍️ 开始有纪律地撰写投资日志</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background:#e8a838;"></div>
+          <div class="tl-label">阶段三 · 成熟期</div>
+          <div class="tl-title">3年以上 — 形成稳定体系，追求超额收益</div>
+          <div class="tl-body">核心目标：在熟悉领域形成「专业深度」</div>
+          <div class="tl-actions">
+            <span class="tl-action">🏆 选3~10只深研企业作为核心持仓长期持有</span>
+            <span class="tl-action">⚙️ 技术分析辅助优化买卖时机</span>
+            <span class="tl-action">🔄 持续关注市场变化，定期检视持仓逻辑</span>
+            <span class="tl-action">🎯 在熟悉领域形成专业深度</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quote-block" style="margin-top:16px;">
+      投资是一场马拉松，不是百米冲刺。每一次亏损都是学费，每一次反思都是进步。最危险的不是不懂，而是以为自己懂了。保持谦逊、持续学习、严格执行，时间会是你最好的朋友。
+    </div>
+  </section>
+
+  <!-- Appendix -->
+  <section id="appendix">
+    <div class="section-title">📚 附录 · 12本书的推荐阅读路线图</div>
+    <div class="books-grid">
+
+      <div class="book-card">
+        <div class="book-cover-wrap">
+          <img src="https://books.google.com/books/content?id=fAsZGQfmXG8C&printsec=frontcover&img=1&zoom=2&source=gbs_api"
+               alt="漫步华尔街" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="book-cover-placeholder" style="display:none">📈</div>
+        </div>
+        <div class="book-meta">
+          <div class="book-num" style="background:#c62828;">1</div>
+          <div class="book-title">《漫步华尔街》</div>
+          <span class="book-cat cat-philosophy">建立正确投资观</span>
+          <div style="font-size:12px; color:var(--text2); margin-top:4px;">入门必读第1本 · 随机游走理论 · 指数投资论证</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover-wrap">
+          <img src="https://books.google.com/books/content?id=TGfaSRHtuNoC&printsec=frontcover&img=1&zoom=2&edge=curl&source=gbs_api"
+               alt="败者的游戏" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="book-cover-placeholder" style="display:none">🏆</div>
+        </div>
+        <div class="book-meta">
+          <div class="book-num" style="background:#c62828;">2</div>
+          <div class="book-title">《败者的游戏》</div>
+          <span class="book-cat cat-philosophy">建立正确投资观</span>
+          <div style="font-size:12px; color:var(--text2); margin-top:4px;">入门必读第2本 · 减少错误比增加收益更重要</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover-wrap">
+          <img src="https://m.media-amazon.com/images/P/4022735252.01._SX300_.jpg"
+               alt="超简单投资法" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="book-cover-placeholder" style="display:none">💴</div>
+        </div>
+        <div class="book-meta">
+          <div class="book-num" style="background:#c62828;">3</div>
+          <div class="book-title">《超简单投资法（山崎元）》</div>
+          <span class="book-cat cat-intro">入门基础</span>
+          <div style="font-size:12px; color:var(--text2); margin-top:4px;">入门必读第3本 · 极简日本指数投资框架</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover-wrap">
+          <img src="https://books.google.com/books/content?id=RfzMDwAAQBAJ&printsec=frontcover&img=1&zoom=2&edge=curl&source=gbs_api"
+               alt="胆小鬼的亿万富翁入门" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="book-cover-placeholder" style="display:none">😰</div>
+        </div>
+        <div class="book-meta">
+          <div class="book-num" style="background:#e65100;">4</div>
+          <div class="book-title">《胆小鬼的亿万富翁入门（橘玲）》</div>
+          <span class="book-cat cat-philosophy">建立正确投资观</span>
+          <div style="font-size:12px; color:var(--text2); margin-top:4px;">心理与认知 · 保守投资原则 · 风险意识建立</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover-wrap">
+          <img src="https://m.media-amazon.com/images/P/4471210912.01._SX300_.jpg"
+               alt="图解股票超入门" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="book-cover-placeholder" style="display:none">📊</div>
+        </div>
+        <div class="book-meta">
+          <div class="book-num" style="background:#1565c0;">5</div>
+          <div class="book-title">《图解股票超入门》</div>
+          <span class="book-cat cat-intro">入门基础</span>
+          <div style="font-size:12px; color:var(--text2); margin-top:4px;">いちばんカンタン！ · 百万册畅销系列 · 新NISA对应</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover-wrap">
+          <img src="https://m.media-amazon.com/images/P/4800720168.01._SX300_.jpg"
+               alt="世界一やさしい株の教科書" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="book-cover-placeholder" style="display:none">📚</div>
+        </div>
+        <div class="book-meta">
+          <div class="book-num" style="background:#1565c0;">6</div>
+          <div class="book-title">《世界上最简单的股票教科书》</div>
+          <span class="book-cat cat-intro">入门基础</span>
+          <div style="font-size:12px; color:var(--text2); margin-top:4px;">世界一やさしい · 理解股票基本概念，了解市场机制</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover-wrap">
+          <img src="https://m.media-amazon.com/images/P/4405102961.01._SX300_.jpg"
+               alt="漫画版最强股票入门" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="book-cover-placeholder" style="display:none">🎌</div>
+        </div>
+        <div class="book-meta">
+          <div class="book-num" style="background:#1565c0;">7</div>
+          <div class="book-title">《漫画版最强股票入门》</div>
+          <span class="book-cat cat-intro">入门基础</span>
+          <div style="font-size:12px; color:var(--text2); margin-top:4px;">マンガでわかる最強の株入門 · 最轻松的入门方式</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover-wrap">
+          <img src="https://covers.openlibrary.org/b/isbn/0743200403-L.jpg"
+               alt="One Up on Wall Street" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="book-cover-placeholder" style="display:none">🌟</div>
+        </div>
+        <div class="book-meta">
+          <div class="book-num" style="background:#2e7d32;">8</div>
+          <div class="book-title">《彼得·林奇的选股策略》</div>
+          <span class="book-cat cat-stock">选股能力</span>
+          <div style="font-size:12px; color:var(--text2); margin-top:4px;">One Up on Wall Street · 普通人优势 · 六类股票</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover-wrap">
+          <img src="https://covers.openlibrary.org/b/isbn/9781416573180-L.jpg"
+               alt="Warren Buffett Financial Statements" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="book-cover-placeholder" style="display:none">💼</div>
+        </div>
+        <div class="book-meta">
+          <div class="book-num" style="background:#2e7d32;">9</div>
+          <div class="book-title">《读懂巴菲特的财务报表》</div>
+          <span class="book-cat cat-stock">选股能力</span>
+          <div style="font-size:12px; color:var(--text2); margin-top:4px;">经济特许权 · 毛利率分析 · 财务报表速读法</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover-wrap">
+          <img src="https://m.media-amazon.com/images/P/4492733477.01._SX300_.jpg"
+               alt="四季报达人" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="book-cover-placeholder" style="display:none">🗓️</div>
+        </div>
+        <div class="book-meta">
+          <div class="book-num" style="background:#2e7d32;">10</div>
+          <div class="book-title">《四季报达人教你发现10倍股》</div>
+          <span class="book-cat cat-stock">选股能力</span>
+          <div style="font-size:12px; color:var(--text2); margin-top:4px;">会社四季報の達人 · 日本市场特有工具 · 高成长股筛选</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover-wrap">
+          <img src="https://books.google.com/books/content?id=KsKKI7CdiekC&printsec=frontcover&img=1&zoom=2&edge=curl&source=gbs_api"
+               alt="Day Trading" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="book-cover-placeholder" style="display:none">⚡</div>
+        </div>
+        <div class="book-meta">
+          <div class="book-num" style="background:#e65100;">11</div>
+          <div class="book-title">《日内交易（Oliver Velez）》</div>
+          <span class="book-cat cat-trade">技术分析/实战</span>
+          <div style="font-size:12px; color:var(--text2); margin-top:4px;">进阶参考 · 短线交易逻辑 · 风险管理纪律</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover-wrap">
+          <img src="https://books.google.com/books/content?id=jNG7r-Ul7jwC&printsec=frontcover&img=1&zoom=2&edge=curl&source=gbs_api"
+               alt="Market Wizards" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="book-cover-placeholder" style="display:none">🧙</div>
+        </div>
+        <div class="book-meta">
+          <div class="book-num" style="background:#e65100;">12</div>
+          <div class="book-title">《市场奇才（杰克·施瓦格）》</div>
+          <span class="book-cat cat-trade">技术分析/实战</span>
+          <div style="font-size:12px; color:var(--text2); margin-top:4px;">Market Wizards · 顶级交易者心理纪律 · 交易系统</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="quote-block" style="margin-top:16px;">
+      读书的目的不是积累知识，而是改变行动。每读完一本书，问自己：「我从这本书中学到了什么？我接下来会有什么具体的行动改变？」没有行动的读书，只是一种自我安慰。
+    </div>
+    <div class="warning-box">
+      <span class="warning-icon">⚠️</span>
+      <span><strong>免责声明：</strong>本手册所有内容仅供参考与学习，不构成任何形式的投资建议。投资有风险，入市需谨慎。过去的市场表现不代表未来结果。请根据个人财务状况和风险承受能力做出独立判断。</span>
+    </div>
+  </section>
+
+  <!-- Checklist -->
+  <section id="checklist" style="padding-bottom:40px;">
+    <div class="section-title">✅ 个人学习进度打卡</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+      <div class="card">
+        <div style="font-size:14px; font-weight:700; margin-bottom:12px;">📖 阅读进度</div>
+        <ul class="checklist" id="reading-progress">
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">《漫步华尔街》</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">《败者的游戏》</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">《超简单投资法》</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">《胆小鬼的亿万富翁入门》</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">《图解股票超入门》</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">《世界上最简单的股票教科书》</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">《漫画版最强股票入门》</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">《彼得·林奇的选股策略》</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">《读懂巴菲特的财务报表》</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">《四季报达人教你发现10倍股》</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">《日内交易》</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">《市场奇才》</div></li>
+        </ul>
+      </div>
+      <div class="card">
+        <div style="font-size:14px; font-weight:700; margin-bottom:12px;">🎯 行动里程碑</div>
+        <ul class="checklist" id="action-milestones">
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">打破三个幻觉，建立正确投资认知</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">确定自己的投资路径（1/2/3选一）</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">开立证券账户</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">首次购入指数基金</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">建立投资日志习惯</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">完成第一次个股深度研究</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">制定个人仓位管理规则</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">设定并执行第一次止损</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">完成第一次季度复盘</div></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">撰写个人投资哲学陈述</div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="page-footer">
+    <a href="https://dongtao2026.github.io/research-lab/index.html" class="footer-back">← 返回资料库</a>
+    <span>© 2026 DongTao 日股研究室</span>
+    <a href="https://dongtao2026.github.io/research-lab/index.html" class="footer-back">← 返回资料库</a>
+  </footer>
+
+</main>
+
+<button id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+  // Expand/collapse cards
+  function toggleExpand(card) {
+    const expand = card.querySelector('.card-expand');
+    if (expand) expand.classList.toggle('open');
+  }
+
+  // Checkbox toggle
+  function toggleCheck(box) {
+    box.classList.toggle('checked');
+    const text = box.nextElementSibling;
+    if (text) text.classList.toggle('done');
+    saveProgress();
+  }
+
+  // Scroll progress
+  const progressBar = document.getElementById('progress-bar');
+  const scrollTopBtn = document.getElementById('scrollTop');
+  const main = document.getElementById('main');
+
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY;
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    progressBar.style.transform = `scaleX(${scrolled / total})`;
+    scrollTopBtn.classList.toggle('visible', scrolled > 300);
+
+    // Highlight nav
+    document.querySelectorAll('section[id]').forEach(sec => {
+      const top = sec.getBoundingClientRect().top;
+      if (top < 100 && top > -sec.offsetHeight + 100) {
+        document.querySelectorAll('.nav-list a').forEach(a => a.classList.remove('active'));
+        const link = document.querySelector(`.nav-list a[href="#${sec.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  });
+
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Save/load progress
+  function saveProgress() {
+    const state = {};
+    document.querySelectorAll('.check-box').forEach((box, i) => {
+      state[i] = box.classList.contains('checked');
+    });
+    localStorage.setItem('investment-handbook-progress', JSON.stringify(state));
+  }
+
+  function loadProgress() {
+    const saved = localStorage.getItem('investment-handbook-progress');
+    if (!saved) return;
+    const state = JSON.parse(saved);
+    document.querySelectorAll('.check-box').forEach((box, i) => {
+      if (state[i]) {
+        box.classList.add('checked');
+        const text = box.nextElementSibling;
+        if (text) text.classList.add('done');
+      }
+    });
+  }
+
+  loadProgress();
+</script>
+</body>
+</html>
