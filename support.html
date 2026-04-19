@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>支持 DongTao — DongTao 日股研究室</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Noto+Sans+JP:wght@300;400;500&family=IM+Fell+English:ital@1&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --ink-light: #2d2d4e;
+    --paper: #f5f0e8;
+    --paper-warm: #ede8dc;
+    --gold: #b8962e;
+    --gold-light: #d4af5a;
+    --red: #8b2635;
+    --red-light: #c0392b;
+    --muted: #6b6b7d;
+    --border: rgba(184,150,46,0.3);
+    --shadow: rgba(26,26,46,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(rgba(184,150,46,0.05) 1px, transparent 1px);
+    background-size: 100% 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 32px 80px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 48px 0 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .back-link {
+    align-self: flex-start;
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 1.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 32px;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover { color: var(--gold); }
+
+  .header-ornament {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    color: var(--gold);
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  .header-ornament::before,
+  .header-ornament::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold));
+  }
+
+  .header-ornament::after {
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+
+  .site-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(20px, 4vw, 28px);
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 0.08em;
+    line-height: 1.3;
+  }
+
+  .site-title .en {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.7em;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 6px;
+    letter-spacing: 0.15em;
+  }
+
+  .header-rule {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), var(--red), var(--gold), transparent);
+    margin-top: 28px;
+    opacity: 0.5;
+  }
+
+  /* ── CONTENT ── */
+  .support-intro {
+    margin-top: 48px;
+    text-align: center;
+  }
+
+  .support-intro p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.9;
+    letter-spacing: 0.04em;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .support-intro p + p {
+    margin-top: 12px;
+  }
+
+  /* ── OPTION CARDS ── */
+  .support-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 40px;
+  }
+
+  .option-card {
+    background: linear-gradient(145deg, rgba(255,255,255,0.7), rgba(237,232,220,0.5));
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 32px 24px;
+    position: relative;
+    text-align: center;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 16px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.8);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .option-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+
+  .option-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 16px; height: 16px;
+    border-top: 2px solid var(--gold);
+    border-left: 2px solid var(--gold);
+    border-radius: 2px 0 0 0;
+  }
+
+  .option-card::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 16px; height: 16px;
+    border-bottom: 2px solid var(--gold);
+    border-right: 2px solid var(--gold);
+    border-radius: 0 0 2px 0;
+  }
+
+  .option-icon {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+  }
+
+  .option-icon svg {
+    width: 22px; height: 22px;
+    stroke: white; fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .option-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+
+  .option-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.8;
+    letter-spacing: 0.03em;
+    margin-bottom: 20px;
+  }
+
+  .btn-option {
+    display: inline-block;
+    padding: 9px 24px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: #fff;
+    border: none;
+    box-shadow: 0 2px 10px rgba(184,150,46,0.3);
+    cursor: pointer;
+  }
+
+  .btn-option:hover {
+    box-shadow: 0 6px 18px rgba(184,150,46,0.45);
+    transform: translateY(-1px);
+  }
+
+.qr-img {
+    width: 180px; height: 180px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin: 20px auto 16px;
+    display: block;
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  footer a { color: var(--gold); text-decoration: none; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  header           { animation: fadeUp 0.7s ease both; }
+  .support-intro   { animation: fadeUp 0.6s ease both 0.1s; }
+  .support-options { animation: fadeUp 0.6s ease both 0.2s; }
+
+  @media (max-width: 540px) {
+    .support-options { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <a href="index.html" class="back-link">← 返回资料库</a>
+    <div class="header-ornament">支持我们</div>
+    <h1 class="site-title">
+      <span class="en">Support DongTao</span>
+      支持 DongTao 研究室
+    </h1>
+    <div class="header-rule"></div>
+  </header>
+
+  <div class="support-intro">
+    <p>感谢您关注 DongTao 日股研究室。</p>
+    <p>研究室的所有内容均由个人独立完成，您的支持将帮助我们持续产出高质量的日本股市研究与分析。</p>
+  </div>
+
+  <div class="support-options">
+    <div class="option-card">
+      <div class="option-title">微信赞赏</div>
+      <p class="option-desc">扫描二维码，通过微信向研究室表达支持。</p>
+      <img src="微信支付1.jpg" alt="微信收款码" class="qr-img">
+    </div>
+
+    <div class="option-card">
+      <div class="option-icon">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="option-title">加入社区</div>
+      <p class="option-desc">加入 Discord 社区，与研究室成员共同交流日本股市。</p>
+      <a href="https://discord.gg/YAXgA7Dx6c" target="_blank" class="btn-option">加入 Discord</a>
+    </div>
+  </div>
+
+  <footer>
+    <span>© 2025 DongTao 日股研究室</span>
+    <span><a href="index.html">← 返回资料库</a></span>
+  </footer>
+
+</div>
+</body>
+</html>
