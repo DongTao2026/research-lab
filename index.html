@@ -304,9 +304,9 @@
     flex-shrink: 0;
   }
 
-  /* Add article button placeholder */
-  .add-link {
-    margin-top: 12px;
+  /* ── COLLAPSE TOGGLE ── */
+  .more-toggle {
+    margin-top: 10px;
     display: block;
     text-align: center;
     font-size: 11px;
@@ -317,11 +317,39 @@
     border-radius: 2px;
     cursor: pointer;
     transition: all 0.2s;
+    background: none;
+    width: 100%;
+    font-family: 'Noto Sans JP', sans-serif;
   }
 
-  .add-link:hover {
+  .more-toggle:hover {
     color: var(--gold);
     border-color: var(--gold);
+  }
+
+  /* ── VISIT COUNTER ── */
+  .visit-counter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+  }
+
+  .visit-counter-icon {
+    width: 14px; height: 14px;
+    opacity: 0.5;
+  }
+
+  .visit-count {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--gold);
+    letter-spacing: 1px;
+    min-width: 20px;
+    text-align: right;
   }
 
   /* ── FOOTER ── */
@@ -496,7 +524,6 @@
           </a>
         </li>
       </ul>
-      <span class="add-link">＋ 更多个股</span>
     </div>
 
     <!-- 分析数据 -->
@@ -555,13 +582,56 @@
 
   <!-- ── FOOTER ── -->
   <footer>
-    <span>© 2025 DongTao 日股研究室</span>
-    <span>
-      <a href="#">微信公众号</a> &nbsp;·&nbsp;
-      <a href="#">Discord 社区</a>
-    </span>
+    <span>© 2026 DongTao 日股研究室</span>
+    <div class="visit-counter">
+      <svg class="visit-counter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+      </svg>
+      <span>本页访问</span>
+      <span class="visit-count" id="visit-count">—</span>
+      <span>次</span>
+    </div>
   </footer>
 
 </div>
+
+<script>
+  /* ── VISIT COUNTER ── */
+  (function () {
+    const el = document.getElementById('visit-count');
+    fetch('https://api.counterapi.dev/v1/dongtao-research-lab/pageviews/up')
+      .then(r => r.json())
+      .then(d => { el.textContent = d.count.toLocaleString(); })
+      .catch(() => { el.textContent = '—'; });
+  })();
+
+  /* ── COLLAPSIBLE LISTS (threshold: 10) ── */
+  const THRESHOLD = 10;
+  document.querySelectorAll('.link-list').forEach(function (list) {
+    const items = list.querySelectorAll('li');
+    if (items.length <= THRESHOLD) return;
+
+    items.forEach(function (li, i) {
+      if (i >= THRESHOLD) li.style.display = 'none';
+    });
+
+    const btn = document.createElement('button');
+    btn.className = 'more-toggle';
+    btn.textContent = '＋ 展开更多（' + (items.length - THRESHOLD) + ' 条）';
+    let expanded = false;
+
+    btn.addEventListener('click', function () {
+      expanded = !expanded;
+      items.forEach(function (li, i) {
+        if (i >= THRESHOLD) li.style.display = expanded ? '' : 'none';
+      });
+      btn.textContent = expanded
+        ? '− 收起'
+        : '＋ 展开更多（' + (items.length - THRESHOLD) + ' 条）';
+    });
+
+    list.parentNode.insertBefore(btn, list.nextSibling);
+  });
+</script>
 </body>
 </html>
