@@ -11,18 +11,14 @@ html,body{height:100%;overflow:hidden;
   background:#1b2838;
 }
 
-/* ═══════ LAYOUT ═══════ */
-#app{
-  display:flex;flex-direction:column;
-  height:100vh;width:100vw;overflow:hidden;
-}
+/* ═══ APP SHELL ═══ */
+#app{display:flex;flex-direction:column;height:100vh;width:100vw;overflow:hidden;}
 
-/* ─── HEADER (always visible) ─── */
+/* ─── HEADER ─── */
 #header{
   flex-shrink:0;
   background:linear-gradient(160deg,#0d1b2a 0%,#1b2838 70%,#263850 100%);
-  color:#fff;
-  padding:12px 20px 12px;
+  color:#fff;padding:12px 20px;
   border-bottom:1px solid rgba(255,255,255,.08);
 }
 .hd-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
@@ -37,54 +33,39 @@ html,body{height:100%;overflow:hidden;
   white-space:nowrap;transition:all .2s;flex-shrink:0;
 }
 .back-btn:hover{color:#fff;border-color:rgba(255,255,255,.5);}
-.hd-row2{font-size:12px;opacity:.72;line-height:1.7;margin-bottom:6px;}
 .hd-legend{display:flex;flex-wrap:wrap;gap:6px;}
-.legend-pill{
-  font-size:11px;padding:3px 10px;
-  border:1px solid rgba(255,255,255,.2);border-radius:20px;opacity:.8;
-}
+.legend-pill{font-size:11px;padding:3px 10px;border:1px solid rgba(255,255,255,.2);border-radius:20px;opacity:.8;}
 
-/* ─── MAIN AREA ─── */
-#main{
-  flex:1;position:relative;overflow:hidden;
-  background:#f0ebe0;
-}
-#preview,#viewer{
-  position:absolute;inset:0;
-  transition:opacity .3s ease,transform .3s ease;
-}
+/* ─── MAIN (preview lives here) ─── */
+#main{flex:1;position:relative;overflow:hidden;background:#f0ebe0;}
 
 /* ─── PREVIEW ─── */
 #preview{
+  position:absolute;inset:0;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:28px;background:#f0ebe0;
+  transition:opacity .3s ease,transform .3s ease;
 }
 #preview.hidden{opacity:0;pointer-events:none;transform:scale(.96);}
+#preview.fanning{animation:previewFade .25s ease forwards .45s;}
+@keyframes previewFade{to{opacity:0;pointer-events:none;}}
 
-.deck-btn{
-  background:none;border:none;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:0;
-  padding:0;-webkit-appearance:none;
-}
-.iso-wrap{perspective:900px;width:300px;height:270px;
-  display:flex;align-items:center;justify-content:center;}
+.deck-btn{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;padding:0;-webkit-appearance:none;}
+.iso-wrap{perspective:900px;width:300px;height:270px;display:flex;align-items:center;justify-content:center;}
 .deck-iso{
   position:relative;width:148px;height:228px;
   transform:rotateX(22deg) rotateY(-22deg) rotateZ(2deg);
-  transform-style:preserve-3d;
-  transition:transform .4s ease;pointer-events:none;
+  transform-style:preserve-3d;transition:transform .4s ease;pointer-events:none;
 }
 .deck-btn:hover .deck-iso{transform:rotateX(16deg) rotateY(-26deg) rotateZ(2deg) scale(1.05);}
 .deck-btn:active .deck-iso{transform:rotateX(25deg) rotateY(-18deg) rotateZ(2deg) scale(.97);}
 .top-card{
-  position:absolute;inset:0;
-  background:#080808;border-radius:9px;
-  border:1px solid rgba(255,255,255,.08);
-  box-shadow:0 8px 28px rgba(0,0,0,.45);
+  position:absolute;inset:0;background:#080808;border-radius:9px;
+  border:1px solid rgba(255,255,255,.08);box-shadow:0 8px 28px rgba(0,0,0,.45);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  z-index:10;overflow:hidden;padding:10px 10px 8px;
+  z-index:10;overflow:hidden;padding:10px;
 }
-.bc-en{font-size:17px;font-weight:900;color:#fff;letter-spacing:3px;line-height:1;text-align:center;}
+.bc-en{font-size:17px;font-weight:900;color:#fff;letter-spacing:3px;text-align:center;}
 .bc-rule{width:90%;height:2px;background:#e74c3c;margin:9px 0;}
 .bc-cn{font-size:23px;font-weight:700;color:#fff;letter-spacing:8px;text-align:center;}
 .bc-au{font-size:12px;color:#888;letter-spacing:3px;text-align:center;margin-top:4px;}
@@ -97,106 +78,79 @@ html,body{height:100%;overflow:hidden;
 .dl:nth-child(5){inset:0;transform:translate3d(20px,20px,-25px);background:#d4d4d4;}
 .dl:nth-child(6){inset:0;transform:translate3d(24px,24px,-30px);background:#cecece;}
 .dl:nth-child(7){inset:0;transform:translate3d(28px,28px,-35px);background:#c8c8c8;}
-
 .open-label{
-  background:#1b2838;color:#fff;
-  padding:14px 44px;border-radius:50px;
-  font-size:15px;letter-spacing:2px;margin-top:40px;
-  box-shadow:0 4px 20px rgba(0,0,0,.28);
+  background:#1b2838;color:#fff;padding:14px 44px;border-radius:50px;
+  font-size:15px;letter-spacing:2px;margin-top:40px;box-shadow:0 4px 20px rgba(0,0,0,.28);
 }
 
-/* ─── VIEWER ─── */
+/* ═══════════════════════════════════
+   VIEWER  —  fullscreen overlay
+═══════════════════════════════════ */
 #viewer{
+  position:fixed;inset:0;z-index:50;
+  background:#ece7db;
   display:flex;flex-direction:column;
-  background:#f0ebe0;
   opacity:0;pointer-events:none;
-  transform:translateY(12px);
+  transition:opacity .35s ease;
 }
-#viewer.active{opacity:1;pointer-events:all;transform:translateY(0);}
+#viewer.active{opacity:1;pointer-events:all;}
 
-/* suit tabs row */
-.v-top{
+/* Top bar: suit tabs + close */
+.v-head{
   flex-shrink:0;
   display:flex;align-items:center;justify-content:space-between;
-  padding:8px 14px 6px;
+  padding:10px 16px 6px;
 }
 .suit-tabs{display:flex;gap:5px;}
 .stab{
-  padding:6px 13px;border-radius:20px;font-size:14px;font-weight:500;
-  border:none;cursor:pointer;background:rgba(0,0,0,.07);color:#666;
+  padding:5px 12px;border-radius:20px;font-size:14px;font-weight:500;
+  border:none;cursor:pointer;background:rgba(0,0,0,.08);color:#777;
   transition:all .2s;-webkit-appearance:none;
 }
 .stab.on-black{background:#1a1a1a;color:#fff;}
 .stab.on-red{background:#c0392b;color:#fff;}
 .stab.on-joker{background:#6c3483;color:#fff;}
-.close-x{background:none;border:none;font-size:20px;cursor:pointer;color:#888;padding:4px;}
+.close-x{background:none;border:none;font-size:20px;cursor:pointer;color:#bbb;padding:4px 8px;transition:color .2s;}
+.close-x:hover{color:#333;}
 
-/* position indicator */
-.v-pos{
-  flex-shrink:0;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:2px 14px 6px;
-}
-.dots{display:flex;gap:4px;flex-wrap:wrap;max-width:240px;}
-.d{width:6px;height:6px;border-radius:50%;background:rgba(0,0,0,.18);cursor:pointer;transition:all .25s;}
-.d.on-black{background:#1a1a1a;width:18px;border-radius:3px;}
-.d.on-red{background:#c0392b;width:18px;border-radius:3px;}
-.d.on-joker{background:#6c3483;width:18px;border-radius:3px;}
-.pos-lbl{font-size:12px;color:#aaa;}
+/* Body: centers the 3×3 grid */
+.v-body{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;}
 
-/* peek suit strip */
-.peek-suit{
-  flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  height:46px;
-}
-.peek-strip{
-  display:flex;align-items:center;justify-content:space-between;
-  background:#fff;border:1px solid rgba(0,0,0,.1);
-  padding:0 16px;height:38px;border-radius:8px;cursor:pointer;
-  box-shadow:0 2px 8px rgba(0,0,0,.08);opacity:.78;
-  transition:opacity .2s;
-  width:clamp(280px, 85vw, 460px);
-  max-width:calc(var(--cw) + 2*var(--pkw));
-}
-.peek-strip:active{opacity:1;}
-.ps-lbl{font-size:13px;font-weight:700;}
-.ps-title{font-size:12px;color:#888;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:220px;}
-
-/* hint text */
-.v-hint{
-  font-size:12px;color:#bbb;text-align:center;
-  padding:4px 0 8px;flex-shrink:0;letter-spacing:.5px;
+/* ─── 3×3 CARD GRID ─── */
+:root{--cw:200px;--ch:308px;--pgap:10px;}
+.v-grid{
+  display:grid;
+  grid-template-columns:calc(var(--cw)*.2) var(--cw) calc(var(--cw)*.2);
+  grid-template-rows:calc(var(--ch)*.2) var(--ch) calc(var(--ch)*.2);
+  gap:var(--pgap);
 }
 
-/* ─── CARD ROW ─── */
-/* CSS variables set by JS on :root */
-:root{--cw:220px;--ch:339px;--pkw:90px;}
-.card-row-wrap{
-  flex:1;display:flex;align-items:center;justify-content:center;
+/* Peek slots — overflow:hidden clips the full card to show 20% */
+.pg-tp,.pg-bt,.pg-lf,.pg-rt{
+  position:relative;overflow:hidden;
+  border-radius:10px;cursor:pointer;
+  transition:opacity .15s;
+}
+.pg-tp:active,.pg-bt:active,.pg-lf:active,.pg-rt:active{opacity:.75;}
+
+.pg-tp{grid-column:2;grid-row:1;}   /* top    → prev suit  */
+.pg-ct{grid-column:2;grid-row:2;}   /* center → active card */
+.pg-bt{grid-column:2;grid-row:3;}   /* bottom → next suit  */
+.pg-lf{grid-column:1;grid-row:2;}   /* left   → prev card  */
+.pg-rt{grid-column:3;grid-row:2;}   /* right  → next card  */
+
+/* Full-size card rendered inside a peek slot;
+   always anchored top-left so the TL corner (rank+suit) is visible */
+.peek-card{
+  position:absolute;top:0;left:0;
+  width:var(--cw);height:var(--ch);
+  background:#fff;border-radius:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,.18);
+  border:1px solid rgba(0,0,0,.07);
   overflow:hidden;
 }
-.card-row{
-  /* exact clip width = card + 2 peeks */
-  width:calc(var(--cw) + 2*var(--pkw));
-  max-width:100%;
-  overflow:hidden;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;
-}
-.card-track{
-  display:flex;align-items:center;
-  gap:10px;flex-shrink:0;
-  transition:transform .32s cubic-bezier(.4,0,.2,1);
-}
-/* 3 slots */
-.card-slot{flex-shrink:0;width:var(--cw);height:var(--ch);position:relative;}
-.card-slot.peek-l,.card-slot.peek-r{
-  cursor:pointer;
-  border-radius:10px;overflow:hidden;
-}
 
-/* ─── THE CARD ─── */
+/* ─── CENTER CARD ─── */
 .card-stage{width:var(--cw);height:var(--ch);perspective:1000px;}
 .card-inner{
   position:relative;width:100%;height:100%;
@@ -208,7 +162,7 @@ html,body{height:100%;overflow:hidden;
 .card-face{
   position:absolute;inset:0;
   background:#fff;border-radius:10px;
-  box-shadow:0 8px 32px rgba(0,0,0,.16),0 2px 8px rgba(0,0,0,.08);
+  box-shadow:0 8px 32px rgba(0,0,0,.18),0 2px 8px rgba(0,0,0,.08);
   backface-visibility:hidden;-webkit-backface-visibility:hidden;
   border:1px solid rgba(0,0,0,.07);
   overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
@@ -216,51 +170,61 @@ html,body{height:100%;overflow:hidden;
 }
 .card-face.back-f{transform:rotateY(180deg);}
 
-/* card interior */
-.crnr{
-  position:absolute;display:flex;flex-direction:column;align-items:center;
-  line-height:1.15;padding:9px 10px;
-}
+/* Card corners */
+.crnr{position:absolute;display:flex;flex-direction:column;align-items:center;line-height:1.15;padding:9px 10px;}
 .crnr.tl{top:0;left:0;}
 .crnr.br{bottom:0;right:0;transform:rotate(180deg);}
-.crnr .rk{font-size:clamp(14px,calc(var(--cw)*0.105),28px);font-weight:800;}
-.crnr .sy{font-size:clamp(12px,calc(var(--cw)*0.086),22px);}
+.crnr .rk{font-size:clamp(13px,calc(var(--cw)*.105),26px);font-weight:800;}
+.crnr .sy{font-size:clamp(11px,calc(var(--cw)*.086),20px);}
 
+/* Card body — front */
 .card-body{
   flex:1;display:flex;flex-direction:column;justify-content:center;
-  padding:8px 16px;margin:clamp(44px,calc(var(--ch)*0.155),60px) 0;
+  padding:8px 18px;margin:clamp(40px,calc(var(--ch)*.155),58px) 0;
 }
 .c-badge{
   display:inline-flex;align-self:flex-start;
-  font-size:clamp(9px,calc(var(--cw)*0.05),12px);font-weight:700;letter-spacing:1px;
-  padding:3px 10px;border-radius:12px;margin-bottom:8px;
-  background:#6c3483;color:#fff;
+  font-size:clamp(9px,calc(var(--cw)*.05),11px);font-weight:700;letter-spacing:1px;
+  padding:2px 9px;border-radius:10px;margin-bottom:8px;color:#fff;
 }
-.c-title{font-size:clamp(14px,calc(var(--cw)*0.091),22px);font-weight:800;line-height:1.4;margin-bottom:10px;}
-.c-div{width:32px;height:2.5px;border-radius:2px;margin-bottom:10px;opacity:.35;}
-.c-body{font-size:clamp(12px,calc(var(--cw)*0.068),16px);line-height:1.85;color:#3a3a3a;}
+.c-title{font-size:clamp(14px,calc(var(--cw)*.093),22px);font-weight:800;line-height:1.4;margin-bottom:10px;}
+.c-div{width:28px;height:2.5px;border-radius:2px;margin-bottom:10px;opacity:.35;}
+.c-body{font-size:clamp(12px,calc(var(--cw)*.07),15px);line-height:1.85;color:#3a3a3a;}
 
-/* back face */
+/* Card body — back */
 .back-body{
   flex:1;display:flex;flex-direction:column;justify-content:center;
-  padding:8px 16px;margin:clamp(44px,calc(var(--ch)*0.155),60px) 0;
+  padding:8px 18px;margin:clamp(40px,calc(var(--ch)*.155),58px) 0;
 }
 .bq{
-  font-size:clamp(12px,calc(var(--cw)*0.068),16px);line-height:1.85;
+  font-size:clamp(12px,calc(var(--cw)*.068),15px);line-height:1.85;
   border-left:3.5px solid;padding-left:12px;
   margin-bottom:12px;color:#2c2c2c;
   font-style:italic;word-break:break-all;
 }
-.bsrc{font-size:clamp(11px,calc(var(--cw)*0.059),14px);color:#999;line-height:1.6;}
+.bsrc{font-size:clamp(10px,calc(var(--cw)*.059),13px);color:#999;line-height:1.6;}
 .bsrc b{color:#666;}
 
-/* ─── COLOR UTILS ─── */
+/* Color utilities */
 .cblack{color:#1a1a1a;}.cred{color:#c0392b;}.cjoker{color:#6c3483;}
 .bgblack{background:rgba(26,26,26,.04);}.bgred{background:rgba(192,57,43,.04);}.bgjoker{background:rgba(108,52,131,.04);}
 .bdblack{border-color:#1a1a1a;}.bdred{border-color:#c0392b;}.bdjoker{border-color:#6c3483;}
 .dvblack{background:#1a1a1a;}.dvred{background:#c0392b;}.dvjoker{background:#6c3483;}
 
-/* ─── SLIDE ANIM ─── */
+/* Footer: dots + position label */
+.v-foot{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  padding:6px 16px 12px;
+}
+.dots{display:flex;gap:4px;flex-wrap:wrap;max-width:260px;justify-content:center;}
+.d{width:6px;height:6px;border-radius:50%;background:rgba(0,0,0,.15);cursor:pointer;transition:all .25s;}
+.d.on-black{background:#1a1a1a;width:18px;border-radius:3px;}
+.d.on-red{background:#c0392b;width:18px;border-radius:3px;}
+.d.on-joker{background:#6c3483;width:18px;border-radius:3px;}
+.pos-lbl{font-size:12px;color:#aaa;letter-spacing:.5px;white-space:nowrap;}
+
+/* Slide animations */
 @keyframes sL{0%{opacity:1;transform:translateX(0)}45%{opacity:0;transform:translateX(-60px)}55%{opacity:0;transform:translateX(75px)}100%{opacity:1;transform:translateX(0)}}
 @keyframes sR{0%{opacity:1;transform:translateX(0)}45%{opacity:0;transform:translateX(60px)}55%{opacity:0;transform:translateX(-75px)}100%{opacity:1;transform:translateX(0)}}
 @keyframes sU{0%{opacity:1;transform:translateY(0)}45%{opacity:0;transform:translateY(-50px)}55%{opacity:0;transform:translateY(65px)}100%{opacity:1;transform:translateY(0)}}
@@ -270,44 +234,25 @@ html,body{height:100%;overflow:hidden;
 .as-U .card-inner{animation:sU .36s ease forwards;}
 .as-D .card-inner{animation:sD .36s ease forwards;}
 
-/* ─── RESPONSIVE ─── */
-@media(min-width:600px){
-  .hd-row2{font-size:13px;}
-  .c-title{font-size:22px;}
-  .c-body{font-size:16px;}
-  .bq{font-size:16px;}
-  .bsrc{font-size:14px;}
-  .crnr .rk{font-size:26px;}
-  .crnr .sy{font-size:21px;}
-}
-@media(max-height:620px){
-  #header{padding:8px 16px 8px;}
-  .hd-row2{display:none;}
-  .v-top{padding:5px 12px 3px;}
-  .v-pos{padding:0 12px 3px;}
-  .peek-suit{height:34px;}
-  .peek-strip{height:28px;}
-  .v-hint{padding:2px 0 4px;}
-}
-
-/* ─── FAN ANIMATION ─── */
+/* Fan animation */
 @keyframes deckLaunch{
   0%{transform:rotateX(22deg) rotateY(-22deg) rotateZ(2deg) scale(1);}
   40%{transform:rotateX(12deg) rotateY(-28deg) rotateZ(-2deg) scale(1.08);}
   100%{transform:rotateX(5deg) rotateY(0deg) rotateZ(0deg) scale(0.05);opacity:0;}
 }
-.deck-iso.launching{
-  animation:deckLaunch .55s cubic-bezier(.4,0,.6,1) forwards;
-  pointer-events:none;
+.deck-iso.launching{animation:deckLaunch .55s cubic-bezier(.4,0,.6,1) forwards;pointer-events:none;}
+
+@media(max-height:600px){
+  #header{padding:8px 16px;}
+  .v-head{padding:6px 12px 3px;}
+  .v-foot{padding:4px 16px 8px;}
 }
-@keyframes previewFade{to{opacity:0;pointer-events:none;}}
-#preview.fanning{animation:previewFade .25s ease forwards .45s;}
 </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- ═══ HEADER ═══ -->
+  <!-- ═══ HEADER (unchanged) ═══ -->
   <header id="header">
     <div class="hd-top">
       <div class="hd-row1">
@@ -316,7 +261,6 @@ html,body{height:100%;overflow:hidden;
       </div>
       <a class="back-btn" href="https://dongtao2026.github.io/research-lab/index.html">← 返回数据库</a>
     </div>
-    <div class="hd-row2">将瑞·达利欧的核心思想提炼为54张扑克牌，点击卡片翻面可看原文出处。</div>
     <div class="hd-legend">
       <span class="legend-pill">🃏 王·元原则</span>
       <span class="legend-pill">♠ 黑桃·思维</span>
@@ -326,10 +270,8 @@ html,body{height:100%;overflow:hidden;
     </div>
   </header>
 
-  <!-- ═══ MAIN ═══ -->
+  <!-- ═══ MAIN: preview only ═══ -->
   <div id="main">
-
-    <!-- PREVIEW -->
     <div id="preview">
       <button class="deck-btn" onclick="openViewer()">
         <div class="iso-wrap">
@@ -349,40 +291,40 @@ html,body{height:100%;overflow:hidden;
         <div class="open-label">展 开 牌 组</div>
       </button>
     </div>
+  </div>
 
-    <!-- VIEWER -->
-    <div id="viewer">
-      <div class="v-top">
-        <div class="suit-tabs" id="sTabs"></div>
-        <button class="close-x" onclick="closeViewer()">✕</button>
-      </div>
-      <div class="v-pos">
-        <div class="dots" id="dots"></div>
-        <div class="pos-lbl" id="posLbl"></div>
-      </div>
-      <div class="peek-suit" id="peekTop"></div>
-      <div class="card-row-wrap">
-        <div class="card-row" id="cardRow">
-          <div class="card-track" id="cardTrack">
-            <div class="card-slot peek-l" id="slotL" onclick="prevCard()"></div>
-            <div class="card-slot" id="slotC">
-              <div class="card-stage">
-                <div class="card-inner" id="cInner">
-                  <div class="card-face front-f" id="cFront"></div>
-                  <div class="card-face back-f" id="cBack"></div>
-                </div>
-              </div>
+  <!-- ═══ VIEWER OVERLAY ═══ -->
+  <div id="viewer">
+    <!-- Top bar -->
+    <div class="v-head">
+      <div class="suit-tabs" id="sTabs"></div>
+      <button class="close-x" onclick="closeViewer()">✕</button>
+    </div>
+    <!-- 3×3 card grid -->
+    <div class="v-body">
+      <div class="v-grid">
+        <div class="pg-tp" id="pgTp" onclick="prevSuit()"></div>
+        <div class="pg-lf" id="pgLf" onclick="prevCard()"></div>
+        <div class="pg-ct" id="pgCt">
+          <div class="card-stage">
+            <div class="card-inner" id="cInner">
+              <div class="card-face front-f" id="cFront"></div>
+              <div class="card-face back-f" id="cBack"></div>
             </div>
-            <div class="card-slot peek-r" id="slotR" onclick="nextCard()"></div>
           </div>
         </div>
+        <div class="pg-rt" id="pgRt" onclick="nextCard()"></div>
+        <div class="pg-bt" id="pgBt" onclick="nextSuit()"></div>
       </div>
-      <div class="peek-suit" id="peekBot"></div>
-      <div class="v-hint" id="vHint">← → 翻牌 &nbsp;|&nbsp; ↑ ↓ 换花色 &nbsp;|&nbsp; 点击翻面</div>
     </div>
-
+    <!-- Dots footer -->
+    <div class="v-foot">
+      <div class="dots" id="dots"></div>
+      <div class="pos-lbl" id="posLbl"></div>
+    </div>
   </div>
-</div>
+
+</div><!-- #app -->
 
 <script>
 // ════ DATA ════
@@ -397,8 +339,8 @@ var SORD=["jokers","spades","hearts","clubs","diamonds"];
 
 var DATA={
 jokers:[
-  {r:"大王",ft:"拥抱现实，按现实行事",fc:"真相是一切良好结果的根本依据。不管现实多么令你不舒服，拒绝现实只会让你付出代价。",bq:"\u201c真相（或者更精确地说，对现实的准确理解）是任何良好结果的根本依据。\u201d",bs:"第二部分·生活原则·第1章·1.2节"},
-  {r:"小王",ft:"极度求真 + 极度透明",fc:"这是达利欧整个思想体系的双引擎。没有这两条，一切原则都是空谈。",bq:"\u201c在公司里无处不在的创意择优 = 极度求真 + 极度透明 + 可信度加权的决策。\u201d",bs:"第三部分·工作原则·极度求真和极度透明"}
+  {r:"JOKER",vc:"red",ft:"拥抱现实，按现实行事",fc:"真相是一切良好结果的根本依据。不管现实多么令你不舒服，拒绝现实只会让你付出代价。",bq:"\u201c真相（或者更精确地说，对现实的准确理解）是任何良好结果的根本依据。\u201d",bs:"第二部分·生活原则·第1章·1.2节"},
+  {r:"JOKER",vc:"black",ft:"极度求真 + 极度透明",fc:"这是达利欧整个思想体系的双引擎。没有这两条，一切原则都是空谈。",bq:"\u201c在公司里无处不在的创意择优 = 极度求真 + 极度透明 + 可信度加权的决策。\u201d",bs:"第三部分·工作原则·极度求真和极度透明"}
 ],
 spades:[
   {r:"A",ft:"把生活想象成一部机器",fc:"不管是经济、市场还是人，都像机器一样运转，理解它的零件和因果关系，你就能预测和干预结果。",bq:"\u201c考察影响你的那些事物的规律，从而理解其背后的因果关系，并学习有效应对这些事物的原则。\u201d",bs:"第二部分·生活原则·导言"},
@@ -463,75 +405,85 @@ diamonds:[
 };
 
 // ════ STATE ════
-var si=0,ci=[0,0,0,0,0],flip=false,busy=false;
+var si=0, ci=[0,0,0,0,0], flip=false, busy=false;
 function suit(i){return SUITS[i];}
 function cards(i){return DATA[SORD[i]];}
 function cur(){return cards(si)[ci[si]];}
 
 // ════ RESPONSIVE SIZE ════
 function calcSize(){
-  var mainH=document.getElementById("main").offsetHeight;
-  var mainW=document.getElementById("main").offsetWidth;
-  var avH=mainH-210;
-  var maxH=Math.min(avH, 540);
-  var ch=Math.max(maxH,280);
-  var cw=Math.round(ch*57/88);
-  var pkw=Math.min(Math.round(mainW*0.2), 120);
-  pkw=Math.max(pkw,60);
-  // 确保卡片 + 左右预览 + 间距不超出屏幕宽度
-  if(cw + 2*pkw + 20 > mainW){
-    cw=Math.max(mainW - 2*pkw - 20, 160);
-    ch=Math.round(cw*88/57);
-  }
-  document.documentElement.style.setProperty("--ch",ch+"px");
-  document.documentElement.style.setProperty("--cw",cw+"px");
-  document.documentElement.style.setProperty("--pkw",pkw+"px");
+  var W=window.innerWidth, H=window.innerHeight;
+  var GAP=10, VHEAD=52, VFOOT=44;
+  var availW = W - GAP*4;
+  var availH = H - VHEAD - VFOOT - GAP*4;
+  // 1.4*cw ≤ availW  and  1.4*ch ≤ availH  with  ch = cw*88/57
+  var cwByW = availW / 1.4;
+  var cwByH = (availH / 1.4) * 57/88;
+  var cw = Math.floor(Math.min(cwByW, cwByH, 320));
+  cw = Math.max(cw, 130);
+  var ch = Math.round(cw * 88/57);
+  document.documentElement.style.setProperty("--cw", cw+"px");
+  document.documentElement.style.setProperty("--ch", ch+"px");
+  document.documentElement.style.setProperty("--pgap", GAP+"px");
 }
 
 // ════ RENDER ════
 function render(anim){
   if(anim){
     busy=true;
-    var st=document.getElementById("slotC");
-    st.classList.add("as-"+anim);
-    setTimeout(function(){st.classList.remove("as-"+anim);busy=false;draw();},200);
-  } else { draw(); }
-  drawTabs(); drawDots(); drawLabel(); drawPeeks(); drawSidePeeks();
+    var ct=document.getElementById("pgCt");
+    ct.classList.add("as-"+anim);
+    setTimeout(function(){ct.classList.remove("as-"+anim);busy=false;draw();},200);
+  } else {draw();}
+  drawTabs(); drawDots(); drawLabel(); drawPeeks();
+}
+
+// Resolve effective color for a card (joker cards have per-card vc override)
+function vc(s,c){ return (c&&c.vc)?c.vc:s.c; }
+
+function mkCorner(s,c){
+  var isJ=(s.id==="jokers");
+  var isJokerCard=(c.r==="JOKER");
+  var rkStyle=isJokerCard?' style="font-size:clamp(8px,calc(var(--cw)*.065),13px);letter-spacing:1px"':'';
+  return '<div class="rk"'+rkStyle+'>'+c.r+'</div>'+
+         (isJ?'':'<div class="sy">'+s.s+'</div>');
 }
 
 function mkFace(s,c,isFront){
+  var v=vc(s,c);
+  var cc="c"+v, dv="dv"+v, bd="bd"+v;
+  var badgeBg=v==="red"?"#c0392b":v==="black"?"#1a1a1a":"#6c3483";
   var isJ=(s.id==="jokers");
-  var cc="c"+s.c, bg="bg"+s.c, bd="bd"+s.c, dv="dv"+s.c;
+  var corner=mkCorner(s,c);
   if(isFront){
-    return '<div class="crnr tl '+cc+'">'+(isJ?'<div class="sy">'+s.s+'</div>':'<div class="rk">'+c.r+'</div><div class="sy">'+s.s+'</div>')+
-      '</div><div class="card-body">'+(isJ?'<span class="c-badge">'+c.r+'</span>':'')+
+    return '<div class="crnr tl '+cc+'">'+corner+'</div>'+
+      '<div class="card-body">'+
+      (isJ?'<span class="c-badge" style="background:'+badgeBg+'">'+c.r+'</span>':'')+
       '<div class="c-title '+cc+'">'+c.ft+'</div>'+
       '<div class="c-div '+dv+'"></div>'+
       '<div class="c-body">'+c.fc+'</div></div>'+
-      '<div class="crnr br '+cc+'">'+(isJ?'<div class="sy">'+s.s+'</div>':'<div class="rk">'+c.r+'</div><div class="sy">'+s.s+'</div>')+'</div>';
+      '<div class="crnr br '+cc+'">'+corner+'</div>';
   } else {
-    return '<div class="crnr tl '+cc+'">'+(isJ?'<div class="sy">'+s.s+'</div>':'<div class="rk">'+c.r+'</div><div class="sy">'+s.s+'</div>')+
-      '</div><div class="back-body">'+
+    return '<div class="crnr tl '+cc+'">'+corner+'</div>'+
+      '<div class="back-body">'+
       '<div class="bq '+cc+' '+bd+'">'+c.bq+'</div>'+
       '<div class="bsrc">\uD83D\uDCD6 <b>'+c.bs+'</b></div></div>'+
-      '<div class="crnr br '+cc+'">'+(isJ?'<div class="sy">'+s.s+'</div>':'<div class="rk">'+c.r+'</div><div class="sy">'+s.s+'</div>')+'</div>';
+      '<div class="crnr br '+cc+'">'+corner+'</div>';
   }
 }
 
 function mkPeekCard(s,c){
-  var isJ=(s.id==="jokers");
-  var cc="c"+s.c, bg="bg"+s.c;
-  return '<div style="width:100%;height:100%;background:#fff;border-radius:10px;'+
-    'box-shadow:0 4px 20px rgba(0,0,0,.12);border:1px solid rgba(0,0,0,.07);overflow:hidden;position:relative;" class="'+bg+'">'+
-    '<div class="crnr tl '+cc+'">'+(isJ?'<div class="sy">'+s.s+'</div>':'<div class="rk">'+c.r+'</div><div class="sy">'+s.s+'</div>')+'</div>'+
+  var v=vc(s,c);
+  return '<div class="peek-card bg'+v+'">'+
+    '<div class="crnr tl c'+v+'">'+mkCorner(s,c)+'</div>'+
     '</div>';
 }
 
 function draw(){
-  var s=suit(si), c=cur();
+  var s=suit(si), c=cur(), v=vc(s,c);
   var f=document.getElementById("cFront"), b=document.getElementById("cBack");
-  f.className="card-face front-f bg"+s.c;
-  b.className="card-face back-f bg"+s.c;
+  f.className="card-face front-f bg"+v;
+  b.className="card-face back-f bg"+v;
   f.innerHTML=mkFace(s,c,true);
   b.innerHTML=mkFace(s,c,false);
   if(flip){document.getElementById("cInner").classList.remove("flipped");flip=false;}
@@ -557,66 +509,52 @@ function drawDots(){
 
 function drawLabel(){
   var s=suit(si), c=cur();
-  document.getElementById("posLbl").textContent=s.s+" "+c.r+"  "+(ci[si]+1)+"/"+cards(si).length;
+  document.getElementById("posLbl").textContent=s.s+" "+(ci[si]+1)+"/"+cards(si).length;
 }
 
 function drawPeeks(){
-  var top=document.getElementById("peekTop"), bot=document.getElementById("peekBot");
-  if(si>0){
-    var ps=suit(si-1), pc=cards(si-1)[ci[si-1]];
-    top.innerHTML='<div class="peek-strip" onclick="prevSuit()">'+
-      '<span class="ps-lbl c'+ps.c+'">'+ps.s+' '+pc.r+'</span>'+
-      '<span class="ps-title">'+pc.ft+'</span></div>';
-    top.style.display="flex";
-  } else {top.innerHTML="";top.style.display="none";}
-  if(si<4){
-    var ns=suit(si+1), nc=cards(si+1)[ci[si+1]];
-    bot.innerHTML='<div class="peek-strip" onclick="nextSuit()">'+
-      '<span class="ps-lbl c'+ns.c+'">'+ns.s+' '+nc.r+'</span>'+
-      '<span class="ps-title">'+nc.ft+'</span></div>';
-    bot.style.display="flex";
-  } else {bot.innerHTML="";bot.style.display="none";}
-}
-
-function drawSidePeeks(){
   var cs=cards(si), s=suit(si);
-  var l=document.getElementById("slotL"), r=document.getElementById("slotR");
-  if(ci[si]>0){
-    l.innerHTML=mkPeekCard(s, cs[ci[si]-1]);
-    l.style.visibility="visible"; l.style.cursor="pointer";
-  } else {l.innerHTML="";l.style.visibility="hidden";}
-  if(ci[si]<cs.length-1){
-    r.innerHTML=mkPeekCard(s, cs[ci[si]+1]);
-    r.style.visibility="visible"; r.style.cursor="pointer";
-  } else {r.innerHTML="";r.style.visibility="hidden";}
+  var pgTp=document.getElementById("pgTp");
+  var pgBt=document.getElementById("pgBt");
+  var pgLf=document.getElementById("pgLf");
+  var pgRt=document.getElementById("pgRt");
+  pgTp.innerHTML=(si>0)      ?mkPeekCard(suit(si-1),cards(si-1)[ci[si-1]]):"";
+  pgBt.innerHTML=(si<4)      ?mkPeekCard(suit(si+1),cards(si+1)[ci[si+1]]):"";
+  pgLf.innerHTML=(ci[si]>0)  ?mkPeekCard(s,cs[ci[si]-1]):"";
+  pgRt.innerHTML=(ci[si]<cs.length-1)?mkPeekCard(s,cs[ci[si]+1]):"";
+  // Disable pointer-events on empty peeks
+  pgTp.style.pointerEvents=(si>0)?"":"none";
+  pgBt.style.pointerEvents=(si<4)?"":"none";
+  pgLf.style.pointerEvents=(ci[si]>0)?"":"none";
+  pgRt.style.pointerEvents=(ci[si]<cs.length-1)?"":"none";
 }
 
 // ════ NAVIGATION ════
-function nextCard(){if(busy)return;if(ci[si]<cards(si).length-1){ci[si]++;render("L");}}
-function prevCard(){if(busy)return;if(ci[si]>0){ci[si]--;render("R");}}
-function nextSuit(){if(busy)return;if(si<4){si++;render("U");}}
-function prevSuit(){if(busy)return;if(si>0){si--;render("D");}}
+function nextCard(){if(busy||ci[si]>=cards(si).length-1)return;ci[si]++;render("L");}
+function prevCard(){if(busy||ci[si]<=0)return;ci[si]--;render("R");}
+function nextSuit(){if(busy||si>=4)return;si++;render("U");}
+function prevSuit(){if(busy||si<=0)return;si--;render("D");}
 function jumpSuit(i){if(i===si)return;var d=i>si?"U":"D";si=i;render(d);}
 function jumpCard(i){if(i===ci[si])return;var d=i>ci[si]?"L":"R";ci[si]=i;render(d);}
 function doFlip(){flip=!flip;document.getElementById("cInner").classList.toggle("flipped",flip);}
 
 // ════ TOUCH ════
 var tx=0,ty=0,inTouch=false,touchFlipped=false;
-var ma=document.getElementById("main");
-ma.addEventListener("touchstart",function(e){
+document.addEventListener("touchstart",function(e){
+  if(!document.getElementById("viewer").classList.contains("active"))return;
   inTouch=true;tx=e.touches[0].clientX;ty=e.touches[0].clientY;
 },{passive:true});
-ma.addEventListener("touchend",function(e){
+document.addEventListener("touchend",function(e){
+  if(!document.getElementById("viewer").classList.contains("active"))return;
   if(!inTouch)return;inTouch=false;
   var dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
   var ax=Math.abs(dx), ay=Math.abs(dy);
   if(ax<14&&ay<14){
-    // tap on main card only
-    var t=e.target;
-    while(t&&t!==ma){if(t.id==="slotC")break;t=t.parentNode;}
-    if(t&&t.id==="slotC"){
+    var ct=document.getElementById("pgCt");
+    var node=e.target,inside=false;
+    while(node&&node!==document.body){if(node===ct){inside=true;break;}node=node.parentNode;}
+    if(inside){
       doFlip();
-      // 标记此次翻牌来自 touch，防止浏览器随后合成的 click 事件再次触发
       touchFlipped=true;
       setTimeout(function(){touchFlipped=false;},600);
     }
@@ -626,13 +564,12 @@ ma.addEventListener("touchend",function(e){
   else if(ay>ax&&ay>40){dy<0?nextSuit():prevSuit();}
 },{passive:true});
 
-// 桌面鼠标点击翻牌（touch 已处理时跳过，避免双重触发）
-document.getElementById("slotC").addEventListener("click",function(){
+document.getElementById("pgCt").addEventListener("click",function(){
   if(touchFlipped)return;
   doFlip();
 });
 
-// keyboard
+// ════ KEYBOARD ════
 document.addEventListener("keydown",function(e){
   if(!document.getElementById("viewer").classList.contains("active"))return;
   if(e.key==="ArrowRight")nextCard();
@@ -640,6 +577,7 @@ document.addEventListener("keydown",function(e){
   else if(e.key==="ArrowDown")nextSuit();
   else if(e.key==="ArrowUp")prevSuit();
   else if(e.key===" "||e.key==="Enter"){e.preventDefault();doFlip();}
+  else if(e.key==="Escape")closeViewer();
 });
 
 // ════ FAN ANIMATION ════
@@ -694,8 +632,7 @@ function openViewer(){
     si=0;ci=[0,0,0,0,0];flip=false;busy=false;
     document.getElementById("preview").classList.remove("fanning");
     document.getElementById("preview").classList.add("hidden");
-    var v=document.getElementById("viewer");
-    v.classList.add("active");
+    document.getElementById("viewer").classList.add("active");
     render(null);
     btn.disabled=false;
   });
@@ -703,10 +640,11 @@ function openViewer(){
 function closeViewer(){
   document.getElementById("viewer").classList.remove("active");
   document.getElementById("preview").classList.remove("hidden");
+  document.querySelector(".deck-btn").disabled=false;
 }
 
 window.addEventListener("resize",function(){
-  if(document.getElementById("viewer").classList.contains("active")) calcSize();
+  if(document.getElementById("viewer").classList.contains("active"))calcSize();
 });
 </script>
 </body>
