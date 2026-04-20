@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>达利欧《原则》54张牌</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  background:#1b2838;
+}
+
+/* ═══════ LAYOUT ═══════ */
+#app{
+  display:flex;flex-direction:column;
+  height:100vh;width:100vw;overflow:hidden;
+}
+
+/* ─── HEADER (always visible) ─── */
+#header{
+  flex-shrink:0;
+  background:linear-gradient(160deg,#0d1b2a 0%,#1b2838 70%,#263850 100%);
+  color:#fff;
+  padding:12px 20px 12px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.hd-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.hd-row1{display:flex;align-items:baseline;gap:10px;}
+.hd-title{font-size:18px;font-weight:700;letter-spacing:2px;}
+.hd-title em{font-style:normal;color:#f0c060;}
+.hd-sub{font-size:11px;opacity:.65;letter-spacing:.5px;}
+.back-btn{
+  font-size:12px;color:rgba(255,255,255,.65);
+  text-decoration:none;padding:5px 12px;
+  border:1px solid rgba(255,255,255,.2);border-radius:20px;
+  white-space:nowrap;transition:all .2s;flex-shrink:0;
+}
+.back-btn:hover{color:#fff;border-color:rgba(255,255,255,.5);}
+.hd-row2{font-size:12px;opacity:.72;line-height:1.7;margin-bottom:6px;}
+.hd-legend{display:flex;flex-wrap:wrap;gap:6px;}
+.legend-pill{
+  font-size:11px;padding:3px 10px;
+  border:1px solid rgba(255,255,255,.2);border-radius:20px;opacity:.8;
+}
+
+/* ─── MAIN AREA ─── */
+#main{
+  flex:1;position:relative;overflow:hidden;
+  background:#f0ebe0;
+}
+#preview,#viewer{
+  position:absolute;inset:0;
+  transition:opacity .3s ease,transform .3s ease;
+}
+
+/* ─── PREVIEW ─── */
+#preview{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:28px;background:#f0ebe0;
+}
+#preview.hidden{opacity:0;pointer-events:none;transform:scale(.96);}
+
+.deck-btn{
+  background:none;border:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  padding:0;-webkit-appearance:none;
+}
+.iso-wrap{perspective:900px;width:300px;height:270px;
+  display:flex;align-items:center;justify-content:center;}
+.deck-iso{
+  position:relative;width:148px;height:228px;
+  transform:rotateX(22deg) rotateY(-22deg) rotateZ(2deg);
+  transform-style:preserve-3d;
+  transition:transform .4s ease;pointer-events:none;
+}
+.deck-btn:hover .deck-iso{transform:rotateX(16deg) rotateY(-26deg) rotateZ(2deg) scale(1.05);}
+.deck-btn:active .deck-iso{transform:rotateX(25deg) rotateY(-18deg) rotateZ(2deg) scale(.97);}
+.top-card{
+  position:absolute;inset:0;
+  background:#080808;border-radius:9px;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 8px 28px rgba(0,0,0,.45);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:10;overflow:hidden;padding:10px 10px 8px;
+}
+.bc-en{font-size:17px;font-weight:900;color:#fff;letter-spacing:3px;line-height:1;text-align:center;}
+.bc-rule{width:90%;height:2px;background:#e74c3c;margin:9px 0;}
+.bc-cn{font-size:23px;font-weight:700;color:#fff;letter-spacing:8px;text-align:center;}
+.bc-au{font-size:12px;color:#888;letter-spacing:3px;text-align:center;margin-top:4px;}
+.bc-hint{font-size:9px;color:#444;letter-spacing:2px;text-align:center;margin-top:12px;}
+.dl{position:absolute;border-radius:9px;border:1px solid rgba(0,0,0,.07);}
+.dl:nth-child(1){inset:0;transform:translate3d(4px,4px,-5px);background:#ececec;}
+.dl:nth-child(2){inset:0;transform:translate3d(8px,8px,-10px);background:#e6e6e6;}
+.dl:nth-child(3){inset:0;transform:translate3d(12px,12px,-15px);background:#e0e0e0;}
+.dl:nth-child(4){inset:0;transform:translate3d(16px,16px,-20px);background:#dadada;}
+.dl:nth-child(5){inset:0;transform:translate3d(20px,20px,-25px);background:#d4d4d4;}
+.dl:nth-child(6){inset:0;transform:translate3d(24px,24px,-30px);background:#cecece;}
+.dl:nth-child(7){inset:0;transform:translate3d(28px,28px,-35px);background:#c8c8c8;}
+
+.open-label{
+  background:#1b2838;color:#fff;
+  padding:14px 44px;border-radius:50px;
+  font-size:15px;letter-spacing:2px;margin-top:40px;
+  box-shadow:0 4px 20px rgba(0,0,0,.28);
+}
+
+/* ─── VIEWER ─── */
+#viewer{
+  display:flex;flex-direction:column;
+  background:#f0ebe0;
+  opacity:0;pointer-events:none;
+  transform:translateY(12px);
+}
+#viewer.active{opacity:1;pointer-events:all;transform:translateY(0);}
+
+/* suit tabs row */
+.v-top{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px 6px;
+}
+.suit-tabs{display:flex;gap:5px;}
+.stab{
+  padding:6px 13px;border-radius:20px;font-size:14px;font-weight:500;
+  border:none;cursor:pointer;background:rgba(0,0,0,.07);color:#666;
+  transition:all .2s;-webkit-appearance:none;
+}
+.stab.on-black{background:#1a1a1a;color:#fff;}
+.stab.on-red{background:#c0392b;color:#fff;}
+.stab.on-joker{background:#6c3483;color:#fff;}
+.close-x{background:none;border:none;font-size:20px;cursor:pointer;color:#888;padding:4px;}
+
+/* position indicator */
+.v-pos{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:2px 14px 6px;
+}
+.dots{display:flex;gap:4px;flex-wrap:wrap;max-width:240px;}
+.d{width:6px;height:6px;border-radius:50%;background:rgba(0,0,0,.18);cursor:pointer;transition:all .25s;}
+.d.on-black{background:#1a1a1a;width:18px;border-radius:3px;}
+.d.on-red{background:#c0392b;width:18px;border-radius:3px;}
+.d.on-joker{background:#6c3483;width:18px;border-radius:3px;}
+.pos-lbl{font-size:12px;color:#aaa;}
+
+/* peek suit strip */
+.peek-suit{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  height:46px;
+}
+.peek-strip{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#fff;border:1px solid rgba(0,0,0,.1);
+  padding:0 16px;height:38px;border-radius:8px;cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);opacity:.78;
+  transition:opacity .2s;
+  width:clamp(280px, 85vw, 460px);
+  max-width:calc(var(--cw) + 2*var(--pkw));
+}
+.peek-strip:active{opacity:1;}
+.ps-lbl{font-size:13px;font-weight:700;}
+.ps-title{font-size:12px;color:#888;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:220px;}
+
+/* hint text */
+.v-hint{
+  font-size:12px;color:#bbb;text-align:center;
+  padding:4px 0 8px;flex-shrink:0;letter-spacing:.5px;
+}
+
+/* ─── CARD ROW ─── */
+/* CSS variables set by JS on :root */
+:root{--cw:220px;--ch:339px;--pkw:90px;}
+.card-row-wrap{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.card-row{
+  /* exact clip width = card + 2 peeks */
+  width:calc(var(--cw) + 2*var(--pkw));
+  max-width:100%;
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.card-track{
+  display:flex;align-items:center;
+  gap:10px;flex-shrink:0;
+  transition:transform .32s cubic-bezier(.4,0,.2,1);
+}
+/* 3 slots */
+.card-slot{flex-shrink:0;width:var(--cw);height:var(--ch);position:relative;}
+.card-slot.peek-l,.card-slot.peek-r{
+  cursor:pointer;
+  border-radius:10px;overflow:hidden;
+}
+
+/* ─── THE CARD ─── */
+.card-stage{width:var(--cw);height:var(--ch);perspective:1000px;}
+.card-inner{
+  position:relative;width:100%;height:100%;
+  transform-style:preserve-3d;
+  transition:transform .56s cubic-bezier(.4,0,.2,1);
+  cursor:pointer;
+}
+.card-inner.flipped{transform:rotateY(180deg);}
+.card-face{
+  position:absolute;inset:0;
+  background:#fff;border-radius:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,.16),0 2px 8px rgba(0,0,0,.08);
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border:1px solid rgba(0,0,0,.07);
+  overflow:hidden;display:flex;flex-direction:column;
+}
+.card-face.back-f{transform:rotateY(180deg);}
+
+/* card interior */
+.crnr{
+  position:absolute;display:flex;flex-direction:column;align-items:center;
+  line-height:1.15;padding:9px 10px;
+}
+.crnr.tl{top:0;left:0;}
+.crnr.br{bottom:0;right:0;transform:rotate(180deg);}
+.crnr .rk{font-size:24px;font-weight:800;}
+.crnr .sy{font-size:19px;}
+
+.card-body{
+  flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:10px 20px;margin:56px 0;
+}
+.c-badge{
+  display:inline-flex;align-self:flex-start;
+  font-size:11px;font-weight:700;letter-spacing:1px;
+  padding:3px 10px;border-radius:12px;margin-bottom:10px;
+  background:#6c3483;color:#fff;
+}
+.c-title{font-size:20px;font-weight:800;line-height:1.5;margin-bottom:12px;}
+.c-div{width:32px;height:2.5px;border-radius:2px;margin-bottom:12px;opacity:.35;}
+.c-body{font-size:15px;line-height:1.95;color:#3a3a3a;}
+
+/* back face */
+.back-body{
+  flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:10px 20px;margin:56px 0;
+}
+.bq{
+  font-size:15px;line-height:2;
+  border-left:3.5px solid;padding-left:12px;
+  margin-bottom:16px;color:#2c2c2c;
+  font-style:italic;word-break:break-all;
+}
+.bsrc{font-size:13px;color:#999;line-height:1.7;}
+.bsrc b{color:#666;}
+
+/* ─── COLOR UTILS ─── */
+.cblack{color:#1a1a1a;}.cred{color:#c0392b;}.cjoker{color:#6c3483;}
+.bgblack{background:rgba(26,26,26,.04);}.bgred{background:rgba(192,57,43,.04);}.bgjoker{background:rgba(108,52,131,.04);}
+.bdblack{border-color:#1a1a1a;}.bdred{border-color:#c0392b;}.bdjoker{border-color:#6c3483;}
+.dvblack{background:#1a1a1a;}.dvred{background:#c0392b;}.dvjoker{background:#6c3483;}
+
+/* ─── SLIDE ANIM ─── */
+@keyframes sL{0%{opacity:1;transform:translateX(0)}45%{opacity:0;transform:translateX(-60px)}55%{opacity:0;transform:translateX(75px)}100%{opacity:1;transform:translateX(0)}}
+@keyframes sR{0%{opacity:1;transform:translateX(0)}45%{opacity:0;transform:translateX(60px)}55%{opacity:0;transform:translateX(-75px)}100%{opacity:1;transform:translateX(0)}}
+@keyframes sU{0%{opacity:1;transform:translateY(0)}45%{opacity:0;transform:translateY(-50px)}55%{opacity:0;transform:translateY(65px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes sD{0%{opacity:1;transform:translateY(0)}45%{opacity:0;transform:translateY(50px)}55%{opacity:0;transform:translateY(-65px)}100%{opacity:1;transform:translateY(0)}}
+.as-L .card-inner{animation:sL .36s ease forwards;}
+.as-R .card-inner{animation:sR .36s ease forwards;}
+.as-U .card-inner{animation:sU .36s ease forwards;}
+.as-D .card-inner{animation:sD .36s ease forwards;}
+
+/* ─── RESPONSIVE ─── */
+@media(min-width:600px){
+  .hd-row2{font-size:13px;}
+  .c-title{font-size:22px;}
+  .c-body{font-size:16px;}
+  .bq{font-size:16px;}
+  .bsrc{font-size:14px;}
+  .crnr .rk{font-size:26px;}
+  .crnr .sy{font-size:21px;}
+}
+@media(max-height:620px){
+  #header{padding:8px 16px 8px;}
+  .hd-row2{display:none;}
+  .v-top{padding:5px 12px 3px;}
+  .v-pos{padding:0 12px 3px;}
+  .peek-suit{height:34px;}
+  .peek-strip{height:28px;}
+  .v-hint{padding:2px 0 4px;}
+}
+
+/* ─── FAN ANIMATION ─── */
+@keyframes deckLaunch{
+  0%{transform:rotateX(22deg) rotateY(-22deg) rotateZ(2deg) scale(1);}
+  40%{transform:rotateX(12deg) rotateY(-28deg) rotateZ(-2deg) scale(1.08);}
+  100%{transform:rotateX(5deg) rotateY(0deg) rotateZ(0deg) scale(0.05);opacity:0;}
+}
+.deck-iso.launching{
+  animation:deckLaunch .55s cubic-bezier(.4,0,.6,1) forwards;
+  pointer-events:none;
+}
+@keyframes previewFade{to{opacity:0;pointer-events:none;}}
+#preview.fanning{animation:previewFade .25s ease forwards .45s;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ═══ HEADER ═══ -->
+  <header id="header">
+    <div class="hd-top">
+      <div class="hd-row1">
+        <span class="hd-title">达利欧《原则》<em>54张牌</em></span>
+        <span class="hd-sub">正面提炼 · 背面原文</span>
+      </div>
+      <a class="back-btn" href="https://dongtao2026.github.io/research-lab/index.html">← 返回数据库</a>
+    </div>
+    <div class="hd-row2">将瑞·达利欧的核心思想提炼为54张扑克牌，点击卡片翻面可看原文出处。</div>
+    <div class="hd-legend">
+      <span class="legend-pill">🃏 王·元原则</span>
+      <span class="legend-pill">♠ 黑桃·思维</span>
+      <span class="legend-pill">♥ 红心·成长</span>
+      <span class="legend-pill">♣ 梅花·组织</span>
+      <span class="legend-pill">♦ 方块·决策</span>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN ═══ -->
+  <div id="main">
+
+    <!-- PREVIEW -->
+    <div id="preview">
+      <button class="deck-btn" onclick="openViewer()">
+        <div class="iso-wrap">
+          <div class="deck-iso">
+            <div class="dl"></div><div class="dl"></div><div class="dl"></div>
+            <div class="dl"></div><div class="dl"></div><div class="dl"></div><div class="dl"></div>
+            <div class="top-card">
+              <div class="bc-en">PRINCIPLES</div>
+              <div class="bc-rule"></div>
+              <div class="bc-cn">原　则</div>
+              <div class="bc-rule"></div>
+              <div class="bc-au">RAY DALIO</div>
+              <div class="bc-hint">54 张 · 点击展开</div>
+            </div>
+          </div>
+        </div>
+        <div class="open-label">展 开 牌 组</div>
+      </button>
+    </div>
+
+    <!-- VIEWER -->
+    <div id="viewer">
+      <div class="v-top">
+        <div class="suit-tabs" id="sTabs"></div>
+        <button class="close-x" onclick="closeViewer()">✕</button>
+      </div>
+      <div class="v-pos">
+        <div class="dots" id="dots"></div>
+        <div class="pos-lbl" id="posLbl"></div>
+      </div>
+      <div class="peek-suit" id="peekTop"></div>
+      <div class="card-row-wrap">
+        <div class="card-row" id="cardRow">
+          <div class="card-track" id="cardTrack">
+            <div class="card-slot peek-l" id="slotL" onclick="prevCard()"></div>
+            <div class="card-slot" id="slotC">
+              <div class="card-stage">
+                <div class="card-inner" id="cInner">
+                  <div class="card-face front-f" id="cFront"></div>
+                  <div class="card-face back-f" id="cBack"></div>
+                </div>
+              </div>
+            </div>
+            <div class="card-slot peek-r" id="slotR" onclick="nextCard()"></div>
+          </div>
+        </div>
+      </div>
+      <div class="peek-suit" id="peekBot"></div>
+      <div class="v-hint" id="vHint">← → 翻牌 &nbsp;|&nbsp; ↑ ↓ 换花色 &nbsp;|&nbsp; 点击翻面</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ════ DATA ════
+var SUITS=[
+  {id:"jokers",n:"王",s:"🃏",c:"joker"},
+  {id:"spades",n:"♠",s:"♠",c:"black"},
+  {id:"hearts",n:"♥",s:"♥",c:"red"},
+  {id:"clubs",n:"♣",s:"♣",c:"black"},
+  {id:"diamonds",n:"♦",s:"♦",c:"red"}
+];
+var SORD=["jokers","spades","hearts","clubs","diamonds"];
+
+var DATA={
+jokers:[
+  {r:"大王",ft:"拥抱现实，按现实行事",fc:"真相是一切良好结果的根本依据。不管现实多么令你不舒服，拒绝现实只会让你付出代价。",bq:"\u201c真相（或者更精确地说，对现实的准确理解）是任何良好结果的根本依据。\u201d",bs:"第二部分·生活原则·第1章·1.2节"},
+  {r:"小王",ft:"极度求真 + 极度透明",fc:"这是达利欧整个思想体系的双引擎。没有这两条，一切原则都是空谈。",bq:"\u201c在公司里无处不在的创意择优 = 极度求真 + 极度透明 + 可信度加权的决策。\u201d",bs:"第三部分·工作原则·极度求真和极度透明"}
+],
+spades:[
+  {r:"A",ft:"把生活想象成一部机器",fc:"不管是经济、市场还是人，都像机器一样运转，理解它的零件和因果关系，你就能预测和干预结果。",bq:"\u201c考察影响你的那些事物的规律，从而理解其背后的因果关系，并学习有效应对这些事物的原则。\u201d",bs:"第二部分·生活原则·导言"},
+  {r:"K",ft:"用「俯瞰视角」看自己",fc:"大多数人只会从内部感受自己，真正的智慧是能跳出来，像管理者看机器一样看自己的行为和决策。",bq:"\u201c区别作为机器设计者的你和作为机器中工作者的你……大多数人一直都把自己看作机器中的工作者。\u201d",bs:"第二部分·生活原则·第1章·1.10节c"},
+  {r:"Q",ft:"考虑后续与再后续的结果",fc:"好吃的食物、舒适的选择、逃避的决定，直接结果令人愉悦，后续结果才是你真正要面对的现实。",bq:"\u201c直接结果和后续结果的值得追求性通常是相反的……直接结果经常是诱惑，导致我们失去真正想要的东西。\u201d",bs:"第二部分·生活原则·第1章·1.8节"},
+  {r:"J",ft:"不要混淆愿望与现实",fc:"\u300c我希望如此\u300d不等于\u300c事实如此\u300d。人会无意识地筛选信息，让证据符合自己的欲望，而不是相反。",bq:"\u201c当真相与愿望不符时，大多数人抗拒真相。理解和应对不好的东西才是更重要的。\u201d",bs:"第二部分·生活原则·第1章·1.2节"},
+  {r:"10",ft:"弱点的暴露是礼物",fc:"大多数人把暴露弱点视为羞耻，但只有直面弱点才能绕过它或克服它。掩盖弱点只会让它反复伤害你。",bq:"\u201c把缺点摆上桌面将帮助你戒掉坏习惯，养成好习惯。\u201d",bs:"第二部分·生活原则·第1章·1.7节b"},
+  {r:"9",ft:"进化是宇宙中最强大的力量",fc:"这条法则适用于生物、企业、经济体、国家，当然也适用于个人。停滞不是稳定，是慢性死亡。",bq:"\u201c进化是宇宙中最强大的力量，是唯一永恒的东西，是一切的驱动力……不进化就死亡。\u201d",bs:"第二部分·生活原则·第1章·1.4节"},
+  {r:"8",ft:"痛苦 + 反思 = 进步",fc:"每一次遭遇失败、尴尬或挫折，都是一个学习节点。逃避痛苦，你只是在浪费人生最贵的学费。",bq:"\u201c如果你能养成一种习惯，面对精神痛苦时能够自动地反思痛苦而不是躲避痛苦，你将能够快速地学习和进化。\u201d",bs:"第二部分·生活原则·第1章·1.7节"},
+  {r:"7",ft:"自上而下与自下而上相结合",fc:"只看宏观会脱离现实，只看细节会迷失方向。最好的思维方式能在两个层次之间自由切换。",bq:"\u201c自上而下地观察事物，是在宏观普适法则背景之下理解我们自身和现实规律的最佳途径……想要准确理解世界，这两种角度你都需要。\u201d",bs:"第二部分·生活原则·第1章·1.4节"},
+  {r:"6",ft:"所有人都有思维盲点",fc:"盲点的本质是你意识不到自己有盲点。一个人永远无法单靠自己发现所有盲点，这是所有人的共同局限。",bq:"\u201c没有识别规律和综合分析能力的人，不知道识别规律和综合分析是怎么回事，就像一个色盲不知道能辨色是怎么回事一样。\u201d",bs:"第二部分·生活原则·第3章·3.1节c"},
+  {r:"5",ft:"不要让自我意识成为障碍",fc:"\u300c想要正确\u300d的渴望，会战胜\u300c找到真相\u300d的需要。大脑中较低层次的自我天然需要被认可，但你可以学会管理它。",bq:"\u201c你绝不能允许想要自己正确的需求压倒找出真相的需求。\u201d",bs:"第二部分·生活原则·第3章·3.1节b"},
+  {r:"4",ft:"历史总在重演",fc:"市场崩溃、货币贬值、债务危机——理解历史中的因果模式，比任何预测模型都有用。",bq:"\u201c这只是个开始，后来我看到类似的事情不断发生，这让我发现，几乎所有的事情都是情景再现。\u201d",bs:"第一部分·我的历程·第2章"},
+  {r:"3",ft:"世界观是一套假设，随时准备被证伪",fc:"不断用现实检验你的世界观，而不是用世界观筛选现实。能自我更新的认知系统才是真正强大的。",bq:"\u201c我犯下的代价惨痛的错误使我改变了看问题的角度，从\u300c我知道我是对的\u300d变成了\u300c我怎么知道我是对的\u300d。\u201d",bs:"第二部分·生活原则·导言"},
+  {r:"2",ft:"接受「不知道」是一种知识",fc:"\u300c我不知道\u300d是最诚实、也最强大的起点。假装确定只会让你错过更好的路径。",bq:"\u201c头脑极度开放的人知道，如果你不在一种不知道的状态下探索一段时间，你就不可能做出很好的决策。\u201d",bs:"第二部分·生活原则·第3章·3.2节a"}
+],
+hearts:[
+  {r:"A",ft:"独立思考，自己决定",fc:"最重要的第一步：搞清楚你自己想要什么。不是别人期望你想要什么，不是社会默认你应该要什么。",bq:"\u201c独立思考并决定：你想要什么；事实是什么；面对事实，你如何实现自己的愿望……\u201d",bs:"第二部分·生活原则·导言"},
+  {r:"K",ft:"设定明确的目标",fc:"不清晰的目标是所有执行失败的根源。你可以得到你想要的任何东西，但不可能同时得到所有东西。",bq:"\u201c排列优先顺序：尽管你几乎可以得到你想要的任何东西，但你不可能得到你想要的所有东西……\u201d",bs:"第二部分·生活原则·第2章·2.1节"},
+  {r:"Q",ft:"区分症状与根本原因",fc:"\u300c我睡不好\u300d不是问题，是症状。只有诊断到根本原因，解决方案才能真正有效。",bq:"\u201c区分直接原因和根本原因……只有消除根本原因才能真正解决问题。\u201d",bs:"第二部分·生活原则·第2章·2.3节b"},
+  {r:"J",ft:"设计系统来克服弱点",fc:"不要靠意志力战胜弱点，要设计绕过弱点的系统。承认弱点，然后系统化地绕过它。",bq:"\u201c承认缺点的同时努力想办法绕过去，是最容易、通常也最可行的道路，但这是走的人最少的路。\u201d",bs:"第二部分·生活原则·第1章·1.10节e"},
+  {r:"10",ft:"了解自己的思维方式",fc:"内向/外向、直觉/感知、大图景/细节导向——这些不是性格好坏，而是天然的认知差异。",bq:"\u201c因为不同人的大脑构造不同，所以我们体验现实的方式千差万别。\u201d",bs:"第二部分·生活原则·第4章·导言"},
+  {r:"9",ft:"勇气是原则的燃料",fc:"知道什么是对的，和真正按对的去做，中间隔着勇气。极度透明、直面弱点，都需要克服本能的恐惧。",bq:"\u201c如果你能鼓起勇气这么做，你将会让自己的生命发挥最大的价值。\u201d",bs:"第二部分·生活原则·导言"},
+  {r:"8",ft:"对自己极度诚实",fc:"自欺是所有失败的隐形根源。我们擅长为自己的错误找借口，打破这个模式需要一种罕见的品质：对自己诚实。",bq:"\u201c大多数人犯下的最大错误是不客观看待自己以及其他人，这导致他们一次次地栽在自己或其他人的弱点上。\u201d",bs:"第二部分·生活原则·第1章·1.10节d"},
+  {r:"7",ft:"用五步流程推进一切目标",fc:"目标→问题→诊断→方案→执行，循环不止。大多数人之所以失败，是因为跳步骤、混步骤，或在某一步上有盲点。",bq:"\u201c这五步加起来构成一个循环……你需要按顺序完成每一步，并从头再来一遍。\u201d",bs:"第二部分·生活原则·第2章·导言"},
+  {r:"6",ft:"不要把任务和目标混淆",fc:"忙碌\u2260进步，执行力\u2260战略力。任务是实现目标的手段，不是目标本身。",bq:"\u201c任务、方案和目标是不同的，不要将其混淆……良好工作习惯的重要性常被大大低估。\u201d",bs:"第二部分·生活原则·第2章·2.5节"},
+  {r:"5",ft:"失败是数据",fc:"成功的人和失败的人都会犯错，区别在于成功的人从错误中汲取数据，而失败的人逃避或否认错误。",bq:"\u201c正确地失败，是指能够在经历痛苦的失败的过程中吸取重要的教训。\u201d",bs:"第一部分·我的历程·导言"},
+  {r:"4",ft:"头脑开放，但要有自己的判断",fc:"真正的头脑开放是：认真听取不同意见，充分考虑后，做出自己的判断。盲从和固执都是开放的反面。",bq:"\u201c你既要头脑开放也要坚定：你既应该考虑各种相互冲突的可能性，也应根据了解到的情况迅速调整想法。\u201d",bs:"第二部分·生活原则·第3章·3.3节"},
+  {r:"3",ft:"伟大的期望创造伟大的能力",fc:"只对自己设定确定能实现的目标，是一种自我设限。当你设定更高的目标并真诚投入，你会发现自己能达到原本想象不到的高度。",bq:"\u201c谨记伟大的期望创造伟大的能力。如果你把目标只限定为明知自己能实现的东西，你的自我要求就太低了。\u201d",bs:"第二部分·生活原则·第2章·2.1节f"},
+  {r:"2",ft:"有意义的工作 + 有意义的关系 = 美好人生",fc:"达利欧的幸福公式不是财富，而是：做让你真正投入的事，和真正关心你的人在一起。",bq:"\u201c有意义的工作和有意义的人际关系都是我的主要目标，赚钱只是其附带结果。\u201d",bs:"第一部分·我的历程·第2章"}
+],
+clubs:[
+  {r:"A",ft:"创意择优：让最好的想法赢",fc:"创意择优的核心是：给每个人发言权，按照可信度加权，让最优的观点脱颖而出，而不是靠权威压制讨论。",bq:"\u201c我需要营造一种氛围，让每个人都有权利和责任提出自己的看法，并公开捍卫自己所认为的最佳方案。\u201d",bs:"第三部分·工作原则·创意择优"},
+  {r:"K",ft:"建立可以说真话的文化",fc:"最贵的组织成本，是没人敢说真话。建立鼓励异见和坏消息的文化，比任何激励机制都重要。",bq:"\u201c在桥水，批评是受到欢迎和鼓励的……在创意择优讨论中，开诚布公是一种责任。\u201d",bs:"第三部分·工作原则·第1章"},
+  {r:"Q",ft:"让热情与工作合二为一",fc:"当你把工作看成要完成的使命，你的创造力、韧性和投入程度都会发生质的变化。这不只是励志话，而是一种实际的竞争优势。",bq:"\u201c如果有人把工作当成一场燃烧激情、完成使命的游戏，那么工作原则就是为了这样的人而写的。\u201d",bs:"第三部分·工作原则·工作原则概要"},
+  {r:"J",ft:"不容忍不诚实",fc:"不诚实是组织的慢性毒药，必须零容忍。一次容忍的不诚实行为，会向整个团队发送信号：这里可以不诚实。",bq:"\u201c不诚实的人很危险，将其留在公司不是明智之举……为人要正直，也要求他人保持正直。\u201d",bs:"第三部分·工作原则·第1章"},
+  {r:"10",ft:"建立系统来处理分歧",fc:"分歧不是威胁，是信息——关键是有没有好的处理机制。没有分歧处理机制的组织，要么压制不同声音，要么陷入混乱。",bq:"\u201c具备清晰的流程，以便高效、明确地解决分歧是至关重要的……知道怎样求取共识和掌控分歧。\u201d",bs:"第三部分·工作原则·第4章"},
+  {r:"9",ft:"把问题搬到桌面上",fc:"被压制的问题不会消失，只会在暗处变大。大多数组织危机的根源，都是某个时间点上一个被压制的问题。",bq:"\u201c营造一种氛围，让每个人都有权了解合理之事，不可保持异议却缄默不语。\u201d",bs:"第三部分·工作原则·第1章·1.3节"},
+  {r:"8",ft:"优秀的管理者是园丁，不是工程师",fc:"工程师设计一个按预期运行的系统；园丁创造条件让生命自然生长。最好的管理者知道何时给空间、何时给支持。",bq:"\u201c同时具备高尚品格和出色能力的人则难得一遇，必须倍加珍惜和善待。\u201d",bs:"第三部分·工作原则·工作原则概要"},
+  {r:"7",ft:"配置要匹配：让合适的人做合适的事",fc:"把错误的人放在错误的位置，是所有人的损失。识别每个人真正擅长的事，而不是期待每个人都全面发展。",bq:"\u201c无论你要实现什么目标，让合适的人各司其职以支持你的目标，是成功的关键。\u201d",bs:"第三部分·工作原则·第8章"},
+  {r:"6",ft:"设计自我纠错的机器",fc:"最好的系统不依赖完美的人，而是能发现并纠正自身错误。关键不是避免所有错误，而是建立能快速发现并纠正错误的机制。",bq:"\u201c如果结果与目标不一致，要么是机器设计有毛病，要么是操作机器的人有问题。\u201d",bs:"第三部分·工作原则·工作原则概要"},
+  {r:"5",ft:"结果不好时，先问机器出了什么问题",fc:"当结果不达预期时，第一个问题应该是\u300c机器哪里出了问题\u300d，而不是立即追责某个人。",bq:"\u201c应对每个问题的手段都要服务于两种目的：修复这个问题，以及改进机器以防止同类问题再次出现。\u201d",bs:"第三部分·工作原则·第10章"},
+  {r:"4",ft:"高标准 + 高关爱 = 真正的团队文化",fc:"严厉之爱：既爱他，也对他严苛。对人太好而不敢要求是伪善；对人严苛而毫无关爱是冷漠。",bq:"\u201c我们之间越是相互关爱，对彼此的要求就越严格，从而业绩也就越好。\u201d",bs:"第三部分·工作原则·严厉之爱"},
+  {r:"3",ft:"透明度是信任的基础",fc:"秘密是组织的慢性毒药，透明是信任的加速器。透明不仅是道德选择，也是效率选择。",bq:"\u201c极度透明会减少办公室政治的危害，并降低不当行为的风险，因为不当行为更可能是在遮遮掩掩中产生的。\u201d",bs:"第三部分·工作原则·极度求真和极度透明"},
+  {r:"2",ft:"价值观一致比能力更重要",fc:"一个团队可以容纳各种技能的差异，但价值观的根本冲突无法靠绩效考核解决。",bq:"\u201c如果你发现自己无法调和相互间的主要分歧——尤其是价值观层面的——要考虑是否值得维持这种关系。\u201d",bs:"第三部分·工作原则·第4章"}
+],
+diamonds:[
+  {r:"A",ft:"用「可信度加权」做决策",fc:"好的决策系统不是少数服从多数，而是给最有资格的人更大权重。不同的人在不同领域的判断，可信度天差地别。",bq:"\u201c我懂得了如何对不同人的观点进行加权，从而选择最好的观点——用可信度加权的方式做决定。\u201d",bs:"第二部分·生活原则·导言"},
+  {r:"K",ft:"区分「决策者」与「建议者」",fc:"谁最终负责，谁就应该有最终决定权。让不承担后果的人做决策，是组织失灵的经典模式。",bq:"\u201c负最终责任的人应是对行为后果承担责任的人。\u201d",bs:"第三部分·工作原则·第7章"},
+  {r:"Q",ft:"在决策前永远问：最坏情况是什么？",fc:"不是悲观主义，而是系统性的防御思维。预见最坏情况并做好准备，你在任何结果下都不会被打垮。",bq:"\u201c为最坏的情况做准备，以尽量使其不那么糟糕。\u201d",bs:"第二部分·生活原则·第3章·3.4节"},
+  {r:"J",ft:"用「预期价值」替代「赢/输」思维",fc:"好的决策不保证好的结果，坏的决策也可能偶尔成功。长期看，按期望值思考比按单次结果思考更理性。",bq:"\u201c最好的选择是好处多于坏处的选择，不是毫无坏处的选择……知道什么时候不要去押注，和知道什么注值得押同样重要。\u201d",bs:"第二部分·生活原则·第5章"},
+  {r:"10",ft:"把原则写下来，建立决策系统",fc:"遇到重大情况时靠直觉反应，是最贵的决策方式。把你做决策的标准写下来，事后复盘，才能系统性进步。",bq:"\u201c在做任何决定时，仔细思考并写下我的决策标准，是价值无限的，于是我养成了这么做的习惯。\u201d",bs:"第二部分·生活原则·导言"},
+  {r:"9",ft:"慢思考系统优于快反应",fc:"面对压力和情绪冲击，大脑的动物性部分会接管控制权。好的决策者知道何时退后一步，让更高层次的自我做决定。",bq:"\u201c要认识到：影响好决策的最大威胁是有害的情绪；决策是一个两步流程（先了解后决定）。\u201d",bs:"第二部分·生活原则·第5章·5.1节"},
+  {r:"8",ft:"分散风险是免费的午餐",fc:"把不相关的押注组合在一起，整体风险可以大幅下降，而回报不必牺牲。这是达利欧在投资中发现的圣杯。",bq:"\u201c如果我能构建一个由良好的、互不相关的回报流构成的投资组合，我就能提供比单一押注风险低得多的整体投资组合。\u201d",bs:"第一部分·我的历程·第4章"},
+  {r:"7",ft:"不要把好结果误认为好决策",fc:"运气好不等于判断对，运气差不等于判断错。真正应该评估的是：在你做决定时，你的逻辑是否正确？",bq:"\u201c思考我们如何做出决定是有好处的，因为这将最终决定我们的生活质量。\u201d",bs:"第一部分·我的历程·导言"},
+  {r:"6",ft:"主动寻找反对意见",fc:"深思熟虑的意见分歧，是最宝贵的学习机会。主动找到最可信、与你意见相反的人，真诚地理解他们的逻辑。",bq:"\u201c在学到东西后改变想法的人是赢家，顽固拒绝学习的人是输家。\u201d",bs:"第二部分·生活原则·第3章·3.3节"},
+  {r:"5",ft:"高可信度信息 > 多数人意见",fc:"在复杂的专业领域，共识往往是错的。找到真正有资格发言的人，比统计大多数人怎么看更有价值。",bq:"\u201c可信的人有两个特征：曾反复地在相关领域成功找到答案；在被问责的情况下能对自己的观点做出很好的解释。\u201d",bs:"第二部分·生活原则·第3章·3.2节g"},
+  {r:"4",ft:"谨记「80/20法则」",fc:"找到那关键的20%，它决定了80%的结果。识别出最关键的驱动因素，比追求完整性更重要。",bq:"\u201c谨记80/20法则，并明白关键性的20%是什么……你不需要了解所有事情；你只需要足够多的信息以做出好决策。\u201d",bs:"第二部分·生活原则·第5章·5.3节"},
+  {r:"3",ft:"把大问题分解成小问题",fc:"所有看起来无从下手的大问题，都可以被拆解成一系列更小的、可操作的问题。分解是解决问题的第一步。",bq:"\u201c你应该找准问题，因为不同的问题有不同的解决方案……区分大问题和小问题。\u201d",bs:"第二部分·生活原则·第2章"},
+  {r:"2",ft:"记录你的决策逻辑，事后复盘",fc:"人的记忆会自动美化过去的判断。把当时的逻辑写下来，事后才能真正知道自己是对了还是只是运气好。",bq:"\u201c我发现我可以以算法的形式把我的决策标准表达出来……同时运行两套决策体系，发现计算机能比我做出更好的决策。\u201d",bs:"第二部分·生活原则·导言"}
+]
+};
+
+// ════ STATE ════
+var si=0,ci=[0,0,0,0,0],flip=false,busy=false;
+function suit(i){return SUITS[i];}
+function cards(i){return DATA[SORD[i]];}
+function cur(){return cards(si)[ci[si]];}
+
+// ════ RESPONSIVE SIZE ════
+function calcSize(){
+  var mainH=document.getElementById("main").offsetHeight;
+  var mainW=document.getElementById("main").offsetWidth;
+  // Chrome of viewer: vtop~48 + vpos~34 + peekSuit*2~92 + hint~36 = ~210px
+  var avH=mainH-210;
+  var maxH=Math.min(avH, 540);
+  var ch=Math.max(maxH,280);
+  var cw=Math.round(ch*57/88);
+  // peek width: larger, responsive
+  var pkw=Math.min(Math.round(mainW*0.2), 120);
+  pkw=Math.max(pkw,80);
+  document.documentElement.style.setProperty("--ch",ch+"px");
+  document.documentElement.style.setProperty("--cw",cw+"px");
+  document.documentElement.style.setProperty("--pkw",pkw+"px");
+}
+
+// ════ RENDER ════
+function render(anim){
+  if(anim){
+    busy=true;
+    var st=document.getElementById("slotC");
+    st.classList.add("as-"+anim);
+    setTimeout(function(){st.classList.remove("as-"+anim);busy=false;draw();},200);
+  } else { draw(); }
+  drawTabs(); drawDots(); drawLabel(); drawPeeks(); drawSidePeeks();
+}
+
+function mkFace(s,c,isFront){
+  var isJ=(s.id==="jokers");
+  var cc="c"+s.c, bg="bg"+s.c, bd="bd"+s.c, dv="dv"+s.c;
+  if(isFront){
+    return '<div class="crnr tl '+cc+'">'+(isJ?'<div class="sy">'+s.s+'</div>':'<div class="rk">'+c.r+'</div><div class="sy">'+s.s+'</div>')+
+      '</div><div class="card-body">'+(isJ?'<span class="c-badge">'+c.r+'</span>':'')+
+      '<div class="c-title '+cc+'">'+c.ft+'</div>'+
+      '<div class="c-div '+dv+'"></div>'+
+      '<div class="c-body">'+c.fc+'</div></div>'+
+      '<div class="crnr br '+cc+'">'+(isJ?'<div class="sy">'+s.s+'</div>':'<div class="rk">'+c.r+'</div><div class="sy">'+s.s+'</div>')+'</div>';
+  } else {
+    return '<div class="crnr tl '+cc+'">'+(isJ?'<div class="sy">'+s.s+'</div>':'<div class="rk">'+c.r+'</div><div class="sy">'+s.s+'</div>')+
+      '</div><div class="back-body">'+
+      '<div class="bq '+cc+' '+bd+'">'+c.bq+'</div>'+
+      '<div class="bsrc">\uD83D\uDCD6 <b>'+c.bs+'</b></div></div>'+
+      '<div class="crnr br '+cc+'">'+(isJ?'<div class="sy">'+s.s+'</div>':'<div class="rk">'+c.r+'</div><div class="sy">'+s.s+'</div>')+'</div>';
+  }
+}
+
+function mkPeekCard(s,c){
+  var isJ=(s.id==="jokers");
+  var cc="c"+s.c, bg="bg"+s.c;
+  return '<div style="width:100%;height:100%;background:#fff;border-radius:10px;'+
+    'box-shadow:0 4px 20px rgba(0,0,0,.12);border:1px solid rgba(0,0,0,.07);overflow:hidden;position:relative;" class="'+bg+'">'+
+    '<div class="crnr tl '+cc+'">'+(isJ?'<div class="sy">'+s.s+'</div>':'<div class="rk">'+c.r+'</div><div class="sy">'+s.s+'</div>')+'</div>'+
+    '</div>';
+}
+
+function draw(){
+  var s=suit(si), c=cur();
+  var f=document.getElementById("cFront"), b=document.getElementById("cBack");
+  f.className="card-face front-f bg"+s.c;
+  b.className="card-face back-f bg"+s.c;
+  f.innerHTML=mkFace(s,c,true);
+  b.innerHTML=mkFace(s,c,false);
+  if(flip){document.getElementById("cInner").classList.remove("flipped");flip=false;}
+}
+
+function drawTabs(){
+  var h="";
+  for(var i=0;i<5;i++){
+    var s=suit(i), on=(i===si)?" on-"+s.c:"";
+    h+='<button class="stab'+on+'" onclick="jumpSuit('+i+')">'+s.n+'</button>';
+  }
+  document.getElementById("sTabs").innerHTML=h;
+}
+
+function drawDots(){
+  var cs=cards(si), s=suit(si), h="";
+  for(var i=0;i<cs.length;i++){
+    var on=(i===ci[si])?" on-"+s.c:"";
+    h+='<div class="d'+on+'" onclick="jumpCard('+i+')"></div>';
+  }
+  document.getElementById("dots").innerHTML=h;
+}
+
+function drawLabel(){
+  var s=suit(si), c=cur();
+  document.getElementById("posLbl").textContent=s.s+" "+c.r+"  "+(ci[si]+1)+"/"+cards(si).length;
+}
+
+function drawPeeks(){
+  var top=document.getElementById("peekTop"), bot=document.getElementById("peekBot");
+  if(si>0){
+    var ps=suit(si-1), pc=cards(si-1)[ci[si-1]];
+    top.innerHTML='<div class="peek-strip" onclick="prevSuit()">'+
+      '<span class="ps-lbl c'+ps.c+'">'+ps.s+' '+pc.r+'</span>'+
+      '<span class="ps-title">'+pc.ft+'</span></div>';
+    top.style.display="flex";
+  } else {top.innerHTML="";top.style.display="none";}
+  if(si<4){
+    var ns=suit(si+1), nc=cards(si+1)[ci[si+1]];
+    bot.innerHTML='<div class="peek-strip" onclick="nextSuit()">'+
+      '<span class="ps-lbl c'+ns.c+'">'+ns.s+' '+nc.r+'</span>'+
+      '<span class="ps-title">'+nc.ft+'</span></div>';
+    bot.style.display="flex";
+  } else {bot.innerHTML="";bot.style.display="none";}
+}
+
+function drawSidePeeks(){
+  var cs=cards(si), s=suit(si);
+  var l=document.getElementById("slotL"), r=document.getElementById("slotR");
+  if(ci[si]>0){
+    l.innerHTML=mkPeekCard(s, cs[ci[si]-1]);
+    l.style.visibility="visible"; l.style.cursor="pointer";
+  } else {l.innerHTML="";l.style.visibility="hidden";}
+  if(ci[si]<cs.length-1){
+    r.innerHTML=mkPeekCard(s, cs[ci[si]+1]);
+    r.style.visibility="visible"; r.style.cursor="pointer";
+  } else {r.innerHTML="";r.style.visibility="hidden";}
+}
+
+// ════ NAVIGATION ════
+function nextCard(){if(busy)return;if(ci[si]<cards(si).length-1){ci[si]++;render("L");}}
+function prevCard(){if(busy)return;if(ci[si]>0){ci[si]--;render("R");}}
+function nextSuit(){if(busy)return;if(si<4){si++;render("U");}}
+function prevSuit(){if(busy)return;if(si>0){si--;render("D");}}
+function jumpSuit(i){if(i===si)return;var d=i>si?"U":"D";si=i;render(d);}
+function jumpCard(i){if(i===ci[si])return;var d=i>ci[si]?"L":"R";ci[si]=i;render(d);}
+function doFlip(){flip=!flip;document.getElementById("cInner").classList.toggle("flipped",flip);}
+
+// ════ TOUCH ════
+var tx=0,ty=0,inTouch=false;
+var ma=document.getElementById("main");
+ma.addEventListener("touchstart",function(e){
+  inTouch=true;tx=e.touches[0].clientX;ty=e.touches[0].clientY;
+},{passive:true});
+ma.addEventListener("touchend",function(e){
+  if(!inTouch)return;inTouch=false;
+  var dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+  var ax=Math.abs(dx), ay=Math.abs(dy);
+  if(ax<14&&ay<14){
+    // tap on main card only
+    var t=e.target;
+    while(t&&t!==ma){if(t.id==="slotC")break;t=t.parentNode;}
+    if(t&&t.id==="slotC")doFlip();
+    return;
+  }
+  if(ax>ay&&ax>40){dx<0?nextCard():prevCard();}
+  else if(ay>ax&&ay>40){dy<0?nextSuit():prevSuit();}
+},{passive:true});
+
+// mouse click for desktop flip
+document.getElementById("slotC").addEventListener("click",function(){
+  if(!inTouch)doFlip();
+});
+
+// keyboard
+document.addEventListener("keydown",function(e){
+  if(!document.getElementById("viewer").classList.contains("active"))return;
+  if(e.key==="ArrowRight")nextCard();
+  else if(e.key==="ArrowLeft")prevCard();
+  else if(e.key==="ArrowDown")nextSuit();
+  else if(e.key==="ArrowUp")prevSuit();
+  else if(e.key===" "||e.key==="Enter"){e.preventDefault();doFlip();}
+});
+
+// ════ FAN ANIMATION ════
+function fanOut(callback){
+  var iso=document.querySelector(".deck-iso");
+  var wrap=document.querySelector(".iso-wrap");
+  var rect=wrap.getBoundingClientRect();
+  var cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+  var ov=document.createElement("div");
+  ov.style.cssText="position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden;";
+  document.body.appendChild(ov);
+  var items=[
+    {s:"🃏",c:"#6c3483",tx:-220,ty:-160,r:-28,d:0},
+    {s:"♠",c:"#1a1a1a",tx:220,ty:-130,r:24,d:70},
+    {s:"♥",c:"#c0392b",tx:-200,ty:140,r:-22,d:140},
+    {s:"♣",c:"#1a1a1a",tx:200,ty:150,r:18,d:210},
+    {s:"♦",c:"#c0392b",tx:10,ty:-210,r:4,d:280}
+  ];
+  var w=52,h=80;
+  items.forEach(function(p){
+    var el=document.createElement("div");
+    el.style.cssText="position:absolute;width:"+w+"px;height:"+h+"px;"+
+      "left:"+(cx-w/2)+"px;top:"+(cy-h/2)+"px;"+
+      "background:#fff;border-radius:7px;border:1px solid rgba(0,0,0,.12);"+
+      "box-shadow:0 4px 14px rgba(0,0,0,.22);"+
+      "display:flex;align-items:center;justify-content:center;"+
+      "font-size:24px;color:"+p.c+";"+
+      "transition:transform .48s cubic-bezier(.2,0,.3,1) "+p.d+"ms,"+
+        "opacity .3s ease "+(p.d+220)+"ms;";
+    el.textContent=p.s;
+    ov.appendChild(el);
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      el.style.transform="translate("+p.tx+"px,"+p.ty+"px) rotate("+p.r+"deg) scale(.75)";
+      el.style.opacity="0";
+    });});
+  });
+  iso.classList.add("launching");
+  document.getElementById("preview").classList.add("fanning");
+  setTimeout(function(){
+    document.body.removeChild(ov);
+    iso.classList.remove("launching");
+    callback();
+  },680);
+}
+
+// ════ OPEN / CLOSE ════
+function openViewer(){
+  var btn=document.querySelector(".deck-btn");
+  btn.disabled=true;
+  fanOut(function(){
+    calcSize();
+    si=0;ci=[0,0,0,0,0];flip=false;busy=false;
+    document.getElementById("preview").classList.remove("fanning");
+    document.getElementById("preview").classList.add("hidden");
+    var v=document.getElementById("viewer");
+    v.classList.add("active");
+    render(null);
+    btn.disabled=false;
+  });
+}
+function closeViewer(){
+  document.getElementById("viewer").classList.remove("active");
+  document.getElementById("preview").classList.remove("hidden");
+}
+
+window.addEventListener("resize",function(){
+  if(document.getElementById("viewer").classList.contains("active")) calcSize();
+});
+</script>
+</body>
+</html>
