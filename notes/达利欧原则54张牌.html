@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>达利欧《原则》54张牌</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -211,7 +211,8 @@ html,body{height:100%;overflow:hidden;
   box-shadow:0 8px 32px rgba(0,0,0,.16),0 2px 8px rgba(0,0,0,.08);
   backface-visibility:hidden;-webkit-backface-visibility:hidden;
   border:1px solid rgba(0,0,0,.07);
-  overflow:hidden;display:flex;flex-direction:column;
+  overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+  display:flex;flex-direction:column;
 }
 .card-face.back-f{transform:rotateY(180deg);}
 
@@ -222,35 +223,35 @@ html,body{height:100%;overflow:hidden;
 }
 .crnr.tl{top:0;left:0;}
 .crnr.br{bottom:0;right:0;transform:rotate(180deg);}
-.crnr .rk{font-size:24px;font-weight:800;}
-.crnr .sy{font-size:19px;}
+.crnr .rk{font-size:clamp(14px,calc(var(--cw)*0.105),28px);font-weight:800;}
+.crnr .sy{font-size:clamp(12px,calc(var(--cw)*0.086),22px);}
 
 .card-body{
   flex:1;display:flex;flex-direction:column;justify-content:center;
-  padding:10px 20px;margin:56px 0;
+  padding:8px 16px;margin:clamp(44px,calc(var(--ch)*0.155),60px) 0;
 }
 .c-badge{
   display:inline-flex;align-self:flex-start;
-  font-size:11px;font-weight:700;letter-spacing:1px;
-  padding:3px 10px;border-radius:12px;margin-bottom:10px;
+  font-size:clamp(9px,calc(var(--cw)*0.05),12px);font-weight:700;letter-spacing:1px;
+  padding:3px 10px;border-radius:12px;margin-bottom:8px;
   background:#6c3483;color:#fff;
 }
-.c-title{font-size:20px;font-weight:800;line-height:1.5;margin-bottom:12px;}
-.c-div{width:32px;height:2.5px;border-radius:2px;margin-bottom:12px;opacity:.35;}
-.c-body{font-size:15px;line-height:1.95;color:#3a3a3a;}
+.c-title{font-size:clamp(14px,calc(var(--cw)*0.091),22px);font-weight:800;line-height:1.4;margin-bottom:10px;}
+.c-div{width:32px;height:2.5px;border-radius:2px;margin-bottom:10px;opacity:.35;}
+.c-body{font-size:clamp(12px,calc(var(--cw)*0.068),16px);line-height:1.85;color:#3a3a3a;}
 
 /* back face */
 .back-body{
   flex:1;display:flex;flex-direction:column;justify-content:center;
-  padding:10px 20px;margin:56px 0;
+  padding:8px 16px;margin:clamp(44px,calc(var(--ch)*0.155),60px) 0;
 }
 .bq{
-  font-size:15px;line-height:2;
+  font-size:clamp(12px,calc(var(--cw)*0.068),16px);line-height:1.85;
   border-left:3.5px solid;padding-left:12px;
-  margin-bottom:16px;color:#2c2c2c;
+  margin-bottom:12px;color:#2c2c2c;
   font-style:italic;word-break:break-all;
 }
-.bsrc{font-size:13px;color:#999;line-height:1.7;}
+.bsrc{font-size:clamp(11px,calc(var(--cw)*0.059),14px);color:#999;line-height:1.6;}
 .bsrc b{color:#666;}
 
 /* ─── COLOR UTILS ─── */
@@ -471,14 +472,17 @@ function cur(){return cards(si)[ci[si]];}
 function calcSize(){
   var mainH=document.getElementById("main").offsetHeight;
   var mainW=document.getElementById("main").offsetWidth;
-  // Chrome of viewer: vtop~48 + vpos~34 + peekSuit*2~92 + hint~36 = ~210px
   var avH=mainH-210;
   var maxH=Math.min(avH, 540);
   var ch=Math.max(maxH,280);
   var cw=Math.round(ch*57/88);
-  // peek width: larger, responsive
   var pkw=Math.min(Math.round(mainW*0.2), 120);
-  pkw=Math.max(pkw,80);
+  pkw=Math.max(pkw,60);
+  // 确保卡片 + 左右预览 + 间距不超出屏幕宽度
+  if(cw + 2*pkw + 20 > mainW){
+    cw=Math.max(mainW - 2*pkw - 20, 160);
+    ch=Math.round(cw*88/57);
+  }
   document.documentElement.style.setProperty("--ch",ch+"px");
   document.documentElement.style.setProperty("--cw",cw+"px");
   document.documentElement.style.setProperty("--pkw",pkw+"px");
@@ -597,7 +601,7 @@ function jumpCard(i){if(i===ci[si])return;var d=i>ci[si]?"L":"R";ci[si]=i;render
 function doFlip(){flip=!flip;document.getElementById("cInner").classList.toggle("flipped",flip);}
 
 // ════ TOUCH ════
-var tx=0,ty=0,inTouch=false;
+var tx=0,ty=0,inTouch=false,touchFlipped=false;
 var ma=document.getElementById("main");
 ma.addEventListener("touchstart",function(e){
   inTouch=true;tx=e.touches[0].clientX;ty=e.touches[0].clientY;
@@ -610,16 +614,22 @@ ma.addEventListener("touchend",function(e){
     // tap on main card only
     var t=e.target;
     while(t&&t!==ma){if(t.id==="slotC")break;t=t.parentNode;}
-    if(t&&t.id==="slotC")doFlip();
+    if(t&&t.id==="slotC"){
+      doFlip();
+      // 标记此次翻牌来自 touch，防止浏览器随后合成的 click 事件再次触发
+      touchFlipped=true;
+      setTimeout(function(){touchFlipped=false;},600);
+    }
     return;
   }
   if(ax>ay&&ax>40){dx<0?nextCard():prevCard();}
   else if(ay>ax&&ay>40){dy<0?nextSuit():prevSuit();}
 },{passive:true});
 
-// mouse click for desktop flip
+// 桌面鼠标点击翻牌（touch 已处理时跳过，避免双重触发）
 document.getElementById("slotC").addEventListener("click",function(){
-  if(!inTouch)doFlip();
+  if(touchFlipped)return;
+  doFlip();
 });
 
 // keyboard
