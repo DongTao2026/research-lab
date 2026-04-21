@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金钱心理学·54张牌</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  background:#1b2838;
+}
+
+/* ═══ APP SHELL ═══ */
+#app{display:flex;flex-direction:column;height:100vh;width:100vw;overflow:hidden;}
+
+/* ─── HEADER ─── */
+#header{
+  flex-shrink:0;
+  background:linear-gradient(160deg,#1a0606 0%,#2d0d0d 70%,#3a1212 100%);
+  color:#fff;padding:12px 20px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.hd-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.hd-row1{display:flex;align-items:baseline;gap:10px;}
+.hd-title{font-size:18px;font-weight:700;letter-spacing:2px;}
+.hd-title em{font-style:normal;color:#e31e24;}
+.hd-sub{font-size:11px;opacity:.65;letter-spacing:.5px;}
+.back-btn{
+  font-size:12px;color:rgba(255,255,255,.65);
+  text-decoration:none;padding:5px 12px;
+  border:1px solid rgba(255,255,255,.2);border-radius:20px;
+  white-space:nowrap;transition:all .2s;flex-shrink:0;
+}
+.back-btn:hover{color:#fff;border-color:rgba(255,255,255,.5);}
+.hd-legend{display:flex;flex-wrap:wrap;gap:6px;}
+.legend-pill{font-size:11px;padding:3px 10px;border:1px solid rgba(255,255,255,.2);border-radius:20px;opacity:.8;}
+
+/* ─── MAIN (preview lives here) ─── */
+#main{flex:1;position:relative;overflow:hidden;background:#f0ebe0;}
+
+/* ─── PREVIEW ─── */
+#preview{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:28px;background:#f0ebe0;
+  transition:opacity .3s ease,transform .3s ease;
+}
+#preview.hidden{opacity:0;pointer-events:none;transform:scale(.96);}
+#preview.fanning{animation:previewFade .25s ease forwards .45s;}
+@keyframes previewFade{to{opacity:0;pointer-events:none;}}
+
+.deck-btn{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;padding:0;-webkit-appearance:none;}
+.iso-wrap{perspective:900px;width:300px;height:270px;display:flex;align-items:center;justify-content:center;}
+.deck-iso{
+  position:relative;width:148px;height:228px;
+  transform:rotateX(22deg) rotateY(-22deg) rotateZ(2deg);
+  transform-style:preserve-3d;transition:transform .4s ease;pointer-events:none;
+}
+.deck-btn:hover .deck-iso{transform:rotateX(16deg) rotateY(-26deg) rotateZ(2deg) scale(1.05);}
+.deck-btn:active .deck-iso{transform:rotateX(25deg) rotateY(-18deg) rotateZ(2deg) scale(.97);}
+.top-card{background:#f5f2ec;border-radius:9px;border:1px solid rgba(0,0,0,.07);box-shadow:0 8px 28px rgba(0,0,0,.45);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;overflow:hidden;padding:10px;position:absolute;inset:0;}
+.bc-tri{width:0;height:0;border-left:34px solid transparent;border-right:34px solid transparent;border-bottom:46px solid #e31e24;margin:4px auto 2px;}
+.bc-cn1{font-size:21px;font-weight:900;color:#e31e24;letter-spacing:1px;text-align:center;margin-top:3px;}
+.bc-en{font-size:7.5px;color:#444;letter-spacing:.5px;text-align:center;margin-top:2px;}
+.bc-sub{font-size:6.5px;color:#888;text-align:center;margin-top:1px;letter-spacing:.3px;}
+.bc-au{font-size:9px;color:#999;letter-spacing:1px;text-align:center;margin-top:7px;}
+.bc-hint{font-size:9px;color:#bbb;letter-spacing:2px;text-align:center;margin-top:8px;}
+.dl{position:absolute;border-radius:9px;border:1px solid rgba(0,0,0,.07);}
+.dl:nth-child(1){inset:0;transform:translate3d(4px,4px,-5px);background:#ececec;}
+.dl:nth-child(2){inset:0;transform:translate3d(8px,8px,-10px);background:#e6e6e6;}
+.dl:nth-child(3){inset:0;transform:translate3d(12px,12px,-15px);background:#e0e0e0;}
+.dl:nth-child(4){inset:0;transform:translate3d(16px,16px,-20px);background:#dadada;}
+.dl:nth-child(5){inset:0;transform:translate3d(20px,20px,-25px);background:#d4d4d4;}
+.dl:nth-child(6){inset:0;transform:translate3d(24px,24px,-30px);background:#cecece;}
+.dl:nth-child(7){inset:0;transform:translate3d(28px,28px,-35px);background:#c8c8c8;}
+.open-label{
+  background:#1b2838;color:#fff;padding:14px 44px;border-radius:50px;
+  font-size:15px;letter-spacing:2px;margin-top:40px;box-shadow:0 4px 20px rgba(0,0,0,.28);
+}
+
+/* ═══════════════════════════════════
+   VIEWER  —  fullscreen overlay
+═══════════════════════════════════ */
+#viewer{
+  position:fixed;inset:0;z-index:50;
+  background:#ece7db;
+  display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;
+  transition:opacity .35s ease;
+}
+#viewer.active{opacity:1;pointer-events:all;}
+
+/* Top bar: suit tabs + close */
+.v-head{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px 6px;
+}
+.suit-tabs{display:flex;gap:5px;}
+.stab{
+  padding:5px 12px;border-radius:20px;font-size:14px;font-weight:500;
+  border:none;cursor:pointer;background:rgba(0,0,0,.08);color:#777;
+  transition:all .2s;-webkit-appearance:none;
+}
+.stab.on-black{background:#1a1a1a;color:#fff;}
+.stab.on-red{background:#c0392b;color:#fff;}
+.stab.on-joker{background:#6c3483;color:#fff;}
+.close-x{background:none;border:none;font-size:20px;cursor:pointer;color:#bbb;padding:4px 8px;transition:color .2s;}
+.close-x:hover{color:#333;}
+
+/* Body: centers the 3×3 grid */
+.v-body{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+
+/* ─── 3×3 CARD GRID ─── */
+:root{--cw:200px;--ch:308px;--pgap:10px;}
+.v-grid{
+  display:grid;
+  grid-template-columns:calc(var(--cw)*.2) var(--cw) calc(var(--cw)*.2);
+  grid-template-rows:calc(var(--ch)*.2) var(--ch) calc(var(--ch)*.2);
+  gap:var(--pgap);
+}
+
+/* Peek slots — overflow:hidden clips the full card to show 20% */
+.pg-tp,.pg-bt,.pg-lf,.pg-rt{
+  position:relative;overflow:hidden;
+  border-radius:10px;cursor:pointer;
+  transition:opacity .15s;
+}
+.pg-tp:active,.pg-bt:active,.pg-lf:active,.pg-rt:active{opacity:.75;}
+
+.pg-tp{grid-column:2;grid-row:1;}   /* top    → prev suit  */
+.pg-ct{grid-column:2;grid-row:2;}   /* center → active card */
+.pg-bt{grid-column:2;grid-row:3;}   /* bottom → next suit  */
+.pg-lf{grid-column:1;grid-row:2;}   /* left   → prev card  */
+.pg-rt{grid-column:3;grid-row:2;}   /* right  → next card  */
+
+/* Full-size card rendered inside a peek slot;
+   always anchored top-left so the TL corner (rank+suit) is visible */
+.peek-card{
+  position:absolute;top:0;left:0;
+  width:var(--cw);height:var(--ch);
+  background:#fff;border-radius:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,.18);
+  border:1px solid rgba(0,0,0,.07);
+  overflow:hidden;
+}
+
+/* ─── CENTER CARD ─── */
+.card-stage{width:var(--cw);height:var(--ch);perspective:1000px;}
+.card-inner{
+  position:relative;width:100%;height:100%;
+  transform-style:preserve-3d;
+  transition:transform .56s cubic-bezier(.4,0,.2,1);
+  cursor:pointer;
+}
+.card-inner.flipped{transform:rotateY(180deg);}
+.card-face{
+  position:absolute;inset:0;
+  background:#fff;border-radius:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,.18),0 2px 8px rgba(0,0,0,.08);
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border:1px solid rgba(0,0,0,.07);
+  overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+  display:flex;flex-direction:column;
+}
+.card-face.back-f{transform:rotateY(180deg);}
+
+/* Card corners */
+.crnr{position:absolute;display:flex;flex-direction:column;align-items:center;line-height:1.15;padding:9px 10px;}
+.crnr.tl{top:0;left:0;}
+.crnr.br{bottom:0;right:0;transform:rotate(180deg);}
+.crnr .rk{font-size:clamp(13px,calc(var(--cw)*.105),26px);font-weight:800;}
+.crnr .sy{font-size:clamp(11px,calc(var(--cw)*.086),20px);}
+
+/* Card body — front */
+.card-body{
+  flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:8px 18px;margin:clamp(40px,calc(var(--ch)*.155),58px) 0;
+}
+.c-badge{
+  display:inline-flex;align-self:flex-start;
+  font-size:clamp(9px,calc(var(--cw)*.05),11px);font-weight:700;letter-spacing:1px;
+  padding:2px 9px;border-radius:10px;margin-bottom:8px;color:#fff;
+}
+.c-title{font-size:clamp(14px,calc(var(--cw)*.093),22px);font-weight:800;line-height:1.4;margin-bottom:10px;}
+.c-div{width:28px;height:2.5px;border-radius:2px;margin-bottom:10px;opacity:.35;}
+.c-body{font-size:clamp(12px,calc(var(--cw)*.07),15px);line-height:1.85;color:#3a3a3a;}
+
+/* Card body — back */
+.back-body{
+  flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:8px 18px;margin:clamp(40px,calc(var(--ch)*.155),58px) 0;
+}
+.bq{
+  font-size:clamp(12px,calc(var(--cw)*.068),15px);line-height:1.85;
+  border-left:3.5px solid;padding-left:12px;
+  margin-bottom:12px;color:#2c2c2c;
+  font-style:italic;word-break:break-all;
+}
+.bsrc{font-size:clamp(10px,calc(var(--cw)*.059),13px);color:#999;line-height:1.6;}
+.bsrc b{color:#666;}
+
+/* Color utilities */
+.cblack{color:#1a1a1a;}.cred{color:#c0392b;}.cjoker{color:#6c3483;}
+.bgblack{background:rgba(26,26,26,.04);}.bgred{background:rgba(192,57,43,.04);}.bgjoker{background:rgba(108,52,131,.04);}
+.bdblack{border-color:#1a1a1a;}.bdred{border-color:#c0392b;}.bdjoker{border-color:#6c3483;}
+.dvblack{background:#1a1a1a;}.dvred{background:#c0392b;}.dvjoker{background:#6c3483;}
+
+/* Footer: dots + position label */
+.v-foot{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  padding:6px 16px 12px;
+}
+.dots{display:flex;gap:4px;flex-wrap:wrap;max-width:260px;justify-content:center;}
+.d{width:6px;height:6px;border-radius:50%;background:rgba(0,0,0,.15);cursor:pointer;transition:all .25s;}
+.d.on-black{background:#1a1a1a;width:18px;border-radius:3px;}
+.d.on-red{background:#c0392b;width:18px;border-radius:3px;}
+.d.on-joker{background:#6c3483;width:18px;border-radius:3px;}
+.pos-lbl{font-size:12px;color:#aaa;letter-spacing:.5px;white-space:nowrap;}
+
+/* Slide animations */
+@keyframes sL{0%{opacity:1;transform:translateX(0)}45%{opacity:0;transform:translateX(-60px)}55%{opacity:0;transform:translateX(75px)}100%{opacity:1;transform:translateX(0)}}
+@keyframes sR{0%{opacity:1;transform:translateX(0)}45%{opacity:0;transform:translateX(60px)}55%{opacity:0;transform:translateX(-75px)}100%{opacity:1;transform:translateX(0)}}
+@keyframes sU{0%{opacity:1;transform:translateY(0)}45%{opacity:0;transform:translateY(-50px)}55%{opacity:0;transform:translateY(65px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes sD{0%{opacity:1;transform:translateY(0)}45%{opacity:0;transform:translateY(50px)}55%{opacity:0;transform:translateY(-65px)}100%{opacity:1;transform:translateY(0)}}
+.as-L .card-inner{animation:sL .36s ease forwards;}
+.as-R .card-inner{animation:sR .36s ease forwards;}
+.as-U .card-inner{animation:sU .36s ease forwards;}
+.as-D .card-inner{animation:sD .36s ease forwards;}
+
+/* Fan animation */
+@keyframes deckLaunch{
+  0%{transform:rotateX(22deg) rotateY(-22deg) rotateZ(2deg) scale(1);}
+  40%{transform:rotateX(12deg) rotateY(-28deg) rotateZ(-2deg) scale(1.08);}
+  100%{transform:rotateX(5deg) rotateY(0deg) rotateZ(0deg) scale(0.05);opacity:0;}
+}
+.deck-iso.launching{animation:deckLaunch .55s cubic-bezier(.4,0,.6,1) forwards;pointer-events:none;}
+
+@media(max-height:600px){
+  #header{padding:8px 16px;}
+  .v-head{padding:6px 12px 3px;}
+  .v-foot{padding:4px 16px 8px;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ═══ HEADER ═══ -->
+  <header id="header">
+    <div class="hd-top">
+      <div class="hd-row1">
+        <span class="hd-title">《金钱心理学》<em>54张牌</em></span>
+        <span class="hd-sub">正面提炼 · 背面原文</span>
+      </div>
+      <a class="back-btn" href="https://dongtao2026.github.io/research-lab/index.html">← 返回数据库</a>
+    </div>
+    <div class="hd-legend">
+      <span class="legend-pill">🃏 王·元原则</span>
+      <span class="legend-pill">♠ 黑桃·认知偏差</span>
+      <span class="legend-pill">♥ 红心·财富积累</span>
+      <span class="legend-pill">♦ 方块·行为决策</span>
+      <span class="legend-pill">♣ 梅花·人性与财富</span>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN: preview only ═══ -->
+  <div id="main">
+    <div id="preview">
+      <button class="deck-btn" onclick="openViewer()">
+        <div class="iso-wrap">
+          <div class="deck-iso">
+            <div class="dl"></div><div class="dl"></div><div class="dl"></div>
+            <div class="dl"></div><div class="dl"></div><div class="dl"></div><div class="dl"></div>
+            <div class="top-card">
+              <div class="bc-tri"></div>
+              <div class="bc-cn1">金钱心理学</div>
+              <div class="bc-en">The Psychology of Money</div>
+              <div class="bc-sub">财富、人性和幸福的永恒真相</div>
+              <div class="bc-au">摩根·豪泽尔</div>
+              <div class="bc-hint">54 张 · 点击展开</div>
+            </div>
+          </div>
+        </div>
+        <div class="open-label">发　　牌</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ VIEWER OVERLAY ═══ -->
+  <div id="viewer">
+    <!-- Top bar -->
+    <div class="v-head">
+      <div class="suit-tabs" id="sTabs"></div>
+      <button class="close-x" onclick="closeViewer()">✕</button>
+    </div>
+    <!-- 3×3 card grid -->
+    <div class="v-body">
+      <div class="v-grid">
+        <div class="pg-tp" id="pgTp" onclick="prevSuit()"></div>
+        <div class="pg-lf" id="pgLf" onclick="prevCard()"></div>
+        <div class="pg-ct" id="pgCt">
+          <div class="card-stage">
+            <div class="card-inner" id="cInner">
+              <div class="card-face front-f" id="cFront"></div>
+              <div class="card-face back-f" id="cBack"></div>
+            </div>
+          </div>
+        </div>
+        <div class="pg-rt" id="pgRt" onclick="nextCard()"></div>
+        <div class="pg-bt" id="pgBt" onclick="nextSuit()"></div>
+      </div>
+    </div>
+    <!-- Dots footer -->
+    <div class="v-foot">
+      <div class="dots" id="dots"></div>
+      <div class="pos-lbl" id="posLbl"></div>
+    </div>
+  </div>
+
+</div><!-- #app -->
+
+<script>
+// ════ DATA ════
+var SUITS=[
+  {id:"jokers",n:"王",s:"🃏",c:"joker"},
+  {id:"spades",n:"♠",s:"♠",c:"black"},
+  {id:"hearts",n:"♥",s:"♥",c:"red"},
+  {id:"diamonds",n:"♦",s:"♦",c:"red"},
+  {id:"clubs",n:"♣",s:"♣",c:"black"}
+];
+var SORD=["jokers","spades","hearts","diamonds","clubs"];
+
+var DATA={
+jokers:[
+  {r:"JOKER",vc:"red",
+   ft:"理财的成功与智商无关，和行为习惯密切相关",
+   fc:"你的情绪、习惯、性格——这些软性因素，才是决定财务命运的真正变量。掌握再多的金融知识，如果行为失控，一样会走向毁灭。",
+   bq:"\u201c这本书的一个重要前提是，理财的成功与否和你的智商关系不大，但和你的行为习惯紧密相关。而行为是很难教授的，即便是面对那些高智商的人。一个无法控制个人情绪的天才或许会引发财务上的灾难，但反过来看——那些没有接受过专业金融教育的普通人，也可以凭借与智商衡量标准无关的良好行为习惯，最终走向富裕。\u201d",
+   bs:"序言·地球上最伟大的表演"},
+  {r:"JOKER",vc:"black",
+   ft:"金钱是一门软科学，不是硬科学",
+   fc:"物理定律不因人的情感而改变；金融规律却完全由人类行为驱动。用学物理的方式学理财，注定会失败。",
+   bq:"\u201c我认为，这种现象的主要原因是，我们思考和学习理财的方式更像学习物理的（涉及很多法则和定律），而不像学习心理学的（关注情感及其微妙变化）……理财知识很多时候都建立在数学的基础上。你需要把数据套入公式，然后公式会告诉你该做什么，而主流观点认为你需要照做。但知道该怎么做并不意味着当你真正去做的时候，你的头脑就能完全根据你的知识来运转。\u201d",
+   bs:"序言·地球上最伟大的表演"}
+],
+spades:[
+  {r:"A",
+   ft:"每个财务决策，在当事人的逻辑框架里都是合理的",
+   fc:"你认为疯狂的行为，对方有其成长背景、经历和信息局限。评判别人之前，先理解他所处的世界。",
+   bq:"\u201c人们在消费和理财时总会做一些看似疯狂的事，但实际上没有人真的失去理智……不同人的出生年代不同，成长经历不同，家庭经济状况和价值观不同，所处的社会环境不同，所在国家的经济形势和就业情况不同，经济激励手段不同，运气好坏不同，因此他们关于金钱的认知和态度就完全不同……你对金钱的个人经验可能只有0.00000001%符合实际，但它构成了你对世界运作方式的主观判断的80%。\u201d",
+   bs:"第1章·没有人真的对钱失去理智"},
+  {r:"K",
+   ft:"你20岁时经历的股市，决定了你此后一生对股票的态度",
+   fc:"在牛市中成年的人天生乐观；在萧条中成年的人天生保守。这不是性格，而是经历刻下的印记。",
+   bq:"\u201c两位经济学家发现，人们一生中的投资决策在很大程度上取决于其生活经历——尤其是成年后的早期经历。如果你在通货膨胀率很高的经济环境中长大，和那些在通货膨胀率低的环境下长大的人相比，你在往后的投资生涯中会把更少的钱投入债券……起决定作用的不是智力，不是教育或阅历，而是一个人出生的时间和地点——纯粹靠运气的因素。\u201d",
+   bs:"第1章·没有人真的对钱失去理智"},
+  {r:"Q",
+   ft:"成功中有运气，失败中有风险。任何事都没有表面看来那样美好或糟糕",
+   fc:"把别人的成功全部归功于努力，把自己的失败全部归咎于运气——这是人类最普遍的双重标准。",
+   bq:"\u201c比尔·盖茨就读的中学是当时世界上极少数拥有计算机的学校之一……放眼全球，100万名学生中只有1名能够进入一所同时具备租借计算机的经济能力和远见的学校读书，而比尔·盖茨恰好是这300人中的1个……盖茨非常聪明，而且极其努力……但他还拥有百万分之一概率的好运气，能进入湖滨学校读书。\u201d",
+   bs:"第2章·运气与风险"},
+  {r:"J",
+   ft:"越极端的成功，越不可复制；越普遍的模式，越有参考价值",
+   fc:"巴菲特的成功太过极端，其中运气成分无法剥离。真正值得学习的，是那些在普通人身上都适用的共通规律。",
+   bq:"\u201c你只有去寻找关于成功和失败的普适性的模式，才更可能获得有价值的经验。模式越普遍，它们对你生活的适用性就越强。试图复制沃伦·巴菲特在投资领域的成功并不容易，因为他的成功非常极端，运气在他的投资生涯中占据的比重很可能非常高，而运气是你无法复制的东西。\u201d",
+   bs:"第2章·运气与风险"},
+  {r:"10",
+   ft:"经济史上最重要的事件，往往是史无前例的意外",
+   fc:"用过去的最坏情况来估算未来的最坏情况，你永远会低估真正的风险。历史学家不是预言家。",
+   bq:"\u201c历史研究的主要内容是意外事件，但投资者和经济学家们却经常将其看作对未来不容置疑的指南……斯坦福大学教授斯科特·萨根曾说过一句应该被每个关注经济或投资市场的人挂在墙上的话：\u2018世界上总在发生过去从来没有发生过的事。\u2019\u201d",
+   bs:"第12章·意外！"},
+  {r:"9",
+   ft:"灾难性预测总是得到更多关注，但世界在长期内一直在变好",
+   fc:"进步发生得太慢，不像新闻；灾难发生得太快，占满头条。这种不对称性，让悲观主义显得比它实际上更聪明。",
+   bq:"\u201c时间是2008年12月29日。现代史上经济最糟糕的一年即将结束……《华尔街日报》发表的一篇故事声称，真正糟糕的阶段还没有到来……这可不是发表在私人博客上的胡言乱语，而是刊登在全球最负盛名的财经报纸头版的文章……乐观主义本该比悲观主义吸引更多的关注。然而现实并非如此。\u201d",
+   bs:"第17章·悲观主义的诱惑"},
+  {r:"8",
+   ft:"投资领域的\u201c吸引人的故事\u201d，专门针对那些迫切需要答案的人",
+   fc:"当风险很高、答案不确定时，人会向任何声称有答案的人靠拢。这是庞氏骗局和坏投资建议得以存在的心理基础。",
+   bq:"\u201c麦道夫是一名做市商，其工作就是撮合股票买卖双方达成交易……他依然冒险进行了欺诈……他讲了一个吸引人的故事，而人们愿意相信它……你越希望某件事成真，你就越容易相信一个高估其成真可能性的故事。\u201d",
+   bs:"第18章·当你相信一切的时候"},
+  {r:"7",
+   ft:"我们都用极其有限的认知框架，解释眼前发生的一切",
+   fc:"人的大脑不能容忍\u201c不知道\u201d，于是自动填补空白。这些被填补的空白，就是最危险的投资盲区。",
+   bq:"\u201c卡尼曼曾经列举过故事让我们对现实产生误解的情况：在做计划的时候，我们会专注于我们想做的和能做的事情，而忽略了他人的计划和能力；无论是在解释过去还是预测未来时，我们都专注于技能起到的因果性作用，而忽略了运气的重要影响；我们专注于我们知道的，忽视了我们不知道的，而这让我们对自己的想法过于自信。\u201d",
+   bs:"第18章·当你相信一切的时候"},
+  {r:"6",
+   ft:"日内交易者的理性决策，会把长线投资者带进灾难",
+   fc:"同一个市场里，不同玩家的目标和时间跨度可以截然不同。看见别人在做什么，不代表你也应该跟随。",
+   bq:"\u201c1999年，购买雅虎股票的很多投资者做的都是短线投资，所以即使价格高得离谱，他们也可以接受……当短期回报的动量吸引了足够多的资金，使投资者的主体从长线投资者变为短线投资者时，泡沫就开始形成了……泡沫与估值上升的关系不大。它体现的其实是另一种情况：随着越来越多的短线投资者入场，交易周期变得越来越短。\u201d",
+   bs:"第16章·每个人的情况不同"},
+  {r:"5",
+   ft:"财富是看不见的——没花出去的钱才是真正的富有",
+   fc:"我们习惯用看得见的消费判断别人的财富，但真正的财富恰恰存在于那些没有被消费掉的部分。",
+   bq:"\u201c财富是由你没有去购买的豪车、钻石、手表、服装和没有升级到的头等舱座位体现的。财富是由未被转化为实物的金融资产体现的……一个开着价值10万美元的豪车的人，我们唯一能确定的只有：在购买这辆车后，他拥有的财富总额减少了10万美元。\u201d",
+   bs:"第9章·财富是你看不见的那些"},
+  {r:"4",
+   ft:"你以为展示财富能获得尊重，但旁观者看到的只是那辆车，而不是你",
+   fc:"人们用财富购买的是别人对自己的羡慕，但实际上那份羡慕指向的是财富本身，而不是拥有财富的人。",
+   bq:"\u201c当你看见有人开着一辆漂亮的车子时，你很少会想\u2018哇，开那辆车的家伙真酷\u2019，相反，你只会想\u2018哇，如果那辆车是我的，别人一定会觉得我很酷\u2019……我们都想通过财富来告诉其他人，自己应该受到他们的爱慕与敬仰。但事实上，其他人常常会跳过敬仰你这一步。\u201d",
+   bs:"第8章·豪车悖论"},
+  {r:"3",
+   ft:"401K计划1978年才诞生——人类驯化狗有1万年了，理财只有几十年",
+   fc:"我们在一个极易受情感影响的领域里，用极短的经验积累来应对极复杂的系统，犯错是必然的。",
+   bq:"\u201c人类驯化狗已经有1万年的历史了，但直到今天，狗身上仍然保留着其远古祖先的某些习性。而如今我们在应对现代金融体系时只有20～50年的历史经验，却希望能完美地适应它……我们之所以经常在金钱方面做出看似疯狂的决策，是因为相较之下在这场游戏里我们都是新手。\u201d",
+   bs:"第1章·没有人真的对钱失去理智"},
+  {r:"2",
+   ft:"穷人买彩票不是愚蠢，是他们看待机会的唯一合理方式",
+   fc:"买彩票被富人视为蠢行，却是某些人唯一能想象到的改变命运的途径。理解这一点，才能真正理解金钱行为背后的逻辑。",
+   bq:"\u201c我们买的是梦想，而你们之所以不理解，是因为你们一开始就生活在对我们来说的梦想中……美国人花在彩票上的钱比花在电影、电子游戏、音乐、体育比赛和书籍上的钱加起来都多……有40%的美国人在急需用钱的时候连400美元都拿不出来，也就是说，那些每年花400美元买彩票的人基本就是这些在急需用钱的时候拿不出400美元的人。\u201d",
+   bs:"第1章·没有人真的对钱失去理智"}
+],
+hearts:[
+  {r:"A",
+   ft:"巴菲特的秘密不是投资技术，是从10岁开始持续投资了75年",
+   fc:"845亿净资产中，815亿是65岁之后赚到的。时间才是最强大的变量。复利的反直觉特性，导致最聪明的人也会低估它。",
+   bq:"\u201c在我写下这段话的时候，沃伦·巴菲特拥有的金融净资产为845亿，其中的842亿是在50岁之后赚到的，其中的815亿则是在65岁后赚到的……假如他只是个普通人，到了30岁时，他会有多少财富呢？也许是2.5万美元……再假如，他的这笔财富以出色的年回报率(22%)持续增加，但到60岁时，他结束了自己的投资生涯……那么今天他的财富大概是多少呢？不是845亿美元，而只有1190万美元。\u201d",
+   bs:"第4章·复利之谜"},
+  {r:"K",
+   ft:"能赚到一亿的人，不一定能守住一亿",
+   fc:"致富需要冒险和乐观；守富需要谦逊和敬畏。把这两种能力都归为\u201c会理财\u201d，是最常见的误解。",
+   bq:"\u201c致富需要的是冒险精神、乐观心态，以及放手一搏的勇气。但守富需要做的却与冒险完全相反。守富需要谦逊和敬畏之心，需要清楚财富来得有多快，去得就有多容易。守富需要节俭，并要承认你获得的财富中一部分源自运气，所以不要指望无限复制过去的成功。\u201d",
+   bs:"第5章·致富vs.守富"},
+  {r:"Q",
+   ft:"不是成长，不是眼界，不是智慧——能持续待在场上，才是最重要的事",
+   fc:"复利需要时间积累。任何可能把你踢出局的风险，无论期望回报多高，都不值得冒。",
+   bq:"\u201c纳西姆·塔勒布这样说：\u2018拥有优势和生存下来完全是两回事，前者需要后者。你需要不惜一切代价避免破产。\u2019……里克·盖林和巴菲特、芒格一样聪明，但他太心急了。在1973—1974年的经济衰退中，里克用保证金贷款来撬动投资……不得不把自己在伯克希尔的股票以每股不到40美元的价格卖给了沃伦。因为加了不该加的杠杆，里克被迫出售了股票。\u201d",
+   bs:"第5章·致富vs.守富"},
+  {r:"J",
+   ft:"即使有一半时间判断错误，依然可以赢",
+   fc:"风险投资里65%的项目亏损，却依然是高回报行业，因为极少数成功足以覆盖所有失败。股市同理。",
+   bq:"\u201c罗素3000指数自1980年以来已经增长了73倍。这是让人瞠目的回报率……罗素3000指数中40%的公司实际上都以失败告终，但其中表现优异的7%已经足以抵消其他公司的失败……在伯克希尔·哈撒韦公司2013年的股东大会上，沃伦·巴菲特表示，自己一生中持有过400～500只股票，而收益中的大部分来自其中的10只。\u201d",
+   bs:"第6章·尾部的胜利"},
+  {r:"10",
+   ft:"存钱不只是为了买什么——它买的是选择权、灵活度和从容感",
+   fc:"当你不知道未来会发生什么时，存钱是应对一切意外的最佳策略。没有特定用途的储蓄，是最有用的储蓄。",
+   bq:"\u201c德雷克·西弗斯……到了22岁时，他已经有了1.2万美元……他说：\u2018那是我人生中真正的影响是在22岁时发生的。\u2019……存钱的目的可以是防止意外。这样一来，即使出现了最坏的情况，你也不会惊慌失措……每个人都需要足够的流动资金，把不得不卖出股票的可能性降到零。\u201d",
+   bs:"第7章·自由；第10章·存钱；第20章·我的理财方案"},
+  {r:"9",
+   ft:"把精力放在提高储蓄率上，比花大量时间寻找好投资标的更有效",
+   fc:"投资回报充满不确定性；储蓄率是你能直接掌控的变量。控制欲望，是最容易被忽视的财富增长引擎。",
+   bq:"\u201c在金钱收支公式的两端，人们在一端投入了大量的精力，在另一端却鲜有作为……一边是专业投资者每周花80个小时去研究投资，只为了投资回报率能多0.1个百分点的事实；另一边，这些人的经济生活中却有着整整两三个百分点的浮动空间，而他们不须付出前一种情况中那么多的努力，只要略微调整生活方式就可以充分利用这些空间。\u201d",
+   bs:"第10章·存钱"},
+  {r:"8",
+   ft:"财富 = 收入 - 欲望。减少欲望，和提高收入一样有效",
+   fc:"当储蓄被定义为\u201c收入减去虚荣心的支出\u201d，你就会明白为什么很多高收入者反而存不下钱。",
+   bq:"\u201c如果你把储蓄定义为虚荣的自我和收入之差时，你就能明白，为什么很多收入不低的人很难存下钱来，因为他们每天都在和自己想要尽情炫耀并与其他炫富者攀比的本能抗争……那些长期成功经营个人财富的人并不一定有着高收入。他们的一个共同点是，完全不在乎别人如何看待自己。\u201d",
+   bs:"第10章·存钱"},
+  {r:"7",
+   ft:"能在任何时候和喜欢的人做喜欢的事，才是钱真正能买到的最好东西",
+   fc:"不是豪车，不是大房子——对生活拥有掌控感，才是研究发现的最可靠幸福预测因素。",
+   bq:"\u201c心理学家坎贝尔总结道：与我们考虑过的任何客观生活条件相比，对自己的生活拥有强烈的掌控感是预测幸福这种积极感受的一项更可靠的指标……金钱最大的内在价值是它能赋予你掌控自己时间的能力。\u201d",
+   bs:"第7章·自由"},
+  {r:"6",
+   ft:"以自己拥有的东西为赌注，去争取自己并不需要的东西——这是愚蠢至极的做法",
+   fc:"知足不是保守主义，而是对\u201c不知足的代价\u201d的清醒认识。那些被无限欲望吞噬的人，往往已经拥有了足够多。",
+   bq:"\u201c沃伦·巴菲特后来写道：为了赚他们并未拥有也不需要的钱，他们拿自己已经拥有并确实需要的东西去冒险了。这是愚蠢至极的做法。冒着失去重要东西的风险去争取并不重要的东西的行为毫无道理可言……顾磊杰是高盛集团的董事会成员，身家1亿美元……但他想成为一个亿万富翁……最终身陷囹圄。\u201d",
+   bs:"第3章·永不知足；第5章·致富vs.守富"},
+  {r:"5",
+   ft:"好的规划不否认意外的存在，而是充分接受意外，为错误留出足够大的空间",
+   fc:"任何要求太多前提条件都不能出错的计划，都是脆弱的。安全边际不是保守，是生存的保障。",
+   bq:"\u201c格雷厄姆的安全边际理论给我们提供了一个简单的建议，那就是我们不能把眼前的世界看成黑白分明的……\u2018安全边际的目的在于让预测变得不再必要\u2019……容错空间让你可以承受一系列可能的结果。拥有这种承受力后，你就可以花足够长的时间等待，从而提高低概率的回报发生在你身上的概率。\u201d",
+   bs:"第13章·容错空间"},
+  {r:"4",
+   ft:"投资回报不是免费的，波动和不确定性是你为之支付的入场费，不是罚款",
+   fc:"把市场波动看作需要交的入场费，而不是做错了事的惩罚——这一认知转变，能让你坚持下去。",
+   bq:"\u201c像绝大多数产品一样，回报越高，需要付出的代价就越大……正确应对波动和不确定性的唯一方法就是理解这笔费用是物有所值的——你需要做的不是忍受惩罚，而是认识到这是一笔值得支付的入场费……投资者原本试图规避这份代价，结果却付出了双倍的代价。\u201d",
+   bs:"第15章·世上没有免费的午餐"},
+  {r:"3",
+   ft:"你今天做出的极端财务规划，是用现在的你绑架未来的你",
+   fc:"心理学研究发现，每个人都低估了自己未来会发生的改变。目标越极端，将来后悔的可能性越大。",
+   bq:"\u201c人们能敏锐地意识到自己相比过去发生的变化，但很容易低估自己的性格、想法和目标在将来会发生的改变。心理学家把这一现象称为\u2018历史终结错觉\u2019……很少有哪个投资者天真地认为市场预测从整体上说是准确或有用的，但在媒体上，在财务顾问面前，人们对预测的需求仍然很强烈——因为\u2018满足这种需求\u2019是一种情感之痒，而不是分析题。\u201d",
+   bs:"第14章·人是会变的"},
+  {r:"2",
+   ft:"财富的终点不是更多的钱，而是更多的自由",
+   fc:"1,000名美国老人的调查中，没有一个人说要努力赚钱买东西。他们在意的，是真实的关系和有意义的时间。",
+   bq:"\u201c老年学家卡尔·皮尔默采访了1,000名美国老年人……他写道：没有人——1,000个人中没有1个——表示如果你想变得快乐，你就该拼命地工作赚钱，然后买自己想要的东西……那些历经世事沧桑的人能给你的忠告是：时间自由是财富能带给你的最大红利。\u201d",
+   bs:"第7章·自由"}
+],
+diamonds:[
+  {r:"A",
+   ft:"数学上最优的投资方案，不一定是现实中最好的方案",
+   fc:"你不是一份电子表格。能让你晚上睡得踏实、能让你在市场崩溃时坚持不卖出的方案，才是对你真正好的方案。",
+   bq:"\u201c哈里·马科维茨凭借对风险和回报之间的数学均衡关系的研究获得了诺贝尔经济学奖……当问及自己如何投资，他说：\u2018我的投资原则就是把未来的后悔降到最低，所以我用一半钱买债券，一半钱买股票了。\u2019……现实中的最佳投资方案一定是能让我们晚上睡得安稳的方案。\u201d",
+   bs:"第11章·合乎情理胜过绝对理性"},
+  {r:"K",
+   ft:"乐观不是盲目，而是相信过程曲折但结果向好——同时为每一次可能的暴跌做好准备",
+   fc:"真正的乐观主义者不认为一切都会好，而是相信从长期看，好结果比坏结果概率更大。",
+   bq:"\u201c真正的乐观主义者并非相信一切都会变得很好——那就变成盲目自信了。乐观主义是一种信念，相信就算过程中充满坎坷，随着时间过去，你心目中好结果出现的概率也比坏结果出现的概率大……\u2018从长远看结果是积极的，但从短期看过程可能很糟糕\u2019这一点乍看之下不符合直觉，但生活中很多事确实是这样的。\u201d",
+   bs:"第5章·致富vs.守富；第17章·悲观主义的诱惑"},
+  {r:"Q",
+   ft:"你成年时经历的利率环境，决定了你此后一生对债券的直觉",
+   fc:"比尔·格罗斯在利率下行时代成就了\u201c债券之王\u201d的声名，他坦承如果早生或晚生10年，可能根本不会成功。",
+   bq:"\u201c《金融时报》曾在2019年采访过著名的债券经理人比尔·格罗斯。采访文章写道：\u2018格罗斯承认，如果他早出生或晚出生10年，他可能就不会有如今的成功了。\u2019格罗斯的生涯刚好赶上了利率大跌的时候……对格罗斯来说，债券就是印钞机，而对他父亲这一代在高通货膨胀环境中艰难长大的人来说，它们是财富的粉碎机。\u201d",
+   bs:"第1章·没有人真的对钱失去理智"},
+  {r:"J",
+   ft:"同一市场里，不同人在玩不同的游戏。跟错对手，是最常见的投资灾难",
+   fc:"日内交易者的\u201c理性买入\u201d，会把长线投资者带进泡沫。先搞清楚自己的游戏规则，再做任何决策。",
+   bq:"\u201c如果我要总结一下对投资的看法……我的理财哲学是：\u2018我是一名被动的投资者，但对这个世界创造货真价实的经济增长的能力持乐观态度。我相信在接下来的30年里，这种增长会让我的财富不断增加。\u2019……一旦写下了这样的宣言，我就意识到所有与其无关的因素——今年的市场走势如何，或者明年是否会出现经济衰退——都不是我玩的游戏的一部分。\u201d",
+   bs:"第16章·每个人的情况不同；第20章·我的理财方案"},
+  {r:"10",
+   ft:"运气好不等于判断正确；运气差不等于判断错误",
+   fc:"按结果评价决策是人类最普遍的认知陷阱。真正应该问的是：在你做决定时，你的逻辑是否经得起推敲？",
+   bq:"\u201c《福布斯》杂志的封面上不会刊登那些做了正确决策却因为运气差而失败的投资者的照片，但一定会刊登那些做了尚可甚至欠考虑的商业决策却因为运气好而致富的投资者的照片。这两种人都在抛硬币，却抛出了截然不同的结果。\u201d",
+   bs:"第2章·运气与风险"},
+  {r:"9",
+   ft:"对投资对象有感情，不是弱点，是坚持下去的心理燃料",
+   fc:"如果你对持有的资产毫无感情，一遇到下跌就会卖出。带着真实认同感的投资，更能在逆风中坚守。",
+   bq:"\u201c如果你对自己的投资对象是有感情的……如果你一开始就对投资对象很感兴趣——这家企业的使命、产品、团队和技术等方面都非常合你的口味——那么当它因为收益下滑或需要帮助而进入不可避免的低谷期时，你至少会因为感到自己在做一件有意义的事而对损失没有那么在意。\u201d",
+   bs:"第11章·合乎情理胜过绝对理性"},
+  {r:"8",
+   ft:"你在2008年底那几个月的行为，比你从2000年到2008年所有投资行为对收益的影响都大",
+   fc:"投资的成败，集中在极少数关键时刻。能在所有人恐慌时保持冷静，才是真正的能力。",
+   bq:"\u201c拿破仑对军事天才的定义是\u2018当身边所有人都进入非理性状态时还能继续正常行事的人\u2019。投资也是如此……你在2008年末到2009年初这几个月里的投资表现，可能比你从2000年到2008年的全部投资行为对你收益的影响都大。\u201d",
+   bs:"第6章·尾部的胜利"},
+  {r:"7",
+   ft:"持有现金看似保守，但它赋予你在最好时机出手的能力——这本身就是巨大的回报",
+   fc:"在牛市中持有现金让人难受，但它防止了你在熊市最低点被迫卖出，这一点的价值远超表面的机会成本。",
+   bq:"\u201c比尔·盖茨在创立微软后不久，表示自己\u2018想到了一个保守至极的办法，那就是要在银行里存足够多的钱。这样一来，即使公司没有了任何收益来源，我们也支付得起员工一年的工资\u2019……巴菲特也表达过相似的观点：\u2018伯克希尔永远要有充足的现金……就算到了必须要选择的境地，我也绝不会拿一晚上的安稳觉来换赚取更多收益的机会。\u2019\u201d",
+   bs:"第13章·容错空间"},
+  {r:"6",
+   ft:"短期用的钱、中期用的钱、长期投资的钱——三者适用完全不同的策略",
+   fc:"用长期资金的逻辑管理短期资金，会在需要用钱时被迫在最坏的时机卖出；反之则会错失长期回报。",
+   bq:"\u201c我把自己的钱规划成了\u2018哑铃状\u2019。我用一部分来冒险，保守地把持着另一部分……我只想确保我能坚持足够长的时间，长到让我冒的险产生回报。你必须先生存下来，才有可能获得成功。\u201d",
+   bs:"第13章·容错空间；第20章·我的理财方案"},
+  {r:"5",
+   ft:"没有人能准确预测市场短期走势，但长期向上的大方向在历史上一直成立",
+   fc:"分清\u201c预测\u201d和\u201c信念\u201d：前者往往错，后者往往对。不要因为预测失败而放弃长期信念。",
+   bq:"\u201c市场上有很多关于经济周期、交易策略和投资领域选择的书，但最有力量、最重要的书应该叫《静下心来，耐心等待》。这本书只需要一页，上面印着记录经济长期增长的表格……每一个投资者都应该选择使自己实现目标的可能性最大化的策略。\u201d",
+   bs:"第4章·复利之谜；第20章·我的理财方案"},
+  {r:"4",
+   ft:"好的投资不是一次性的最高回报，而是能持续重复、不会让你出局的稳定回报",
+   fc:"高回报的投资往往是一次性的，很难重复。能持续执行、不会在关键时刻崩溃的策略，才是真正的好策略。",
+   bq:"\u201c好的投资并不一定意味着长期回报最高，因为高回报的投资往往是一次性的，很难重复。好的投资是可以持续获得不错的收益并能长期重复的投资——这正是复利开始大显身手的地方。\u201d",
+   bs:"第4章·复利之谜"},
+  {r:"3",
+   ft:"\u201c我不知道\u201d是最诚实也最有用的起点——它让你为多种可能的结果做好准备",
+   fc:"承认不确定性，才能构建真正稳健的投资组合。自以为能预测未来的人，往往是最脆弱的。",
+   bq:"\u201c卡尼曼说：\u2018每当我们遇到新的问题时，我们也会说：下次我再也不会犯同样的错误了。但事实上，如果你犯错是因为你没能预测到某些意外，你得到的教训应该是：世界很难预测。每天都在发生意料外的事。这就是你应该从意外事件中领悟的真理。\u2019\u201d",
+   bs:"第12章·意外！"},
+  {r:"2",
+   ft:"在投资领域，努力和结果之间几乎没有线性关系",
+   fc:"世界由尾事件驱动，少数关键因素决定大部分结果。抓住那几个关键点，再简单的策略也会有成效。",
+   bq:"\u201c我始终坚持的投资理念是，在投资领域，努力和结果之间几乎没有关系……我的投资策略并不依靠选择正确的行业或者把握下一次经济衰退的机会，而是依靠高储蓄率、耐心和认为接下来几十年里全球经济将不断创造价值的乐观态度。我把几乎全部投资精力都投入了这三方面——尤其是前两个，因为它们是我能掌控的。\u201d",
+   bs:"第20章·我的理财方案"}
+],
+clubs:[
+  {r:"A",
+   ft:"二战后美国消费主义的兴起，并非自然演化，而是政策刻意制造的结果",
+   fc:"低利率、信用卡、退伍军人贷款政策……整整一代人的消费习惯，被政策塑造。理解这个背景，才能理解今天的债务文化。",
+   bq:"\u201c在第二次世界大战后，为了维持经济运转，美国所做的第一件事就是保持低利率……普林斯顿大学的历史学家谢尔顿·加伦写道：1945年以后，美国再次与提倡储蓄的欧洲和东亚分道扬镳……政客、商人和工会领袖们都在鼓励美国人消费，以促进经济增长。\u201d",
+   bs:"附录·美国消费者心态形成简史"},
+  {r:"K",
+   ft:"总想和别人一样富有，是一场没有人能打赢的战役",
+   fc:"棒球界新手年薪50万，和特劳特比显得微不足道；特劳特年薪3600万，和顶级对冲基金经理比又相形见绌。攀比没有终点。",
+   bq:"\u201c问题在于，攀比的天花板很高，因此实际上没有任何人能触摸到它……取胜的唯一办法是根本不要加入这场战争——用知足的态度接受一切，即使这意味着自己比周围的人逊色……\u2018幸福是你拥有的减去你期待的。\u2019\u201d",
+   bs:"第3章·永不知足"},
+  {r:"Q",
+   ft:"当少数人的生活方式成为所有人的参照系时，整个社会都陷入了不可能实现的期望",
+   fc:"收入中位数几十年没有实质增长，但可参照的富人生活方式却通过媒体无处不在。这才是现代人普遍焦虑的深层根源。",
+   bq:"\u201c1993年至2012年，金字塔尖上1%的人群的收入增长了86.1%，而占据99%的底层人群的收入仅增长了6.6%……乔是一名投资银行家，年收入有90万美元……彼得是一家银行的分行经理，年薪8万美元。看着乔的生活，彼得潜意识里认为自己也有权利过上类似的生活……这是一种巨大的撕裂。\u201d",
+   bs:"附录·美国消费者心态形成简史"},
+  {r:"J",
+   ft:"超过某个收入水平之后，收入的增加不再显著提升幸福感——但低于这个水平时，贫困带来的痛苦是真实的",
+   fc:"金钱与幸福的关系不是线性的。在基本需求得到满足之前，金钱很重要；在那之后，关系、自主和意义远比金钱重要。",
+   bq:"\u201c美国是世界历史上最富有的国家，但是几乎没什么证据可以证明美国人现在比20世纪50年代时更幸福……约有45%的美国人表示他们前一天有过\u2018非常忧虑\u2019的情绪，而全球平均水平是39%……这种情况的部分原因是，美国人把很多钱花在买更大、更好的商品上，与此同时也就放弃了对自己时间的更多控制。\u201d",
+   bs:"第7章·自由"},
+  {r:"10",
+   ft:"从2007年到2009年，美国的物理能力没有任何改变，改变的只是人们讲述的故事",
+   fc:"一个外星人从2007年到2009年观察美国，会发现工厂、大学、技术都一样——但家庭财富蒸发了16万亿。改变的只是信念。",
+   bq:"\u201c从2007年到2009年，这个外星人看不到的一个变化是，关于经济发展，美国人对自己讲述的故事变了……唯一的改变就在这里，但它却改变了一切……故事是现存的对经济影响最大的潜在力量之一，它们既可以充当让经济的有形部分发挥作用的助燃剂，也可以成为抑制我们发展能力的制动器。\u201d",
+   bs:"第18章·当你相信一切的时候"},
+  {r:"9",
+   ft:"对暂时的不适反应过度，往往会打断一个有益的自然过程",
+   fc:"就像退烧药会干扰免疫系统的工作，在市场下跌时急于\u201c解决问题\u201d，往往会打断市场的自我出清过程。",
+   bq:"\u201c瓦格纳-尧雷格发现，发热可以帮助身体对抗传染病……冰期形成的关键并不一定是大量的降雪，而是雪能累积下来，无论量有多少……在投资中合乎情理的做法：选择能够让你长期坚持的策略，而不是理论上最完美的策略。\u201d",
+   bs:"第11章·合乎情理胜过绝对理性；第4章·复利之谜"},
+  {r:"8",
+   ft:"医生会根据患者的具体情况制定个性化方案，财务顾问却常常给所有人相同的建议",
+   fc:"最好的财务建议因人而异。适合你朋友的资产配置，可能完全不适合你，因为你们的目标、时间跨度和风险承受能力完全不同。",
+   bq:"\u201c克拉伦斯·休斯去看牙医，最终死于术后并发症——原因并非手术出错，而是他从一开始就不同意做这些手术……卡茨写道：\u2018医疗是一个复杂的行业，医患间的互动同样是一种复杂的过程。\u2019你知道还有什么职业也是这样吗？提供理财建议的……我无法告诉你应该如何去管理你的财富，因为我不了解你。\u201d",
+   bs:"第19章·总结"},
+  {r:"7",
+   ft:"\u201c工作到一定年限后退休\u201d这个概念在美国最多不过两代人的历史，我们对此完全没有经验",
+   fc:"401K计划1978年才出现。我们在一个全新的制度里，用几乎没有历史参照的方式，做影响几十年的决定。",
+   bq:"\u201c在第二次世界大战前，美国人会一直工作到死为止……直到20世纪80年代，\u2018人人都有权利并应当光荣退休\u2019的想法才成为现实……让我来重申一下这个概念的历史有多短：401K计划——美国主要的养老保险制度——直到1978年才出现；罗斯个人退休金账户(Roth IRA)直到1998年才诞生。如果把后者看成一个人，那么他现在刚刚达到能饮酒的年龄。\u201d",
+   bs:"第1章·没有人真的对钱失去理智"},
+  {r:"6",
+   ft:"在一个全球化竞争白热化的世界里，灵活度是少数几种真正能拉开差距的特质之一",
+   fc:"智力优势越来越难保持，信息优势越来越难持续。但对时间的掌控权，是技术无法直接取代的竞争力。",
+   bq:"\u201c我们生活在一个紧密联系的世界里……和你竞争的人已经从一个小镇上的几百或几千人变成了全球范围内的几百万或几十亿人……在一个联系越发紧密的全球化世界里，智力不再是一个可靠的优势。但你拥有的灵活度却是……拥有这种灵活度，你就可以等待好机会来临。\u201d",
+   bs:"第10章·存钱"},
+  {r:"5",
+   ft:"每一次克制消费，都是在为未来的自己购买一个选项",
+   fc:"节俭不是苦行，而是一种战略选择——用今天的克制，换取未来更大的灵活性和自主性。",
+   bq:"\u201c我妻子和我……或多或少始终保持着此前的生活方式。这使得我们的储蓄率不断上升……我们增长的每一美元收入都变成了储蓄——我们的\u2018自主基金\u2019……如果说我的家庭理财计划中有哪一部分是我引以为傲的，那便是我们在年轻时就已经决定，我们对生活方式的欲望不会随着收入水涨船高。\u201d",
+   bs:"第20章·我的理财方案"},
+  {r:"4",
+   ft:"任何收入水平的人，都可以通过正确的行为积累财富；也都可以通过错误的行为耗尽财富",
+   fc:"门卫里德和哈佛MBA福斯肯的故事，证明财富积累更多是行为的函数，而不是收入的函数。",
+   bq:"\u201c罗纳德·里德出生于佛蒙特州的乡下……里德曾在一家加油站做过25年汽车修理工，又在杰西潘尼服装商场拖了17年地板……在遗嘱中，这位曾经的门卫将200万美元留给了自己的继子女，而把剩下的600多万捐献给了当地的医院和图书馆……里德将能攒的每一分钱都积攒起来，然后去买了蓝筹股，接下来便是漫长的等待。\u201d",
+   bs:"序言·地球上最伟大的表演"},
+  {r:"3",
+   ft:"虚荣是储蓄率最大的敌人——不在乎别人眼光的人，自然不需要用消费来证明自己",
+   fc:"那些长期成功管理个人财富的人，未必收入最高，但几乎都有一个特质：对社会比较几乎免疫。",
+   bq:"\u201c那些长期成功经营个人财富的人并不一定有着高收入。他们的一个共同点是，完全不在乎别人如何看待自己……当你不再关心别人怎么看你，你的欲望自然就会减少。当你的欲望减少，开支自然就会减少。当开支减少，储蓄率自然会提高。\u201d",
+   bs:"第10章·存钱"},
+  {r:"2",
+   ft:"金融服务业从复杂性中赚钱，而你从简单中赚钱",
+   fc:"低成本指数基金+长期持有+高储蓄率——这套方案对大多数普通投资者而言是最优解，尽管它显得太简单。",
+   bq:"\u201c我们把全家人的闲钱都投入了这些指数基金——美国本土和其他国家股票的组合……我家的理财方案就是这么简单。实际上，我们所有的金融净资产不过是一套房子、一个支票账户和一些先锋领航集团旗下的指数基金罢了。对我们来说，事情不需要更复杂了。\u201d",
+   bs:"第20章·我的理财方案"}
+]
+};
+
+// ════ STATE ════
+var si=0, ci=[0,0,0,0,0], flip=false, busy=false;
+function suit(i){return SUITS[i];}
+function cards(i){return DATA[SORD[i]];}
+function cur(){return cards(si)[ci[si]];}
+
+// ════ RESPONSIVE SIZE ════
+function calcSize(){
+  var W=window.innerWidth, H=window.innerHeight;
+  var GAP=10, VHEAD=52, VFOOT=44;
+  var availW = W - GAP*4;
+  var availH = H - VHEAD - VFOOT - GAP*4;
+  // 1.4*cw ≤ availW  and  1.4*ch ≤ availH  with  ch = cw*88/57
+  var cwByW = availW / 1.4;
+  var cwByH = (availH / 1.4) * 57/88;
+  var cw = Math.floor(Math.min(cwByW, cwByH, 320));
+  cw = Math.max(cw, 130);
+  var ch = Math.round(cw * 88/57);
+  document.documentElement.style.setProperty("--cw", cw+"px");
+  document.documentElement.style.setProperty("--ch", ch+"px");
+  document.documentElement.style.setProperty("--pgap", GAP+"px");
+}
+
+// ════ RENDER ════
+function render(anim){
+  if(anim){
+    busy=true;
+    var ct=document.getElementById("pgCt");
+    ct.classList.add("as-"+anim);
+    setTimeout(function(){ct.classList.remove("as-"+anim);busy=false;draw();},200);
+  } else {draw();}
+  drawTabs(); drawDots(); drawLabel(); drawPeeks();
+}
+
+// Resolve effective color for a card (joker cards have per-card vc override)
+function vc(s,c){ return (c&&c.vc)?c.vc:s.c; }
+
+function mkCorner(s,c){
+  var isJ=(s.id==="jokers");
+  var isJokerCard=(c.r==="JOKER");
+  var rkStyle=isJokerCard?' style="font-size:clamp(8px,calc(var(--cw)*.065),13px);letter-spacing:1px"':'';
+  return '<div class="rk"'+rkStyle+'>'+c.r+'</div>'+
+         (isJ?'':'<div class="sy">'+s.s+'</div>');
+}
+
+function mkFace(s,c,isFront){
+  var v=vc(s,c);
+  var cc="c"+v, dv="dv"+v, bd="bd"+v;
+  var badgeBg=v==="red"?"#c0392b":v==="black"?"#1a1a1a":"#6c3483";
+  var isJ=(s.id==="jokers");
+  var corner=mkCorner(s,c);
+  if(isFront){
+    return '<div class="crnr tl '+cc+'">'+corner+'</div>'+
+      '<div class="card-body">'+
+      (isJ?'<span class="c-badge" style="background:'+badgeBg+'">'+c.r+'</span>':'')+
+      '<div class="c-title '+cc+'">'+c.ft+'</div>'+
+      '<div class="c-div '+dv+'"></div>'+
+      '<div class="c-body">'+c.fc+'</div></div>'+
+      '<div class="crnr br '+cc+'">'+corner+'</div>';
+  } else {
+    return '<div class="crnr tl '+cc+'">'+corner+'</div>'+
+      '<div class="back-body">'+
+      '<div class="bq '+cc+' '+bd+'">'+c.bq+'</div>'+
+      '<div class="bsrc">\uD83D\uDCD6 <b>'+c.bs+'</b></div></div>'+
+      '<div class="crnr br '+cc+'">'+corner+'</div>';
+  }
+}
+
+function mkPeekCard(s,c){
+  var v=vc(s,c);
+  return '<div class="peek-card bg'+v+'">'+
+    '<div class="crnr tl c'+v+'">'+mkCorner(s,c)+'</div>'+
+    '</div>';
+}
+
+function draw(){
+  var s=suit(si), c=cur(), v=vc(s,c);
+  var f=document.getElementById("cFront"), b=document.getElementById("cBack");
+  f.className="card-face front-f bg"+v;
+  b.className="card-face back-f bg"+v;
+  f.innerHTML=mkFace(s,c,true);
+  b.innerHTML=mkFace(s,c,false);
+  if(flip){document.getElementById("cInner").classList.remove("flipped");flip=false;}
+}
+
+function drawTabs(){
+  var h="";
+  for(var i=0;i<5;i++){
+    var s=suit(i), on=(i===si)?" on-"+s.c:"";
+    h+='<button class="stab'+on+'" onclick="jumpSuit('+i+')">'+s.n+'</button>';
+  }
+  document.getElementById("sTabs").innerHTML=h;
+}
+
+function drawDots(){
+  var cs=cards(si), s=suit(si), h="";
+  for(var i=0;i<cs.length;i++){
+    var on=(i===ci[si])?" on-"+s.c:"";
+    h+='<div class="d'+on+'" onclick="jumpCard('+i+')"></div>';
+  }
+  document.getElementById("dots").innerHTML=h;
+}
+
+function drawLabel(){
+  var s=suit(si), c=cur();
+  document.getElementById("posLbl").textContent=s.s+" "+(ci[si]+1)+"/"+cards(si).length;
+}
+
+function drawPeeks(){
+  var cs=cards(si), s=suit(si);
+  var pgTp=document.getElementById("pgTp");
+  var pgBt=document.getElementById("pgBt");
+  var pgLf=document.getElementById("pgLf");
+  var pgRt=document.getElementById("pgRt");
+  pgTp.innerHTML=(si>0)      ?mkPeekCard(suit(si-1),cards(si-1)[ci[si-1]]):"";
+  pgBt.innerHTML=(si<4)      ?mkPeekCard(suit(si+1),cards(si+1)[ci[si+1]]):"";
+  pgLf.innerHTML=(ci[si]>0)  ?mkPeekCard(s,cs[ci[si]-1]):"";
+  pgRt.innerHTML=(ci[si]<cs.length-1)?mkPeekCard(s,cs[ci[si]+1]):"";
+  // Disable pointer-events on empty peeks
+  pgTp.style.pointerEvents=(si>0)?"":"none";
+  pgBt.style.pointerEvents=(si<4)?"":"none";
+  pgLf.style.pointerEvents=(ci[si]>0)?"":"none";
+  pgRt.style.pointerEvents=(ci[si]<cs.length-1)?"":"none";
+}
+
+// ════ NAVIGATION ════
+function nextCard(){if(busy||ci[si]>=cards(si).length-1)return;ci[si]++;render("L");}
+function prevCard(){if(busy||ci[si]<=0)return;ci[si]--;render("R");}
+function nextSuit(){if(busy||si>=4)return;si++;render("U");}
+function prevSuit(){if(busy||si<=0)return;si--;render("D");}
+function jumpSuit(i){if(i===si)return;var d=i>si?"U":"D";si=i;render(d);}
+function jumpCard(i){if(i===ci[si])return;var d=i>ci[si]?"L":"R";ci[si]=i;render(d);}
+function doFlip(){flip=!flip;document.getElementById("cInner").classList.toggle("flipped",flip);}
+
+// ════ TOUCH ════
+var tx=0,ty=0,inTouch=false,touchFlipped=false;
+document.addEventListener("touchstart",function(e){
+  if(!document.getElementById("viewer").classList.contains("active"))return;
+  inTouch=true;tx=e.touches[0].clientX;ty=e.touches[0].clientY;
+},{passive:true});
+document.addEventListener("touchend",function(e){
+  if(!document.getElementById("viewer").classList.contains("active"))return;
+  if(!inTouch)return;inTouch=false;
+  var dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+  var ax=Math.abs(dx), ay=Math.abs(dy);
+  if(ax<14&&ay<14){
+    var ct=document.getElementById("pgCt");
+    var node=e.target,inside=false;
+    while(node&&node!==document.body){if(node===ct){inside=true;break;}node=node.parentNode;}
+    if(inside){
+      doFlip();
+      touchFlipped=true;
+      setTimeout(function(){touchFlipped=false;},600);
+    }
+    return;
+  }
+  if(ax>ay&&ax>40){dx<0?nextCard():prevCard();}
+  else if(ay>ax&&ay>40){dy<0?nextSuit():prevSuit();}
+},{passive:true});
+
+document.getElementById("pgCt").addEventListener("click",function(){
+  if(touchFlipped)return;
+  doFlip();
+});
+
+// ════ KEYBOARD ════
+document.addEventListener("keydown",function(e){
+  if(!document.getElementById("viewer").classList.contains("active"))return;
+  if(e.key==="ArrowRight")nextCard();
+  else if(e.key==="ArrowLeft")prevCard();
+  else if(e.key==="ArrowDown")nextSuit();
+  else if(e.key==="ArrowUp")prevSuit();
+  else if(e.key===" "||e.key==="Enter"){e.preventDefault();doFlip();}
+  else if(e.key==="Escape")closeViewer();
+});
+
+// ════ DEAL ANIMATION ════
+function fanOut(callback){
+  var iso=document.querySelector(".deck-iso");
+  var wrap=document.querySelector(".iso-wrap");
+  var rect=wrap.getBoundingClientRect();
+  var cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+  var ov=document.createElement("div");
+  ov.style.cssText="position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden;";
+  document.body.appendChild(ov);
+  // 5 cards dealt one by one to positions around the table (荷官发牌)
+  var items=[
+    {s:"\uD83C\uDCCF",c:"#6c3483",tx:-300,ty:40,r:-5,d:0},     // 发到左侧
+    {s:"\u2660",     c:"#1a1a1a", tx:-185,ty:-210,r:-3,d:60},   // 发到左上
+    {s:"\u2665",     c:"#c0392b", tx:0,   ty:-260,r:0, d:120},  // 发到正上
+    {s:"\u2666",     c:"#c0392b", tx:200, ty:-200,r:3, d:180},  // 发到右上
+    {s:"\u2663",     c:"#1a1a1a", tx:305, ty:50,  r:5, d:240}   // 发到右侧
+  ];
+  var w=56,h=86;
+  items.forEach(function(p){
+    var el=document.createElement("div");
+    // 牌背面深色（模拟正式发牌，面朝下）
+    el.style.cssText="position:absolute;width:"+w+"px;height:"+h+"px;"+
+      "left:"+(cx-w/2)+"px;top:"+(cy-h/2)+"px;"+
+      "background:linear-gradient(135deg,#0a0a05 60%,#1a1a0e);"+
+      "border-radius:7px;border:2px solid #c9a227;"+
+      "box-shadow:0 6px 18px rgba(0,0,0,.45);"+
+      "display:flex;align-items:center;justify-content:center;"+
+      "font-size:26px;color:"+p.c+";"+
+      /* 快速弹出（cubic-bezier 模拟荷官甩牌：极快启动，末端略减速） */
+      "transition:transform .2s cubic-bezier(.05,0,.15,1) "+p.d+"ms,"+
+        "opacity .15s ease "+(p.d+190)+"ms;";
+    el.textContent=p.s;
+    ov.appendChild(el);
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      el.style.transform="translate("+p.tx+"px,"+p.ty+"px) rotate("+p.r+"deg)";
+      el.style.opacity="0";
+    });});
+  });
+  iso.classList.add("launching");
+  document.getElementById("preview").classList.add("fanning");
+  setTimeout(function(){
+    document.body.removeChild(ov);
+    iso.classList.remove("launching");
+    callback();
+  },600);
+}
+
+// ════ OPEN / CLOSE ════
+function openViewer(){
+  var btn=document.querySelector(".deck-btn");
+  btn.disabled=true;
+  fanOut(function(){
+    calcSize();
+    si=0;ci=[0,0,0,0,0];flip=false;busy=false;
+    document.getElementById("preview").classList.remove("fanning");
+    document.getElementById("preview").classList.add("hidden");
+    document.getElementById("viewer").classList.add("active");
+    render(null);
+    btn.disabled=false;
+  });
+}
+function closeViewer(){
+  document.getElementById("viewer").classList.remove("active");
+  document.getElementById("preview").classList.remove("hidden");
+  document.querySelector(".deck-btn").disabled=false;
+}
+
+window.addEventListener("resize",function(){
+  if(document.getElementById("viewer").classList.contains("active"))calcSize();
+});
+</script>
+</body>
+</html>
