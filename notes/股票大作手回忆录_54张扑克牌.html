@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>股票大作手回忆录·54张牌</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  background:#1b2838;
+}
+
+/* ═══ APP SHELL ═══ */
+#app{display:flex;flex-direction:column;height:100vh;width:100vw;overflow:hidden;}
+
+/* ─── HEADER ─── */
+#header{
+  flex-shrink:0;
+  background:linear-gradient(160deg,#0a1a0d 0%,#162314 70%,#1e3020 100%);
+  color:#fff;padding:12px 20px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.hd-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.hd-row1{display:flex;align-items:baseline;gap:10px;}
+.hd-title{font-size:18px;font-weight:700;letter-spacing:2px;}
+.hd-title em{font-style:normal;color:#d4a017;}
+.hd-sub{font-size:11px;opacity:.65;letter-spacing:.5px;}
+.back-btn{
+  font-size:12px;color:rgba(255,255,255,.65);
+  text-decoration:none;padding:5px 12px;
+  border:1px solid rgba(255,255,255,.2);border-radius:20px;
+  white-space:nowrap;transition:all .2s;flex-shrink:0;
+}
+.back-btn:hover{color:#fff;border-color:rgba(255,255,255,.5);}
+.hd-legend{display:flex;flex-wrap:wrap;gap:6px;}
+.legend-pill{font-size:11px;padding:3px 10px;border:1px solid rgba(255,255,255,.2);border-radius:20px;opacity:.8;}
+
+/* ─── MAIN (preview lives here) ─── */
+#main{flex:1;position:relative;overflow:hidden;background:#f0ebe0;}
+
+/* ─── PREVIEW ─── */
+#preview{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:28px;background:#f0ebe0;
+  transition:opacity .3s ease,transform .3s ease;
+}
+#preview.hidden{opacity:0;pointer-events:none;transform:scale(.96);}
+#preview.fanning{animation:previewFade .25s ease forwards .45s;}
+@keyframes previewFade{to{opacity:0;pointer-events:none;}}
+
+.deck-btn{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;padding:0;-webkit-appearance:none;}
+.iso-wrap{perspective:900px;width:300px;height:270px;display:flex;align-items:center;justify-content:center;}
+.deck-iso{
+  position:relative;width:148px;height:228px;
+  transform:rotateX(22deg) rotateY(-22deg) rotateZ(2deg);
+  transform-style:preserve-3d;transition:transform .4s ease;pointer-events:none;
+}
+.deck-btn:hover .deck-iso{transform:rotateX(16deg) rotateY(-26deg) rotateZ(2deg) scale(1.05);}
+.deck-btn:active .deck-iso{transform:rotateX(25deg) rotateY(-18deg) rotateZ(2deg) scale(.97);}
+.top-card{
+  position:absolute;inset:0;background:#0a0a05;border-radius:9px;
+  border:1px solid rgba(255,255,255,.08);box-shadow:0 8px 28px rgba(0,0,0,.45);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:10;overflow:hidden;padding:10px;
+}
+.bc-rule{width:80%;height:1.5px;background:#c9a227;margin:6px 0;}
+.bc-cn1{font-size:19px;font-weight:900;color:#f5f0e0;letter-spacing:2px;text-align:center;}
+.bc-cn2{font-size:18px;font-weight:700;color:#c9a227;letter-spacing:4px;text-align:center;}
+.bc-en{font-size:8px;color:#aaa;letter-spacing:1.5px;text-align:center;}
+.bc-au{font-size:10px;color:#888;letter-spacing:2px;text-align:center;margin-top:6px;}
+.bc-hint{font-size:9px;color:#444;letter-spacing:2px;text-align:center;margin-top:10px;}
+.dl{position:absolute;border-radius:9px;border:1px solid rgba(0,0,0,.07);}
+.dl:nth-child(1){inset:0;transform:translate3d(4px,4px,-5px);background:#ececec;}
+.dl:nth-child(2){inset:0;transform:translate3d(8px,8px,-10px);background:#e6e6e6;}
+.dl:nth-child(3){inset:0;transform:translate3d(12px,12px,-15px);background:#e0e0e0;}
+.dl:nth-child(4){inset:0;transform:translate3d(16px,16px,-20px);background:#dadada;}
+.dl:nth-child(5){inset:0;transform:translate3d(20px,20px,-25px);background:#d4d4d4;}
+.dl:nth-child(6){inset:0;transform:translate3d(24px,24px,-30px);background:#cecece;}
+.dl:nth-child(7){inset:0;transform:translate3d(28px,28px,-35px);background:#c8c8c8;}
+.open-label{
+  background:#1b2838;color:#fff;padding:14px 44px;border-radius:50px;
+  font-size:15px;letter-spacing:2px;margin-top:40px;box-shadow:0 4px 20px rgba(0,0,0,.28);
+}
+
+/* ═══════════════════════════════════
+   VIEWER  —  fullscreen overlay
+═══════════════════════════════════ */
+#viewer{
+  position:fixed;inset:0;z-index:50;
+  background:#ece7db;
+  display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;
+  transition:opacity .35s ease;
+}
+#viewer.active{opacity:1;pointer-events:all;}
+
+/* Top bar: suit tabs + close */
+.v-head{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px 6px;
+}
+.suit-tabs{display:flex;gap:5px;}
+.stab{
+  padding:5px 12px;border-radius:20px;font-size:14px;font-weight:500;
+  border:none;cursor:pointer;background:rgba(0,0,0,.08);color:#777;
+  transition:all .2s;-webkit-appearance:none;
+}
+.stab.on-black{background:#1a1a1a;color:#fff;}
+.stab.on-red{background:#c0392b;color:#fff;}
+.stab.on-joker{background:#6c3483;color:#fff;}
+.close-x{background:none;border:none;font-size:20px;cursor:pointer;color:#bbb;padding:4px 8px;transition:color .2s;}
+.close-x:hover{color:#333;}
+
+/* Body: centers the 3×3 grid */
+.v-body{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+
+/* ─── 3×3 CARD GRID ─── */
+:root{--cw:200px;--ch:308px;--pgap:10px;}
+.v-grid{
+  display:grid;
+  grid-template-columns:calc(var(--cw)*.2) var(--cw) calc(var(--cw)*.2);
+  grid-template-rows:calc(var(--ch)*.2) var(--ch) calc(var(--ch)*.2);
+  gap:var(--pgap);
+}
+
+/* Peek slots — overflow:hidden clips the full card to show 20% */
+.pg-tp,.pg-bt,.pg-lf,.pg-rt{
+  position:relative;overflow:hidden;
+  border-radius:10px;cursor:pointer;
+  transition:opacity .15s;
+}
+.pg-tp:active,.pg-bt:active,.pg-lf:active,.pg-rt:active{opacity:.75;}
+
+.pg-tp{grid-column:2;grid-row:1;}   /* top    → prev suit  */
+.pg-ct{grid-column:2;grid-row:2;}   /* center → active card */
+.pg-bt{grid-column:2;grid-row:3;}   /* bottom → next suit  */
+.pg-lf{grid-column:1;grid-row:2;}   /* left   → prev card  */
+.pg-rt{grid-column:3;grid-row:2;}   /* right  → next card  */
+
+/* Full-size card rendered inside a peek slot;
+   always anchored top-left so the TL corner (rank+suit) is visible */
+.peek-card{
+  position:absolute;top:0;left:0;
+  width:var(--cw);height:var(--ch);
+  background:#fff;border-radius:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,.18);
+  border:1px solid rgba(0,0,0,.07);
+  overflow:hidden;
+}
+
+/* ─── CENTER CARD ─── */
+.card-stage{width:var(--cw);height:var(--ch);perspective:1000px;}
+.card-inner{
+  position:relative;width:100%;height:100%;
+  transform-style:preserve-3d;
+  transition:transform .56s cubic-bezier(.4,0,.2,1);
+  cursor:pointer;
+}
+.card-inner.flipped{transform:rotateY(180deg);}
+.card-face{
+  position:absolute;inset:0;
+  background:#fff;border-radius:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,.18),0 2px 8px rgba(0,0,0,.08);
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border:1px solid rgba(0,0,0,.07);
+  overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+  display:flex;flex-direction:column;
+}
+.card-face.back-f{transform:rotateY(180deg);}
+
+/* Card corners */
+.crnr{position:absolute;display:flex;flex-direction:column;align-items:center;line-height:1.15;padding:9px 10px;}
+.crnr.tl{top:0;left:0;}
+.crnr.br{bottom:0;right:0;transform:rotate(180deg);}
+.crnr .rk{font-size:clamp(13px,calc(var(--cw)*.105),26px);font-weight:800;}
+.crnr .sy{font-size:clamp(11px,calc(var(--cw)*.086),20px);}
+
+/* Card body — front */
+.card-body{
+  flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:8px 18px;margin:clamp(40px,calc(var(--ch)*.155),58px) 0;
+}
+.c-badge{
+  display:inline-flex;align-self:flex-start;
+  font-size:clamp(9px,calc(var(--cw)*.05),11px);font-weight:700;letter-spacing:1px;
+  padding:2px 9px;border-radius:10px;margin-bottom:8px;color:#fff;
+}
+.c-title{font-size:clamp(14px,calc(var(--cw)*.093),22px);font-weight:800;line-height:1.4;margin-bottom:10px;}
+.c-div{width:28px;height:2.5px;border-radius:2px;margin-bottom:10px;opacity:.35;}
+.c-body{font-size:clamp(12px,calc(var(--cw)*.07),15px);line-height:1.85;color:#3a3a3a;}
+
+/* Card body — back */
+.back-body{
+  flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:8px 18px;margin:clamp(40px,calc(var(--ch)*.155),58px) 0;
+}
+.bq{
+  font-size:clamp(12px,calc(var(--cw)*.068),15px);line-height:1.85;
+  border-left:3.5px solid;padding-left:12px;
+  margin-bottom:12px;color:#2c2c2c;
+  font-style:italic;word-break:break-all;
+}
+.bsrc{font-size:clamp(10px,calc(var(--cw)*.059),13px);color:#999;line-height:1.6;}
+.bsrc b{color:#666;}
+
+/* Color utilities */
+.cblack{color:#1a1a1a;}.cred{color:#c0392b;}.cjoker{color:#6c3483;}
+.bgblack{background:rgba(26,26,26,.04);}.bgred{background:rgba(192,57,43,.04);}.bgjoker{background:rgba(108,52,131,.04);}
+.bdblack{border-color:#1a1a1a;}.bdred{border-color:#c0392b;}.bdjoker{border-color:#6c3483;}
+.dvblack{background:#1a1a1a;}.dvred{background:#c0392b;}.dvjoker{background:#6c3483;}
+
+/* Footer: dots + position label */
+.v-foot{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  padding:6px 16px 12px;
+}
+.dots{display:flex;gap:4px;flex-wrap:wrap;max-width:260px;justify-content:center;}
+.d{width:6px;height:6px;border-radius:50%;background:rgba(0,0,0,.15);cursor:pointer;transition:all .25s;}
+.d.on-black{background:#1a1a1a;width:18px;border-radius:3px;}
+.d.on-red{background:#c0392b;width:18px;border-radius:3px;}
+.d.on-joker{background:#6c3483;width:18px;border-radius:3px;}
+.pos-lbl{font-size:12px;color:#aaa;letter-spacing:.5px;white-space:nowrap;}
+
+/* Slide animations */
+@keyframes sL{0%{opacity:1;transform:translateX(0)}45%{opacity:0;transform:translateX(-60px)}55%{opacity:0;transform:translateX(75px)}100%{opacity:1;transform:translateX(0)}}
+@keyframes sR{0%{opacity:1;transform:translateX(0)}45%{opacity:0;transform:translateX(60px)}55%{opacity:0;transform:translateX(-75px)}100%{opacity:1;transform:translateX(0)}}
+@keyframes sU{0%{opacity:1;transform:translateY(0)}45%{opacity:0;transform:translateY(-50px)}55%{opacity:0;transform:translateY(65px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes sD{0%{opacity:1;transform:translateY(0)}45%{opacity:0;transform:translateY(50px)}55%{opacity:0;transform:translateY(-65px)}100%{opacity:1;transform:translateY(0)}}
+.as-L .card-inner{animation:sL .36s ease forwards;}
+.as-R .card-inner{animation:sR .36s ease forwards;}
+.as-U .card-inner{animation:sU .36s ease forwards;}
+.as-D .card-inner{animation:sD .36s ease forwards;}
+
+/* Fan animation */
+@keyframes deckLaunch{
+  0%{transform:rotateX(22deg) rotateY(-22deg) rotateZ(2deg) scale(1);}
+  40%{transform:rotateX(12deg) rotateY(-28deg) rotateZ(-2deg) scale(1.08);}
+  100%{transform:rotateX(5deg) rotateY(0deg) rotateZ(0deg) scale(0.05);opacity:0;}
+}
+.deck-iso.launching{animation:deckLaunch .55s cubic-bezier(.4,0,.6,1) forwards;pointer-events:none;}
+
+@media(max-height:600px){
+  #header{padding:8px 16px;}
+  .v-head{padding:6px 12px 3px;}
+  .v-foot{padding:4px 16px 8px;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ═══ HEADER ═══ -->
+  <header id="header">
+    <div class="hd-top">
+      <div class="hd-row1">
+        <span class="hd-title">《股票大作手回忆录》<em>54张牌</em></span>
+        <span class="hd-sub">正面提炼 · 背面原文</span>
+      </div>
+      <a class="back-btn" href="https://dongtao2026.github.io/research-lab/index.html">← 返回数据库</a>
+    </div>
+    <div class="hd-legend">
+      <span class="legend-pill">🃏 王·核心思想</span>
+      <span class="legend-pill">♠ 黑桃·市场认知</span>
+      <span class="legend-pill">♥ 红心·交易纪律</span>
+      <span class="legend-pill">♦ 方块·操盘智慧</span>
+      <span class="legend-pill">♣ 梅花·人性命运</span>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN: preview only ═══ -->
+  <div id="main">
+    <div id="preview">
+      <button class="deck-btn" onclick="openViewer()">
+        <div class="iso-wrap">
+          <div class="deck-iso">
+            <div class="dl"></div><div class="dl"></div><div class="dl"></div>
+            <div class="dl"></div><div class="dl"></div><div class="dl"></div><div class="dl"></div>
+            <div class="top-card">
+              <div class="bc-rule"></div>
+              <div class="bc-cn1">股票大作手</div>
+              <div class="bc-cn2">回忆录</div>
+              <div class="bc-rule"></div>
+              <div class="bc-en">REMINISCENCES OF A STOCK OPERATOR</div>
+              <div class="bc-au">杰西·利弗莫尔</div>
+              <div class="bc-hint">54 张 · 点击展开</div>
+            </div>
+          </div>
+        </div>
+        <div class="open-label">发　　牌</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ VIEWER OVERLAY ═══ -->
+  <div id="viewer">
+    <!-- Top bar -->
+    <div class="v-head">
+      <div class="suit-tabs" id="sTabs"></div>
+      <button class="close-x" onclick="closeViewer()">✕</button>
+    </div>
+    <!-- 3×3 card grid -->
+    <div class="v-body">
+      <div class="v-grid">
+        <div class="pg-tp" id="pgTp" onclick="prevSuit()"></div>
+        <div class="pg-lf" id="pgLf" onclick="prevCard()"></div>
+        <div class="pg-ct" id="pgCt">
+          <div class="card-stage">
+            <div class="card-inner" id="cInner">
+              <div class="card-face front-f" id="cFront"></div>
+              <div class="card-face back-f" id="cBack"></div>
+            </div>
+          </div>
+        </div>
+        <div class="pg-rt" id="pgRt" onclick="nextCard()"></div>
+        <div class="pg-bt" id="pgBt" onclick="nextSuit()"></div>
+      </div>
+    </div>
+    <!-- Dots footer -->
+    <div class="v-foot">
+      <div class="dots" id="dots"></div>
+      <div class="pos-lbl" id="posLbl"></div>
+    </div>
+  </div>
+
+</div><!-- #app -->
+
+<script>
+// ════ DATA ════
+var SUITS=[
+  {id:"jokers",n:"王",s:"🃏",c:"joker"},
+  {id:"spades",n:"♠",s:"♠",c:"black"},
+  {id:"hearts",n:"♥",s:"♥",c:"red"},
+  {id:"diamonds",n:"♦",s:"♦",c:"red"},
+  {id:"clubs",n:"♣",s:"♣",c:"black"}
+];
+var SORD=["jokers","spades","hearts","diamonds","clubs"];
+
+var DATA={
+jokers:[
+  {r:"JOKER",vc:"red",ft:"华尔街没有新鲜事——人性不变，市场也不变",
+   fc:"无论技术如何进步，交易工具如何演变，驱动市场的永远是人类的贪婪与恐惧。理解人性，比研究任何技术指标都更重要。",
+   bq:"\u201c我从早年的经历中还学到了另一课，华尔街没有新鲜事。投机乃人类天性，就像山丘那样古老，华尔街不可能有什么新鲜的东西。不论今天在股票市场上发生了何等匪夷所思的事情，都必定前有古人、后有来者。我不忘记这一点。\u201d",
+   bs:"第一章·小后生抄价格悟出行情模式"},
+  {r:"JOKER",vc:"black",ft:"投机者最大的敌人，永远潜藏在他的内部",
+   fc:"希望和恐惧，是人类无法割除的本能，也是投机失败的两大根源。外部市场的风险是可见的，内心的弱点才是真正致命的。",
+   bq:"\u201c投机者的主要敌人总是潜藏在他的内部自挖墙脚的。不可能把\u2018希望\u2019从人类的天性中割除，也不可能把\u2018恐惧\u2019从人类的天性中割除。在从事投机时，如果市场运行对你不利，每一天你都希望这是最后一天——盲目听从希望的摆布，不接受最初的损失，到头来，亏损反而变本加厉。\u201d",
+   bs:"译者前言·第三节"}
+],
+spades:[
+  {r:"A",ft:"价格不会无缘无故运动，它总是沿阻力最小的方向走",
+   fc:"做多的时候，上行是最小阻力；做空的时候，下行是最小阻力。认清最小阻力的方向，是一切交易的起点。",
+   bq:"\u201c他领悟到市场按照最小阻力路线演变，这就是趋势；总体市场的大趋势决定个股演变趋势，真正的利润来自总体市场趋势，而不是个别股票的个别短线波动。只有当他领悟出这一点之后，他才从豪赌客跃升为职业交易家。\u201d",
+   bs:"译者前言·第二节"},
+  {r:"K",ft:"在一轮熊市中，再好的个股也难独善其身；在一轮牛市中，平庸的股票也会随势而涨",
+   fc:"研究个股，不如先研究大势。大势判断错了，个股研究越深，亏损可能越大。",
+   bq:"\u201c（利弗莫尔）在对赌行的成功几乎完全建立在对行情数字序列形态的个人经验和认识上……最终，他领悟到市场按照最小阻力路线演变……在市场技术分析中，趋势是核心概念，行为要领是服从纪律。通过本书，技术分析从业者可以正本清源，认识技术分析的起源、发展，最重要的是切实体验到趋势的重要性，把趋势永远放在技术分析的核心地位。\u201d",
+   bs:"译者前言·第二节"},
+  {r:"Q",ft:"当下发生了什么比为什么发生更重要——行动不能等待解释",
+   fc:"原因可以在几天后、几周后甚至几个月后才清晰，但你必须立刻行动。等你弄清楚原因，机会早已消失。",
+   bq:"\u201c今天某股票行情如此这般的原因，也许在二、三天内都不清楚，或者在若干星期之内都不清楚，甚或在数月之内都不清楚。然而，究竟这原因与你何干？你用纸带做买卖，只在此刻——不是将来。原因可以放一放，以后再追查。但，你必须立刻行动——不然就被市场抛弃。\u201d",
+   bs:"第一章·小后生抄价格悟出行情模式"},
+  {r:"J",ft:"价格运动本身就是最真实的信息，因为它是所有参与者共同博弈的结果",
+   fc:"研究财报和故事有价值，但市场的真实表态永远体现在价格的运动方式上。",
+   bq:"\u201c在我眼中，这些数字并不代表股票的价钱，多少多少美元一股什么的。它们就是数字……我注意到，在行情上涨或下跌时，股票价格往往表现出特定的习惯——如果可以这样描述的话。我看到了无穷无尽地重复发生的相似现象，从中可以提取范例，作为未来的指引。\u201d",
+   bs:"第一章·小后生抄价格悟出行情模式"},
+  {r:"10",ft:"当\u201c显赫内部人士\u201d开始高调发表利好声明时，他们往往已经在卖出了",
+   fc:"真正的利好消息，内部人会悄悄买入，对外沉默。等消息传到你耳朵里，那份利好已经被充分定价了。",
+   bq:"\u201c当某个股票真正处于低估值时，内部人悄悄买入，对外保持沉默；等到他们拿够了，各种利好消息才开始满天飞，引导公众接盘……当你读到\u2018显赫的董事\u2019说的话之后，他们相信什么呢？普通的圈外人能想些什么呢？……他们本该记住，虽然已经完成向公众发行新股，但工作并没有结束。\u201d",
+   bs:"第二十三章·内部人明借\u201c空头打压\u201d等解释行情，暗度陈仓"},
+  {r:"9",ft:"股票持续下跌，从来不是空头的错，一定是它本身出了问题",
+   fc:"凡是内部人声称\u201c空头打压\u201d的时候，往往正是他们自己在悄悄卖出。这个说辞越强烈，越值得警惕。",
+   bq:"\u201c在我记忆中没有哪一例空头袭击事件曾经导致某个股票持续下跌的……当某个股票保持下跌的时候，你可以肯定该股票一定有什么地方不对，要么是它的市场，要么是它的公司。如果该股票行情下跌是不合理的，那么很快它的成交价就会低于其实际价值，这将激发买进行为，从而阻止其继续下跌。\u201d",
+   bs:"第二十三章·内部人明借\u201c空头打压\u201d等解释行情，暗度陈仓"},
+  {r:"8",ft:"你听到的贴士，往往是别人出货链条上的最后一环",
+   fc:"贴士从内部人传给第一圈，再传给第二圈，层层传递。等你听到，内部人早已完成布局，而你成了接盘侠。",
+   bq:"\u201c本着身为股票作手的多年经验，我确信不疑，没人能够始终一贯地、持续不断地打败股票市场，虽然他可能在特定场合下、在某个股票上赢得利润。不论交易者经验多么丰富，发生交易亏损的可能性始终挥之不去……华尔街的专业人员都清楚，听凭\u2018内部人\u2019的贴士行事，将比饥荒、瘟疫、谷物歉收、政治动荡或者其他常见的意外遭际更快将你摧垮。\u201d",
+   bs:"第二十四章·给大众朋友一点忠告"},
+  {r:"7",ft:"不署名的好消息，说明发布者不愿对自己的话负责——这本身就是最大的警告信号",
+   fc:"利弗莫尔建议：如果散播看涨谎言和散播看跌谎言一样要受法律惩罚，公众将避免巨万美元的损失。",
+   bq:"\u201c如果通过一项法律，惩处散播看涨谎言的人，如同现行法律惩处散播看跌谎言的人一样，那么我相信，公众将会避免巨万美元的损失……不署名意味着发布者不愿对自己的话负责，这在本质上已经告诉了你这条消息的可信度。\u201d",
+   bs:"第二十三章；第二十四章·给大众朋友一点忠告"},
+  {r:"6",ft:"公众总要求得到解释——内部人最擅长的，是为自己的出货行为提供说得过去的解释",
+   fc:"上涨行情靠买入维持；如果内部人不买入，任何言语上的\u201c解释\u201d都无法阻止下跌。",
+   bq:"\u201c公众应当时时牢记股票交易的要领。当某个股票上涨的时候，并不需要详述解释为什么它会上涨……如果某个股票经历了长期稳定的上涨行情之后，掉转方向，开始逐步下降，并且过程中只有偶尔的小幅回升，那么很显然，其最小阻力路线已经从上升转为下降。既然如此，为什么你还需要任何解释呢？\u201d",
+   bs:"第二十四章·给大众朋友一点忠告"},
+  {r:"5",ft:"每一次股票发行，你需要先问：谁在卖，为什么要卖给你",
+   fc:"一旦有人急于把股票卖给公众，动机就值得怀疑。最好的买入机会，往往不是在热闹的新股发行时，而是在无人问津的低谷期。",
+   bq:"\u201c战时繁荣的雨露几乎无所不至……本国最大型的各家银行和信托公司不遗余力地给各色各样的证券发行者和军火制造商铺路搭桥，一夜之间把他们造就成为百万富翁……这批发行人的第一个错误是行动不够及时。市场已经达到了新股发行的饱和点，而他们本当看出这一点。\u201d",
+   bs:"第二十二章·老江湖使诈大派贴士，大众受骗狂热跟风"},
+  {r:"4",ft:"每当看到股票无故拆细，先问：是公司在创造价值，还是有人在变个花样卖货？",
+   fc:"把1股变4股，让股票看起来更\u201c便宜\u201d，是推销股票的经典手法。价格的高低本身不代表价值的高低。",
+   bq:"\u201c推销股票的承销人还有其他一些伎俩……另一种常见的推销伎俩是拆分股票来增加股票数量，这纯属销售策略……他们变戏法似的，拿出2股、4股甚至10股\u2018新\u2019股票更换原来的1股\u2018老\u2019股票。这种做法通常的意图都是力求使得原有的商品更加容易销售……为什么公众不问一问到底为什么该股票需要通过拆细来促销呢？\u201d",
+   bs:"第二十四章·给大众朋友一点忠告"},
+  {r:"3",ft:"在某个环境中有效的策略，换一个环境可能完全失效——理解规则的改变至关重要",
+   fc:"利弗莫尔在对赌行所向无敌，到了真实经纪行却一败涂地，花了多年才明白：规则变了，方法必须变。",
+   bq:"\u201c在对赌行里行之有效的交易套路，在富勒顿的营业厅里却不起作用……我真正在买进或卖出股票。纸带上糖业的价格或许是105，我能看出它即将出现3点的下跌。实际上，就在报价机在纸带上打印出105的那一刻，在交易所场内真实的成交价可能已经是104或103了……我一直无法得知我卖出1000股的成交价到底在什么水平。\u201d",
+   bs:"第二章·首战纽约遭挫败，对赌行里找本钱"},
+  {r:"2",ft:"不论交易者采取任何行动，市场都会立即给他一个交代",
+   fc:"这是金融市场残酷而诚实的地方：你的判断对不对，马上就会有答案。没有其他任何领域能提供这么快速的反馈。",
+   bq:"\u201c另一方面，交易者是幸运的，因为市场是交易者的一面绝不走形的好镜子。不论交易者采取任何行动，买、卖还是等待，市场都会立即给他一个交代，让他立即得知自己行为的后果，迫使反观、反思自己的行为。\u201d",
+   bs:"译者前言·第六节"}
+],
+hearts:[
+  {r:"A",ft:"你对方向判断正确，不等于你对时机判断正确——方向对而时机错，依然会亏损",
+   fc:"等待确认信号，是职业交易者和豪赌客之间最重要的区别。在信号出现之前，耐心本身就是仓位。",
+   bq:"\u201c利弗莫尔在下单之前进行了长达6周的行情跟踪，因为他的第一笔交易必须有百分之百的成功把握。在98美元的价位买入了伯利恒钢铁……该股价格如其预期保持上升势头，他在115美元进一步买进。下一天，他在145美元卖出平仓。这次交易达成了他的心愿——重新攒出一笔资本。\u201d",
+   bs:"附录一·杰西·利弗莫尔年表"},
+  {r:"K",ft:"如果你买进之后股票立刻下跌，市场已经在告诉你，你做错了",
+   fc:"真正的好机会，入场之后通常会立刻朝有利的方向运动。如果一开始就套牢，不要抱幻想，这是最直接的警告。",
+   bq:"\u201c盈利最多的交易往往一开头就有账面利润。\u201d",
+   bs:"附录二·杰西·利弗莫尔的股票交易规则"},
+  {r:"Q",ft:"用小仓位确认方向，在方向得到验证后才逐步加大",
+   fc:"不要一上来就押满。先用小仓位试探，如果市场的反应和你的判断一致，再在盈利的基础上逐步加仓。",
+   bq:"\u201c顺势步步为营的建仓方式……先用小仓位试探市场，如果方向正确，价格会立刻朝有利方向运动，形成账面利润。只有在此基础上，才逐步加仓……买上涨中的股票，卖下跌中的股票。\u201d",
+   bs:"第七章·顺势步步为营的建仓方式；附录二·杰西·利弗莫尔的股票交易规则"},
+  {r:"J",ft:"在亏损的头寸上继续买入，是在用行动否认市场已经发出的警告",
+   fc:"每一次\u201c摊平\u201d，都意味着你在市场证明你错了之后，仍然坚持自己的判断。这是导致大亏损最常见的原因。",
+   bq:"\u201c绝不平摊亏损的头寸，比如说某个股票已经被套还继续买进……绝不追加保证金，干脆平仓认赔。\u201d",
+   bs:"附录二·杰西·利弗莫尔的股票交易规则"},
+  {r:"10",ft:"如果交易有利润，继续持有；如果交易有亏损，从速了结",
+   fc:"这是所有交易原则中最简单、也最难执行的一条。大多数人做的恰好相反：对盈利急于了结，对亏损恋恋不舍。",
+   bq:"\u201c如果交易有利润，继续持有；如果交易有亏损，从速了结……当事态明朗原来从中获利的趋势已经终结时，了结交易……股票下跌就放手，别炒股炒成股东。\u201d",
+   bs:"附录二·杰西·利弗莫尔的股票交易规则"},
+  {r:"9",ft:"等待信号时要无限耐心；信号出现后要毫不迟疑",
+   fc:"这两种品质看似矛盾，实则都是专业交易者必须具备的。慢在等待，快在执行。",
+   bq:"\u201c等市场变化证明你的观点后再交易；交易则兵贵神速……交易步调必须与时间价格关键点相协调……我那时还没到23岁，对投机生意的基本原则还是一无所知……（要学会）在开仓之前确信自己是对的，就总能最终获利。\u201d",
+   bs:"附录二·杰西·利弗莫尔的股票交易规则；第二章"},
+  {r:"8",ft:"没有值得交易的理由时，最好的交易就是不交易",
+   fc:"在对赌行的经历养成了利弗莫尔\u201c必须每天交易\u201d的习惯，这个习惯让他在真实市场中损失惨重。知道何时不该动，是一种独立的技能。",
+   bq:"\u201c不要天天交易。只有行情明显看涨或看跌的时候才交易。交易方向与总体市场保持一致……一般的傻瓜犯起傻来，不分时间和场合，而华尔街的傻瓜呢，则是不分时间，总觉得非做交易不可。没有人能够天天都找到足够的理由，天天买进或者卖出股票。\u201d",
+   bs:"附录二；第二章·首战纽约遭挫败，对赌行里找本钱"},
+  {r:"7",ft:"在同类股票中，选走势最强的那一只；在市场上行时，最强的股票会最先涨，最后跌",
+   fc:"强者恒强是市场的基本逻辑。追弱求补涨，是理论上说得通但实践中经常失效的策略。",
+   bq:"\u201c做股票就做领头羊——走势最强的那一个……绝不因股价太高而不可买进；绝不因股价太低而不可卖出……看法千错万错，市场永远没错。\u201d",
+   bs:"附录二·杰西·利弗莫尔的股票交易规则"},
+  {r:"6",ft:"愤怒、懊悔、兴奋——每一种强烈情绪都可能让你做出糟糕的决策",
+   fc:"利弗莫尔说：\u201c对于任何人发怒都无济于事。市场曾经不止一次教我明白，投机者情绪失控，不啻于自绝生路。\u201d",
+   bq:"\u201c无论是发火，还是企图讲理，都没有什么意义……不管怎么说，情绪失控对我来说是很糟糕的——愤怒不会产生什么严重后果。然而……投机者情绪失控，不啻于自绝生路……许多聪明人的失败归根结底都是太过自负造成的。\u201d",
+   bs:"第二十二章；第五章·大势！大势！大势！"},
+  {r:"5",ft:"每次失败都是一笔学费——只有把教训转化为未来的盈利，才算真正偿还了这笔债",
+   fc:"利弗莫尔每次破产后，都会强迫自己对市场、对错误、对自我进行再认识，而不是逃避。",
+   bq:"\u201c利弗莫尔每一次跌落都必然迫使他对市场再认识、对错误再认识、对自我再认识，并且不得不找到行之有效的解决方案，否则就不可能超越旧的自我，不可能东山再起。\u2018我不希望第二次重复同一个错误。我们只有从自己所犯的错误中汲取教训、将它转化为将来的获利，才能原谅自己的错误。\u2019\u201d",
+   bs:"译者前言·第三节"},
+  {r:"4",ft:"大师也会违背自己的规则——这是最深刻的警示，也是最重要的谦卑",
+   fc:"利弗莫尔四次破产，每一次都能事后清晰地说出自己违背了哪条规则。知道不等于能做到。",
+   bq:"\u201c（帕西·托马斯）是一个具有超凡说服力的商品专家，渐渐引入盲从状态，违背自己的交易规则、违背自己的初衷而买进棉花，结果一塌糊涂。在棉花交易发生亏损的情况下，再度违背自己的交易规则，给已经发生亏损的头寸加码，反而卖出了在小麦上获利的头寸。结果以破产告终。\u201d",
+   bs:"译者前言·第一节；附录一·利弗莫尔年表1908年条目"},
+  {r:"3",ft:"独立判断是职业交易者最稀缺的品质——一旦允许别人的意见干扰你，你就丧失了自己的优势",
+   fc:"利弗莫尔从14岁起就养成了独来独往的交易习惯。他说：\u201c这是我始终在市场上独来独往的道理。\u201d",
+   bq:"\u201c我对自己的买卖秘而不宣。无论如何，这是一桩单枪匹马的买卖。这是我自己的脑袋，对不对？价格要么按照我凭赛马预测表所做的判断继续演变，这时候用不着哪位朋友或合伙人来帮忙；要么走另一条路，这时候也没有哪位好心的朋友能够帮我挡住它。这便是我始终在市场上独来独往的道理。\u201d",
+   bs:"第一章·小后生抄价格悟出行情模式"},
+  {r:"2",ft:"止损不是失败，是对现实的承认；死扛才是真正的失败",
+   fc:"每一笔不愿意止损的亏损，背后都是\u201c希望\u201d在作祟。而\u201c希望\u201d，是利弗莫尔反复强调的投机者最危险的情绪。",
+   bq:"\u201c在从事投机时，如果市场运行对你不利，每一天你都希望这是最后一天——盲目听从希望的摆布，不接受最初的损失，到头来，亏损反而变本加厉……绝不追加保证金，干脆平仓认赔。\u201d",
+   bs:"译者前言·第三节；附录二·交易规则"}
+],
+diamonds:[
+  {r:"A",ft:"真正懂得分销的人，不是急于卖出，而是设法让公众主动来买",
+   fc:"利弗莫尔在联合锅炉公司一案中，没有用辛迪加的钱买入一股，却靠公众的追涨热情完成了全部出货。",
+   bq:"\u201c在整个操作过程中从未需要我承接哪怕1张股票。我没有为了以后更容易卖出股票而被迫先期买进……我甚至没有主要利用市场回落的过程来卖出股票，而是在股价一路上涨的过程中卖出的……一场天堂一般的美好梦境，甚至用不着你动一动手指头，市场便已经为你准备好了足够强大的买进力量。\u201d",
+   bs:"第二十一章·帝国钢铁操作成功，石油产品公司不如人意"},
+  {r:"K",ft:"在市场上，固执于一种方法的人，迟早会被市场惩罚",
+   fc:"利弗莫尔面对做空玉米时的困境，通过卖空燕麦转移市场注意力，间接完成了玉米的平仓——这是以灵活应对僵局的经典案例。",
+   bq:"\u201c1907年10月……当时他在小麦和玉米期货上分别卖空了1000万蒲式耳，小麦顺利买入平仓，获利丰厚，但玉米遭到斯特拉逼空，如果简单买入平仓，可能导致价格狂涨，买入成本极高。利弗莫尔声东击西，集中卖空了5万蒲式耳燕麦，引人联想为斯特拉的对头阵营正在发起攻击，于是大家纷纷卖出玉米，而利弗莫尔乘机买入平仓。\u201d",
+   bs:"附录一·利弗莫尔年表1907年条目"},
+  {r:"Q",ft:"要操作一只股票，首先要控制住最可能砸盘的那部分股票",
+   fc:"联合锅炉公司一案中，利弗莫尔第一步就是让最大的三个持股人签协议、把股票委托给第三方托管，从根本上消除了友军变敌军的风险。",
+   bq:"\u201c如果你在操作本项目时设法吸引公众买进，也就是说如果你促使该股票行情坚挺、活跃，就会看到凯恩、戈登和沃尔夫借机出货……我亲自照料相应股票交给第三方托管的事宜，因此当我推高市场的时候不会有其中任何一张股票流入市场。我不得不保护自己。\u201d",
+   bs:"第二十二章·老江湖使诈大派贴士，大众受骗狂热跟风"},
+  {r:"J",ft:"发行人最大的错误，不是时机判断错了，而是判断错了之后仍然不肯认赔调整",
+   fc:"联合锅炉公司的发行人明明已经错过了最佳时机，却还想着复制牛市高潮时的暴利，最终酿成灾难。",
+   bq:"\u201c这批发行人的第一个错误是行动不够及时。市场已经达到了新股发行的饱和点，而他们本当看出这一点。然而，即便如此，要是他们没有不切实际地贪图重复其他发行人在繁荣期最高潮阶段曾经实现的高不可及的巨利的话，毕竟还是有机会赚到相当不错的利润的。\u201d",
+   bs:"第二十二章·老江湖使诈大派贴士，大众受骗狂热跟风"},
+  {r:"10",ft:"当整体市场疲软时，与其试图拉高再出货，不如顺势在下跌中找抄底者接盘",
+   fc:"利弗莫尔帮助三位大股东出清联合锅炉公司时，判断市场无法承受拉高操作，转而在下跌中逐步分销，反而顺利完成任务。",
+   bq:"\u201c根据当时的总体市场形势以及联合锅炉公司的具体表现，只有一条路可走，那当然就是在市场下跌过程中卖出，而不是企图首先拉高价格……在他们看来，我本该统统卖光、获利丰厚。但我觉得他们不相信这些——在那种行情下，可以达成卖出目标的唯一选择虽然还不至于不计后果地大甩卖，但也不可偏重于价格。\u201d",
+   bs:"第二十二章·老江湖使诈大派贴士，大众受骗狂热跟风"},
+  {r:"9",ft:"最好的入场点，往往是市场自己告诉你的，而不是你算出来的",
+   fc:"价格在关键点位的表现方式——是突破还是受阻，是放量还是缩量——本身就是最重要的信息。",
+   bq:"\u201c时机！时机！时机！……交易步调必须与时间价格关键点相协调……等市场变化证明你的观点后再交易；交易则兵贵神速……股价创新高，买进做多；股价创新低，卖出做空。\u201d",
+   bs:"第八章·时机！时机！时机！；附录二·交易规则"},
+  {r:"8",ft:"做空者实际上是市场最早的警报器，他们在发现问题时率先用金钱表达判断",
+   fc:"所有被控诉的\u201c空头打压\u201d案例，事后往往都被证明是有根据的。做空者的判断，经常比公司自己发布的公告更早、更准确。",
+   bq:"\u201c导致行情长期持续下跌的真实原因从来不是空头打压。当某个股票保持下跌的时候，你可以肯定该股票一定有什么地方不对……事实上，空头有可能挣大钱的唯一机会是在某个股票价格过高的时候卖出它。在这种情况下内部人绝不会把真相告白天下，这一点确定无疑。\u201d",
+   bs:"第二十三章·内部人明借\u201c空头打压\u201d等解释行情，暗度陈仓"},
+  {r:"7",ft:"牛市的最后阶段，最危险的错误是把账面盈利当作真实财富",
+   fc:"公众总是在价格最高、风险最大的时候信心最足。聪明的交易者知道：账面利润变成现金之前，什么都不算数。",
+   bq:"\u201c在繁荣时期，总是公众首先赚到大钱——在账面上。遗憾的是，它始终只在账面上……某个股票曾在12或15美元徘徊，没人想要它，现在突然上涨到了30，在一般人看来，这里肯定是顶了。然而，该股票继续上涨到了50……在繁荣大潮中，这帮人轻易就能挣到相当不错的利润，但此前他们本该看出时机已过，而他们不愿意相信繁荣终有到头的一天。\u201d",
+   bs:"第二十一章；第二十二章"},
+  {r:"6",ft:"真正赚到大钱的时候往往是\u201c什么都不做\u201d的那些时刻",
+   fc:"当你判断大势已定，唯一需要做的就是拿住。频繁交易是盈利的蚕食者，耐心是复利的土壤。",
+   bq:"\u201c利弗莫尔（在1915年以后）对市场的领悟、趋势研判、交易手段、资金管理体系终于日臻化境，人生、财富都上升到一个全新的高度……有了这个底子，我渐渐开始有意地检验它们的准确性……我注意到，在行情上涨或下跌时，股票价格往往表现出特定的习惯。\u201d",
+   bs:"译者前言·第一节"},
+  {r:"5",ft:"技术再好，如果资金管理失控，依然无法生存",
+   fc:"利弗莫尔每次破产，往往不是因为判断方向错了，而是因为仓位过重或杠杆过高，被短期的波动提前出局。",
+   bq:"\u201c在任何时候，玩家都不可能有百分之百的把握去投入手中的全部筹码。这个世界不会对任何一个人那么友好……你必须给自己留出犯错的空间，并为计划赶不上变化的情况做好预案……根据经验，你应该至少将筹码分为100份。\u201d",
+   bs:"引用自《打败庄家》，在金钱心理学第13章中亦有体现"},
+  {r:"4",ft:"同一套方法在不同的市场阶段，效果可能完全相反",
+   fc:"牛市末期的策略和熊市初期的策略必须不同。不能判断当前所处的市场阶段，是大多数亏损的根本原因。",
+   bq:"\u201c我确实做了一番功课。我没有分析该公司最近一期年报。我的调研集中在了解问题处在什么样的市场阶段……我的做法集中在了解什么因素将会、什么因素有潜力、什么因素可能帮助我完成任务，或者阻碍我完成任务。\u201d",
+   bs:"第二十二章·老江湖使诈大派贴士，大众受骗狂热跟风"},
+  {r:"3",ft:"宣布破产，把债务说清楚，才能轻装上阵",
+   fc:"利弗莫尔1914年宣告破产，他后来说：\u201c不受债务的困扰，我的身心现在解放了，可以全部投入到交易中，因此为我增添了几分交易成功的前景。\u201d",
+   bq:"\u201c1914年宣布破产。他后来对此解释道，\u2018不受债务的困扰，我的身心现在解放了，可以全部投入到交易中，因此为我增添了几分交易成功的前景，下一步便是找到新的一笔本金\u2019……1915年2月，向丹·威廉森求助。威廉森答允利弗莫尔可以交易500股……在98美元的价位买入了伯利恒钢铁。\u201d",
+   bs:"附录一·杰西·利弗莫尔年表"},
+  {r:"2",ft:"在某个环境中练就的本领，换一个环境可能成为障碍",
+   fc:"利弗莫尔在对赌行无往不胜的核心技能——闪电般的短线反应——在真实市场里因为执行价偏差而彻底失效。",
+   bq:"\u201c以我的方式交易，只能在对赌行里赢得这场游戏，因为我赌的是市场波动……我的纸带阅读术只适用于我在对赌行的交易方式……我一直无法得知我卖出1000股的成交价到底在什么水平，必须等到那位出市代表的成交回报传回来……导致我亏损的原因并不在于现在我做的是合法交易，而在于我在操作过程中一知半解。\u201d",
+   bs:"第二章·首战纽约遭挫败，对赌行里找本钱"}
+],
+clubs:[
+  {r:"A",ft:"投机者梦想战胜市场，就像梦想自己揪着自己的头发上升",
+   fc:"市场由无数参与者共同构成。任何个人，无论多聪明，最终都只能顺应市场，而不能战胜市场。",
+   bq:"\u201c市场是不可战胜的。每个人相对于市场，如同每个人相对于太阳，任谁死了，太阳都将继续照耀。归根结底，每个市场参与者都只是市场的一份子，都必须依赖市场获取盈利。市场参与者梦想战胜市场，就像梦想自己揪着自己的头发上升一样。\u201d",
+   bs:"译者前言·第八节"},
+  {r:"K",ft:"规则对每个人都平等——违背规则，天才也难逃惩罚",
+   fc:"利弗莫尔的成就登峰造极，最终的破产也印证了这一点：无论多大的天才，违背自己总结出来的基本原则，市场不会给你例外。",
+   bq:"\u201c利弗莫尔毕竟是人，不管他有多高的境界、多大的才能，终究会犯错误，他所违背的甚至就是他自己从小摸索、领悟的根本原则。即便是交易天才，也不能违背市场交易基本原则。敬业、守纪是市场参与者的根本立足点。\u201d",
+   bs:"译者前言·第八节"},
+  {r:"Q",ft:"把全部人生压注在交易上，是走向失衡的开始",
+   fc:"利弗莫尔对美酒和美女不加节制，最终失去了早年严格自律的作息和心态。这种失衡，最终体现在了他的交易结果上。",
+   bq:"\u201c人生必须是平衡的，交易是人生的一部分，与其他方面应当维持平衡。没有平衡的人生，就没有持久成功的交易事业。他对美女、美酒不加节制，最终丧失了早年严格自制的作息规律、生活态度。他的家庭悲剧是他的人生失衡的标志，也可能是导致自杀的原因之一。\u201d",
+   bs:"译者前言·第八节"},
+  {r:"J",ft:"别人交过的学费，你不必再交一遍",
+   fc:"利弗莫尔接受采访、留下这部回忆录的原因之一，正是为了帮助交易者从他的经历中学习，而不必亲身经历同样的错误。",
+   bq:"\u201c取他人之长、避他人之短，从他人身上发掘交易行为正确和错误的本质，而不必事事自己重来一遍……利弗莫尔当日交易生涯的风云变幻自不待言，即使每日发生在我们身边的交易者成败得失，也总是充满活生生的魅力。\u201d",
+   bs:"译者前言·第六节"},
+  {r:"10",ft:"当所有人都在谈同一只股票时，往往已经到了最危险的时刻",
+   fc:"联合锅炉公司案例中，当全国每家报纸都在讨论利弗莫尔即将大力做多时，他已经在默默出货了。",
+   bq:"\u201c等我赶到办公室在开市之前查阅我的信件的时候，我意识到整个华尔街已经被买进联合锅炉公司的抢手贴士淹没了……当天早晨买进指令从全国各个角落蜂拥而至，三天前随便什么价格都没人要的股票，现在这些买单几千股、几千股地疯抢……我没有料到自己竟然有这么一支庞大的跟风队伍。\u201d",
+   bs:"第二十二章·老江湖使诈大派贴士，大众受骗狂热跟风"},
+  {r:"9",ft:"从百万到破产，再从破产到百万——这个循环可能不止一次",
+   fc:"利弗莫尔四起四落，每一次的峰值和谷底都令人瞠目。这是他极端性格和能力的体现，但更重要的是：如何避免这种循环。",
+   bq:"\u201c他的第一次上升阶段从对赌行开始……1907年10月24日（30岁）成为股市之王，挣得了此生的第一笔1百万美元……1914年，宣告破产……1929年，在1929年股市大崩盘行情中做空，获利1亿美元左右……1934年，破产……1940年11月28日，用左轮手枪对着头部自杀身亡。\u201d",
+   bs:"附录一·杰西·利弗莫尔年表"},
+  {r:"8",ft:"1929年的大成功，让利弗莫尔以为自己已经掌握了市场的全部秘密",
+   fc:"极度的成功会催生极度的自信，而极度的自信会瓦解一个人最核心的纪律。这是许多投机天才共同的宿命。",
+   bq:"\u201c在经过1929年的大成功后，利弗莫尔变得更加自信，在股市中下的赌注越来越大。在投资上的冒进导致他债台高筑，并让他最终在股市中倾家荡产，失去了一切……许多聪明人的失败归根结底都是太过自负造成的。\u2018这是一种随处可见的疾病，\u2019他说，\u2018不管在哪里，每个人都有。\u2019\u201d",
+   bs:"金钱心理学·第5章，以及第五章·大势！大势！大势！"},
+  {r:"7",ft:"在华尔街，你的名声是你最重要的资产，有时比钱更值钱",
+   fc:"利弗莫尔能够四次破产后四次重建，很大程度上依赖于他在市场上建立的名声。声誉是职业生命线。",
+   bq:"\u201c利弗莫尔每次破产后，都有人愿意给他机会重来……威廉森答允利弗莫尔可以交易500股，这是一笔很小的信用额度……他的名声让他在最困难的时刻仍然能获得机会……华尔街谈起他来也是劲头十足，他在华尔街职业人士中间和更好动的佣金经纪行客户之中肯定也有一批追随者。\u201d",
+   bs:"第二十一章；附录一·利弗莫尔年表"},
+  {r:"6",ft:"当你跟随别人的贴士行动，你承担了他们的风险，却没有他们的信息优势",
+   fc:"贴士链上的每个人都相信自己在占别人的便宜，但最终受益的永远是信息源头，而不是末端的跟随者。",
+   bq:"\u201c想到无辜的人们可能因为追随那样的贴士而损失钱财，我很难感觉轻松……那位裁缝让我觉得，要是谈起谁该抱怨谁的问题，其实是我要埋怨沃尔夫……我从不给别人任何贴士。\u201d",
+   bs:"第二十二章·老江湖使诈大派贴士，大众受骗狂热跟风"},
+  {r:"5",ft:"技术可以学习，人性需要战胜——后者才是真正的挑战",
+   fc:"利弗莫尔的每次失败，都是他对自我弱点的一次认识加深。成长不是学到更多技巧，而是更清楚地看见自己。",
+   bq:"\u201c交易者的成长之路，是认清自我、超越自我的道路。诚实地面对市场、诚实地面对自我，是先决条件。本书如实交代了当事人在起伏跌宕的交易生涯中曲折前行的心路历程，对我们每一位市场参与者来说都是价值无穷的心理训练大纲。\u201d",
+   bs:"译者前言·第三节"},
+  {r:"4",ft:"\u201c我的一生是个失败\u201d——财富的顶峰与人生的意义，可以完全不在同一个方向",
+   fc:"1940年，距1929年做空赚取1亿美元的巅峰仅10年，利弗莫尔在遗书中写下这句话。财富可以重建，但有些东西，一旦失去就再也回不来了。",
+   bq:"\u201c1940年11月28日，用左轮手枪对着头部自杀身亡。之前，他长期遭受抑郁症的折磨。他在遗书中把自己的一生描述为一场\u2018失败\u2019……如果要勉强分析利弗莫尔失败的原因……人生必须是平衡的，交易是人生的一部分，与其他方面应当维持平衡。没有平衡的人生，就没有持久成功的交易事业。\u201d",
+   bs:"附录一·杰西·利弗莫尔年表；译者前言·第八节"},
+  {r:"3",ft:"对市场心存敬畏和感激，才是正确的情操",
+   fc:"利弗莫尔晚年总结：每个市场参与者都必须依赖市场才能生存，对市场怀有傲慢，是自我毁灭的开始。",
+   bq:"\u201c市场参与者对市场心存敬畏和感激，才是正确的、合适的情操。市场参与者梦想战胜市场，就像梦想自己揪着自己的头发上升一样……他对自己所从事的事业也并不倾向于大鸣大放……愿意接受作者深入访谈，实有不得已的苦衷。他之所以愿意，是为了还自己一个清白，最好的策略便是如实介绍自己的成长历程和交易曲折，把真实的自己呈现给大家。\u201d",
+   bs:"译者前言·第八节"}
+]
+};
+
+// ════ STATE ════
+var si=0, ci=[0,0,0,0,0], flip=false, busy=false;
+function suit(i){return SUITS[i];}
+function cards(i){return DATA[SORD[i]];}
+function cur(){return cards(si)[ci[si]];}
+
+// ════ RESPONSIVE SIZE ════
+function calcSize(){
+  var W=window.innerWidth, H=window.innerHeight;
+  var GAP=10, VHEAD=52, VFOOT=44;
+  var availW = W - GAP*4;
+  var availH = H - VHEAD - VFOOT - GAP*4;
+  // 1.4*cw ≤ availW  and  1.4*ch ≤ availH  with  ch = cw*88/57
+  var cwByW = availW / 1.4;
+  var cwByH = (availH / 1.4) * 57/88;
+  var cw = Math.floor(Math.min(cwByW, cwByH, 320));
+  cw = Math.max(cw, 130);
+  var ch = Math.round(cw * 88/57);
+  document.documentElement.style.setProperty("--cw", cw+"px");
+  document.documentElement.style.setProperty("--ch", ch+"px");
+  document.documentElement.style.setProperty("--pgap", GAP+"px");
+}
+
+// ════ RENDER ════
+function render(anim){
+  if(anim){
+    busy=true;
+    var ct=document.getElementById("pgCt");
+    ct.classList.add("as-"+anim);
+    setTimeout(function(){ct.classList.remove("as-"+anim);busy=false;draw();},200);
+  } else {draw();}
+  drawTabs(); drawDots(); drawLabel(); drawPeeks();
+}
+
+// Resolve effective color for a card (joker cards have per-card vc override)
+function vc(s,c){ return (c&&c.vc)?c.vc:s.c; }
+
+function mkCorner(s,c){
+  var isJ=(s.id==="jokers");
+  var isJokerCard=(c.r==="JOKER");
+  var rkStyle=isJokerCard?' style="font-size:clamp(8px,calc(var(--cw)*.065),13px);letter-spacing:1px"':'';
+  return '<div class="rk"'+rkStyle+'>'+c.r+'</div>'+
+         (isJ?'':'<div class="sy">'+s.s+'</div>');
+}
+
+function mkFace(s,c,isFront){
+  var v=vc(s,c);
+  var cc="c"+v, dv="dv"+v, bd="bd"+v;
+  var badgeBg=v==="red"?"#c0392b":v==="black"?"#1a1a1a":"#6c3483";
+  var isJ=(s.id==="jokers");
+  var corner=mkCorner(s,c);
+  if(isFront){
+    return '<div class="crnr tl '+cc+'">'+corner+'</div>'+
+      '<div class="card-body">'+
+      (isJ?'<span class="c-badge" style="background:'+badgeBg+'">'+c.r+'</span>':'')+
+      '<div class="c-title '+cc+'">'+c.ft+'</div>'+
+      '<div class="c-div '+dv+'"></div>'+
+      '<div class="c-body">'+c.fc+'</div></div>'+
+      '<div class="crnr br '+cc+'">'+corner+'</div>';
+  } else {
+    return '<div class="crnr tl '+cc+'">'+corner+'</div>'+
+      '<div class="back-body">'+
+      '<div class="bq '+cc+' '+bd+'">'+c.bq+'</div>'+
+      '<div class="bsrc">\uD83D\uDCD6 <b>'+c.bs+'</b></div></div>'+
+      '<div class="crnr br '+cc+'">'+corner+'</div>';
+  }
+}
+
+function mkPeekCard(s,c){
+  var v=vc(s,c);
+  return '<div class="peek-card bg'+v+'">'+
+    '<div class="crnr tl c'+v+'">'+mkCorner(s,c)+'</div>'+
+    '</div>';
+}
+
+function draw(){
+  var s=suit(si), c=cur(), v=vc(s,c);
+  var f=document.getElementById("cFront"), b=document.getElementById("cBack");
+  f.className="card-face front-f bg"+v;
+  b.className="card-face back-f bg"+v;
+  f.innerHTML=mkFace(s,c,true);
+  b.innerHTML=mkFace(s,c,false);
+  if(flip){document.getElementById("cInner").classList.remove("flipped");flip=false;}
+}
+
+function drawTabs(){
+  var h="";
+  for(var i=0;i<5;i++){
+    var s=suit(i), on=(i===si)?" on-"+s.c:"";
+    h+='<button class="stab'+on+'" onclick="jumpSuit('+i+')">'+s.n+'</button>';
+  }
+  document.getElementById("sTabs").innerHTML=h;
+}
+
+function drawDots(){
+  var cs=cards(si), s=suit(si), h="";
+  for(var i=0;i<cs.length;i++){
+    var on=(i===ci[si])?" on-"+s.c:"";
+    h+='<div class="d'+on+'" onclick="jumpCard('+i+')"></div>';
+  }
+  document.getElementById("dots").innerHTML=h;
+}
+
+function drawLabel(){
+  var s=suit(si), c=cur();
+  document.getElementById("posLbl").textContent=s.s+" "+(ci[si]+1)+"/"+cards(si).length;
+}
+
+function drawPeeks(){
+  var cs=cards(si), s=suit(si);
+  var pgTp=document.getElementById("pgTp");
+  var pgBt=document.getElementById("pgBt");
+  var pgLf=document.getElementById("pgLf");
+  var pgRt=document.getElementById("pgRt");
+  pgTp.innerHTML=(si>0)      ?mkPeekCard(suit(si-1),cards(si-1)[ci[si-1]]):"";
+  pgBt.innerHTML=(si<4)      ?mkPeekCard(suit(si+1),cards(si+1)[ci[si+1]]):"";
+  pgLf.innerHTML=(ci[si]>0)  ?mkPeekCard(s,cs[ci[si]-1]):"";
+  pgRt.innerHTML=(ci[si]<cs.length-1)?mkPeekCard(s,cs[ci[si]+1]):"";
+  // Disable pointer-events on empty peeks
+  pgTp.style.pointerEvents=(si>0)?"":"none";
+  pgBt.style.pointerEvents=(si<4)?"":"none";
+  pgLf.style.pointerEvents=(ci[si]>0)?"":"none";
+  pgRt.style.pointerEvents=(ci[si]<cs.length-1)?"":"none";
+}
+
+// ════ NAVIGATION ════
+function nextCard(){if(busy||ci[si]>=cards(si).length-1)return;ci[si]++;render("L");}
+function prevCard(){if(busy||ci[si]<=0)return;ci[si]--;render("R");}
+function nextSuit(){if(busy||si>=4)return;si++;render("U");}
+function prevSuit(){if(busy||si<=0)return;si--;render("D");}
+function jumpSuit(i){if(i===si)return;var d=i>si?"U":"D";si=i;render(d);}
+function jumpCard(i){if(i===ci[si])return;var d=i>ci[si]?"L":"R";ci[si]=i;render(d);}
+function doFlip(){flip=!flip;document.getElementById("cInner").classList.toggle("flipped",flip);}
+
+// ════ TOUCH ════
+var tx=0,ty=0,inTouch=false,touchFlipped=false;
+document.addEventListener("touchstart",function(e){
+  if(!document.getElementById("viewer").classList.contains("active"))return;
+  inTouch=true;tx=e.touches[0].clientX;ty=e.touches[0].clientY;
+},{passive:true});
+document.addEventListener("touchend",function(e){
+  if(!document.getElementById("viewer").classList.contains("active"))return;
+  if(!inTouch)return;inTouch=false;
+  var dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+  var ax=Math.abs(dx), ay=Math.abs(dy);
+  if(ax<14&&ay<14){
+    var ct=document.getElementById("pgCt");
+    var node=e.target,inside=false;
+    while(node&&node!==document.body){if(node===ct){inside=true;break;}node=node.parentNode;}
+    if(inside){
+      doFlip();
+      touchFlipped=true;
+      setTimeout(function(){touchFlipped=false;},600);
+    }
+    return;
+  }
+  if(ax>ay&&ax>40){dx<0?nextCard():prevCard();}
+  else if(ay>ax&&ay>40){dy<0?nextSuit():prevSuit();}
+},{passive:true});
+
+document.getElementById("pgCt").addEventListener("click",function(){
+  if(touchFlipped)return;
+  doFlip();
+});
+
+// ════ KEYBOARD ════
+document.addEventListener("keydown",function(e){
+  if(!document.getElementById("viewer").classList.contains("active"))return;
+  if(e.key==="ArrowRight")nextCard();
+  else if(e.key==="ArrowLeft")prevCard();
+  else if(e.key==="ArrowDown")nextSuit();
+  else if(e.key==="ArrowUp")prevSuit();
+  else if(e.key===" "||e.key==="Enter"){e.preventDefault();doFlip();}
+  else if(e.key==="Escape")closeViewer();
+});
+
+// ════ DEAL ANIMATION ════
+function fanOut(callback){
+  var iso=document.querySelector(".deck-iso");
+  var wrap=document.querySelector(".iso-wrap");
+  var rect=wrap.getBoundingClientRect();
+  var cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+  var ov=document.createElement("div");
+  ov.style.cssText="position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden;";
+  document.body.appendChild(ov);
+  // 5 cards dealt one by one to positions around the table (荷官发牌)
+  var items=[
+    {s:"\uD83C\uDCCF",c:"#6c3483",tx:-300,ty:40,r:-5,d:0},     // 发到左侧
+    {s:"\u2660",     c:"#1a1a1a", tx:-185,ty:-210,r:-3,d:60},   // 发到左上
+    {s:"\u2665",     c:"#c0392b", tx:0,   ty:-260,r:0, d:120},  // 发到正上
+    {s:"\u2666",     c:"#c0392b", tx:200, ty:-200,r:3, d:180},  // 发到右上
+    {s:"\u2663",     c:"#1a1a1a", tx:305, ty:50,  r:5, d:240}   // 发到右侧
+  ];
+  var w=56,h=86;
+  items.forEach(function(p){
+    var el=document.createElement("div");
+    // 牌背面深色（模拟正式发牌，面朝下）
+    el.style.cssText="position:absolute;width:"+w+"px;height:"+h+"px;"+
+      "left:"+(cx-w/2)+"px;top:"+(cy-h/2)+"px;"+
+      "background:linear-gradient(135deg,#0a0a05 60%,#1a1a0e);"+
+      "border-radius:7px;border:2px solid #c9a227;"+
+      "box-shadow:0 6px 18px rgba(0,0,0,.45);"+
+      "display:flex;align-items:center;justify-content:center;"+
+      "font-size:26px;color:"+p.c+";"+
+      /* 快速弹出（cubic-bezier 模拟荷官甩牌：极快启动，末端略减速） */
+      "transition:transform .2s cubic-bezier(.05,0,.15,1) "+p.d+"ms,"+
+        "opacity .15s ease "+(p.d+190)+"ms;";
+    el.textContent=p.s;
+    ov.appendChild(el);
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      el.style.transform="translate("+p.tx+"px,"+p.ty+"px) rotate("+p.r+"deg)";
+      el.style.opacity="0";
+    });});
+  });
+  iso.classList.add("launching");
+  document.getElementById("preview").classList.add("fanning");
+  setTimeout(function(){
+    document.body.removeChild(ov);
+    iso.classList.remove("launching");
+    callback();
+  },600);
+}
+
+// ════ OPEN / CLOSE ════
+function openViewer(){
+  var btn=document.querySelector(".deck-btn");
+  btn.disabled=true;
+  fanOut(function(){
+    calcSize();
+    si=0;ci=[0,0,0,0,0];flip=false;busy=false;
+    document.getElementById("preview").classList.remove("fanning");
+    document.getElementById("preview").classList.add("hidden");
+    document.getElementById("viewer").classList.add("active");
+    render(null);
+    btn.disabled=false;
+  });
+}
+function closeViewer(){
+  document.getElementById("viewer").classList.remove("active");
+  document.getElementById("preview").classList.remove("hidden");
+  document.querySelector(".deck-btn").disabled=false;
+}
+
+window.addEventListener("resize",function(){
+  if(document.getElementById("viewer").classList.contains("active"))calcSize();
+});
+</script>
+</body>
+</html>
