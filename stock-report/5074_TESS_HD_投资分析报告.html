@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>テスホールディングス (5074) 投资分析报告</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --surface2: #f0f4f8;
+  --border: #d1dce8;
+  --accent: #0d7a5f;
+  --accent2: #1d5fa8;
+  --accent3: #b45309;
+  --danger: #c0392b;
+  --success: #0d7a5f;
+  --text: #1a2332;
+  --text-muted: #5a6e84;
+  --text-dim: #3d5166;
+  --gold: #b45309;
+  --red: #c0392b;
+  --green: #0d7a5f;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans SC', sans-serif;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+/* HEADER */
+.report-header {
+  background: linear-gradient(135deg, #e8f4f0 0%, #ddeef9 50%, #e6f0f8 100%);
+  border-bottom: 2px solid #b8d4e8;
+  padding: 48px 60px 36px;
+  position: relative;
+  overflow: hidden;
+}
+.report-header::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(13,122,95,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.report-header::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: 40%;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(29,95,168,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.company-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(13,122,95,0.10);
+  border: 1px solid rgba(13,122,95,0.30);
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 1px;
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+.company-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+.company-name-ja {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #0f2136;
+  letter-spacing: 2px;
+  line-height: 1.2;
+}
+.company-name-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  letter-spacing: 0.5px;
+}
+.report-meta {
+  text-align: right;
+}
+.report-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.rating-badge {
+  display: inline-block;
+  background: rgba(180,83,9,0.10);
+  border: 1px solid rgba(180,83,9,0.35);
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 3px;
+  letter-spacing: 1px;
+  margin-top: 8px;
+}
+
+.key-metrics {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1px;
+  background: #b8d4e8;
+  border: 1px solid #b8d4e8;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 28px;
+}
+.metric-cell {
+  background: #ffffff;
+  padding: 14px 16px;
+  text-align: center;
+}
+.metric-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.metric-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+}
+.metric-value.up { color: var(--green); }
+.metric-value.down { color: var(--red); }
+.metric-value.accent { color: var(--accent); }
+.metric-change {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* MAIN LAYOUT */
+.report-body {
+  background: #f5f7fa;
+}
+
+/* SECTION */
+.section {
+  margin-bottom: 48px;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border);
+}
+.section-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  background: rgba(13,122,95,0.08);
+  border: 1px solid rgba(13,122,95,0.25);
+  padding: 3px 8px;
+  border-radius: 3px;
+}
+.section-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f2136;
+  letter-spacing: 1px;
+}
+
+/* CARD */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+/* TWO-COL */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* INFO TABLE */
+.info-table { width: 100%; border-collapse: collapse; }
+.info-table tr { border-bottom: 1px solid rgba(30,48,80,0.5); }
+.info-table tr:last-child { border-bottom: none; }
+.info-table td { padding: 8px 0; vertical-align: top; }
+.info-table td:first-child {
+  width: 140px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  padding-right: 16px;
+}
+.info-table td:last-child {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+/* TIMELINE */
+.timeline { position: relative; padding-left: 20px; }
+.timeline::before {
+  content: '';
+  position: absolute; left: 4px; top: 0; bottom: 0;
+  width: 1px; background: #c8d8e8;
+}
+.timeline-item {
+  position: relative;
+  padding: 0 0 16px 16px;
+  font-size: 12.5px;
+  color: var(--text-dim);
+}
+.timeline-item::before {
+  content: '';
+  position: absolute; left: -3px; top: 5px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #e8eff6;
+  border: 1px solid #9db4c8;
+}
+.timeline-item.highlight::before { background: var(--accent); border-color: var(--accent); }
+.timeline-year {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+/* FINANCIAL TABLE */
+.fin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.fin-table th {
+  text-align: right;
+  padding: 8px 12px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  border-bottom: 2px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+  background: #f5f7fa;
+}
+.fin-table th:first-child { text-align: left; }
+.fin-table td {
+  text-align: right;
+  padding: 8px 12px;
+  color: var(--text-dim);
+  border-bottom: 1px solid #e4edf5;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+.fin-table td:first-child {
+  text-align: left;
+  color: var(--text);
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 12.5px;
+}
+.fin-table tr:last-child td { border-bottom: none; }
+.fin-table .pos { color: #0a6b50; font-weight: 600; }
+.fin-table .neg { color: #b03030; font-weight: 600; }
+.fin-table .row-key td { background: rgba(13,122,95,0.05); color: var(--text); font-weight: 600; }
+
+/* RISK ITEM */
+.risk-item {
+  display: flex;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid #e4edf5;
+}
+.risk-item:last-child { border-bottom: none; }
+.risk-num {
+  flex-shrink: 0;
+  width: 24px; height: 24px;
+  background: rgba(192,57,43,0.10);
+  border: 1px solid rgba(192,57,43,0.28);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--red);
+  font-family: 'JetBrains Mono', monospace;
+}
+.risk-content .risk-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.risk-content .risk-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* CATALYST ITEM */
+.catalyst-item {
+  background: #f8fbfe;
+  border: 1px solid #c8dcea;
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+}
+.catalyst-item.warn { border-left-color: var(--gold); background: #fdfaf5; border-color: #e5d4a8; border-left-color: var(--gold); }
+.catalyst-item.danger { border-left-color: var(--red); background: #fdf8f8; border-color: #e5c8c8; border-left-color: var(--red); }
+.catalyst-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  margin-bottom: 8px;
+  background: rgba(13,122,95,0.10);
+  color: var(--accent);
+  border: 1px solid rgba(13,122,95,0.22);
+}
+.catalyst-item.warn .catalyst-tag { background: rgba(180,83,9,0.10); color: var(--gold); border-color: rgba(180,83,9,0.22); }
+.catalyst-item.danger .catalyst-tag { background: rgba(192,57,43,0.10); color: var(--red); border-color: rgba(192,57,43,0.22); }
+.catalyst-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.catalyst-desc {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* VERDICT BOX */
+.verdict-box {
+  background: linear-gradient(135deg, rgba(13,122,95,0.05), rgba(29,95,168,0.04));
+  border: 1.5px solid rgba(13,122,95,0.25);
+  border-radius: 10px;
+  padding: 28px 32px;
+  position: relative;
+  overflow: hidden;
+}
+.verdict-box::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(13,122,95,0.06), transparent 70%);
+}
+.verdict-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.verdict-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 2px;
+}
+.verdict-rating {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold);
+}
+.verdict-body {
+  font-size: 13.5px;
+  color: var(--text-dim);
+  line-height: 1.8;
+}
+
+/* PROGRESS BAR */
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.progress-label {
+  width: 100px;
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.progress-bar-wrap {
+  flex: 1;
+  background: #dce8f0;
+  border-radius: 2px;
+  height: 6px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--accent);
+  transition: width 0.6s ease;
+}
+.progress-pct {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  width: 44px;
+  text-align: right;
+}
+
+/* MOAT */
+.moat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.moat-item {
+  background: #f4f8fb;
+  border: 1px solid #d0e0ec;
+  border-radius: 6px;
+  padding: 14px;
+  text-align: center;
+}
+.moat-icon { font-size: 22px; margin-bottom: 6px; }
+.moat-name { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.moat-score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 600;
+}
+.moat-score.strong { color: var(--green); }
+.moat-score.medium { color: var(--gold); }
+.moat-score.weak { color: #7a8fa0; }
+
+/* SHAREHOLDER TABLE */
+.sh-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.sh-table th { padding: 8px 12px; text-align: left; font-size: 10px; color: var(--text-muted); border-bottom: 2px solid var(--border); letter-spacing: 0.5px; background: #f5f7fa; }
+.sh-table td { padding: 8px 12px; border-bottom: 1px solid #e4edf5; color: var(--text-dim); }
+.sh-table td:last-child { text-align: right; font-family: 'JetBrains Mono', monospace; }
+.sh-table tr:last-child td { border-bottom: none; }
+
+/* TAG PILLS */
+.tag-pill {
+  display: inline-block;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  margin: 2px;
+  background: rgba(29,95,168,0.08);
+  color: var(--accent2);
+  border: 1px solid rgba(29,95,168,0.20);
+}
+
+/* VALUATION SECTION */
+.val-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.val-item {
+  background: #f4f8fb;
+  border: 1px solid #c8dcea;
+  border-radius: 6px;
+  padding: 16px;
+  text-align: center;
+}
+.val-metric {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.val-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px;
+  font-weight: 600;
+}
+.val-note { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+
+/* DIVIDER */
+hr.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* ALERT */
+.alert {
+  border-radius: 6px;
+  padding: 14px 18px;
+  font-size: 12.5px;
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+.alert-info { background: rgba(29,95,168,0.06); border-left: 3px solid #4a90c8; color: var(--text-dim); }
+.alert-warn { background: rgba(180,83,9,0.07); border-left: 3px solid var(--gold); color: var(--text-dim); }
+.alert-danger { background: rgba(192,57,43,0.07); border-left: 3px solid var(--red); color: var(--text-dim); }
+.alert-success { background: rgba(13,122,95,0.07); border-left: 3px solid var(--green); color: var(--text-dim); }
+
+/* RECOMMENDATION */
+.rec-box {
+  border-radius: 8px;
+  padding: 22px 26px;
+  margin-bottom: 14px;
+}
+.rec-short { background: rgba(13,122,95,0.05); border: 1px solid rgba(13,122,95,0.22); }
+.rec-mid { background: rgba(29,95,168,0.05); border: 1px solid rgba(29,95,168,0.22); }
+.rec-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.rec-icon { font-size: 18px; }
+.rec-type {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+}
+.rec-action {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 17px;
+  font-weight: 700;
+}
+.rec-short .rec-action { color: var(--green); }
+.rec-mid .rec-action { color: var(--accent2); }
+.rec-body { font-size: 12.5px; color: var(--text-muted); line-height: 1.8; }
+
+/* FOOTER */
+.report-footer {
+  background: #e8eff6;
+  border-top: 1px solid var(--border);
+  padding: 24px 60px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.8;
+}
+
+/* SEGMENT BAR */
+.seg-bar-wrap {
+  margin-bottom: 10px;
+}
+.seg-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.seg-bar-track {
+  height: 8px;
+  background: #dce8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+}
+.seg-bar-fill-a {
+  background: var(--accent);
+  height: 100%;
+}
+.seg-bar-fill-b {
+  background: var(--accent2);
+  height: 100%;
+}
+
+/* Change log */
+.change-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.change-item {
+  background: #f4f8fb;
+  border: 1px solid #c8dcea;
+  border-radius: 6px;
+  padding: 14px;
+}
+.change-item-title {
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.change-item-body {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+b { color: var(--text); font-weight: 600; }
+em { color: var(--accent); font-style: normal; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="report-header">
+  <div class="header-top">
+    <div>
+      <div class="company-badge">
+        <span class="dot"></span>
+        5074 · 東証プライム · 建設業
+      </div>
+      <div class="company-name-ja">テスホールディングス株式会社</div>
+      <div class="company-name-sub">TESS Holdings Co., Ltd. ／ 分析报告（个人投资者参考用）</div>
+    </div>
+    <div class="report-meta">
+      <div class="report-date">2026.04.16</div>
+      <div class="rating-badge">⚡ 中期关注 · 积极观察</div>
+    </div>
+  </div>
+  <div class="key-metrics">
+    <div class="metric-cell">
+      <div class="metric-label">当前股价</div>
+      <div class="metric-value accent">¥624</div>
+      <div class="metric-change">+2.97% (04/14)</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-label">市值</div>
+      <div class="metric-value">¥440亿</div>
+      <div class="metric-change">↑ 近期回升</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-label">PBR (FY25)</div>
+      <div class="metric-value up">1.03x</div>
+      <div class="metric-change">BPS ¥603</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-label">FY26 营收目标</div>
+      <div class="metric-value">¥470亿</div>
+      <div class="metric-change">+28.1% YoY</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-label">FY26 H1进捗率（营业利益）</div>
+      <div class="metric-value up">90.9%</div>
+      <div class="metric-change">H1已完成9成</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-label">蓄电池EPC累计受注</div>
+      <div class="metric-value accent">¥367亿</div>
+      <div class="metric-change">FY26H1时点</div>
+    </div>
+  </div>
+</div>
+
+<!-- REPORT BODY -->
+<div class="report-body" style="max-width:1200px;margin:0 auto;padding:40px 60px;background:#f5f7fa;">
+
+  <!-- ① 企业基本信息 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">企业基本信息</span>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">公司档案</div>
+        <table class="info-table">
+          <tr><td>公司名</td><td>テスホールディングス株式会社</td></tr>
+          <tr><td>股票代码</td><td>5074（東証プライム）</td></tr>
+          <tr><td>所属行业</td><td>建設業（东证分类）</td></tr>
+          <tr><td>决算月</td><td>每年6月（6月期）</td></tr>
+          <tr><td>发行股数</td><td>70,518,974股</td></tr>
+          <tr><td>总资产（FY25）</td><td>1,512亿日元</td></tr>
+          <tr><td>自己资本比率</td><td>28.1%（FY25）</td></tr>
+          <tr><td>有利子负债比率</td><td>57.8%（高水准）</td></tr>
+          <tr><td>下次决算预定</td><td>2026年5月15日</td></tr>
+          <tr><td>主要关联企业</td><td>东京センチュリー（株主5%）、大和エナジー・インフラ</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">经营愿景 · 核心定位</div>
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.8;margin-bottom:12px;">
+          テスHDは「<b>脱炭素のリーディングカンパニー</b>」を経营目标，グループ名称TESS（Total Energy Saving & Solution）を体现しています。
+          能源转型大背景下，集省エネEPC + 再エネ発電(所有・运営) + バイオマス燃料供应于一体的垂直整合型再生可能能源专门集团。
+        </p>
+        <div style="margin-top:10px;">
+          <span class="tag-pill">再生可能エネルギー</span>
+          <span class="tag-pill">蓄電システム</span>
+          <span class="tag-pill">省エネEPC</span>
+          <span class="tag-pill">バイオマス</span>
+          <span class="tag-pill">オンサイトPPA</span>
+          <span class="tag-pill">FIP転換</span>
+          <span class="tag-pill">系統用蓄電所</span>
+        </div>
+        <hr class="divider" style="margin:14px 0;">
+        <div class="card-title">CEO 及主要管理层</div>
+        <table class="info-table">
+          <tr><td>代表取締役社長</td><td><b>山本一樹</b>（第8大股东2.2%）</td></tr>
+          <tr><td>取締役会長</td><td>石脇秀夫（第2大股东6.8%）</td></tr>
+          <tr><td>取締役</td><td>吉田麻友美（ESG・人財戦略担当）</td></tr>
+          <tr><td>特点</td><td>创业家族（石脇）持股约25%+，社长山本是内部提升，非家族经营人物，管理团队有外部专业人才</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 公司沿革 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">公司沿革</span>
+    </div>
+    <div class="card">
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-year">1979</div>
+          以「省エネルギーコンサルティング」为目的创立テス・エンジニアリング（前身）。
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">1992</div>
+          テス・エンジニアリング株式会社改组。
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">1999</div>
+          在东证二部上市（当时为テス・エンジニアリング）。
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">2006</div>
+          レスポンシブルケア活动、能源管理服务扩大。
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">2010</div>
+          以再生可能能源（太阳能）为中心的EPC业务展开。
+        </div>
+        <div class="timeline-item highlight">
+          <div class="timeline-year">2018</div>
+          <b>控股公司化</b>，テスホールディングス株式会社に商号変更（持株会社体制へ移行）。
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">2019</div>
+          拓展东南亚（生物质燃料、新加坡等）。
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">2023</div>
+          东证プライム升格；FY2023录得历史最高营业利益（68.6亿日元）。
+        </div>
+        <div class="timeline-item highlight">
+          <div class="timeline-year">2024.08</div>
+          <b>中期経営計画 TX2030发布</b>（2025-2030），以蓄电系统EPC为核心增长轴。
+        </div>
+        <div class="timeline-item highlight">
+          <div class="timeline-year">2024.12</div>
+          <b>東京センチュリーが株式5%取得し资本・业务提携</b>，系统用蓄电所开発拍档。
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">2025.02</div>
+          大和エナジー・インフラとの業務提携（3年内2GWh蓄电所共同开发合意）。
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">2025.03</div>
+          <b>株主優待制度新設</b>（投资魅力向上目的）。
+        </div>
+        <div class="timeline-item highlight">
+          <div class="timeline-year">2025.09</div>
+          テス・エンジニアリング，约130亿日元系统用蓄电所EPC大口受注（大和エナジー・インフラ系）。
+        </div>
+        <div class="timeline-item highlight">
+          <div class="timeline-year">2025.11</div>
+          东京センチュリー系SPC：约90亿日元系统用蓄电所EPC受注。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ 业务内容与盈利模式 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">业务内容及盈利模式</span>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">① エンジニアリング事業（工程业务）</div>
+        <p style="font-size:12.5px;color:var(--text-muted);line-height:1.8;margin-bottom:10px;">
+          <b>受託型EPC</b>：接受工厂・事业所的委托，设计・采购・施工一条龙提供省エネ/再エネ设备（コジェネ、燃料転換、太阳能等）。近年注力<b>蓄電システムEPC</b>（系統用蓄電所/FIP転換+蓄電池）。<br><br>
+          <b>開発型EPC</b>：自家开发FIT/FIP太阳能发电所后出售，并承接自家EPC工程。近年开发型案件减少，重点转移至受託型蓄電池。
+        </p>
+        <div class="alert alert-info">FY25エンジ事業売上高：167.2亿日元（+27% YoY），营业利益3.6亿日元（上期大幅亏损后改善）</div>
+      </div>
+      <div class="card">
+        <div class="card-title">② エネルギーサプライ事業（能源供应业务）</div>
+        <p style="font-size:12.5px;color:var(--text-muted);line-height:1.8;margin-bottom:10px;">
+          <b>再エネ発電・売電</b>（Stockビジネス）：自社保有再エネ発電所（太阳光为主+バイオマス）通过FIT/FIP卖电，收入稳定。FY25末発電容量<b>約231.8MW</b>（FIT+FIP）→FY26Q2时点<b>403.4MW</b>に拡大。
+          <br><br>
+          <b>電気小売供給・オンサイトPPA</b>：向需要家供电，PPA模式稳步扩大。<br><br>
+          <b>バイオマス燃料</b>：印度尼西亚EFBペレット工场2026.6月操業予定，PKS供给持续。
+        </p>
+        <div class="alert alert-success">FY25エネルギーサプライ売上高：199.6亿日元（+14% YoY），营业利益24.5亿日元（+43% YoY）</div>
+      </div>
+    </div>
+
+    <!-- Segment Revenue Bar Chart FY25 -->
+    <div class="card">
+      <div class="card-title">セグメント別売上高・营业利益 推移（FY21～FY25）</div>
+      <div style="overflow-x:auto;">
+        <table class="fin-table">
+          <thead>
+            <tr>
+              <th>指标（百万日元）</th>
+              <th>FY2021</th><th>FY2022</th><th>FY2023</th><th>FY2024</th><th>FY2025</th>
+              <th>FY2026E</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row-key"><td>売上高（合計）</td><td>34,249</td><td>34,945</td><td>34,415</td><td>30,643</td><td>36,684</td><td class="pos">47,000</td></tr>
+            <tr><td>　うちエンジニアリング</td><td>—</td><td>—</td><td>—</td><td>13,163</td><td>16,720</td><td>—</td></tr>
+            <tr><td>　うちエネルギーサプライ</td><td>—</td><td>—</td><td>—</td><td>17,479</td><td>19,963</td><td>—</td></tr>
+            <tr class="row-key"><td>営業利益</td><td>4,399</td><td>5,146</td><td class="pos">6,864</td><td class="neg">2,370</td><td>2,548</td><td class="pos">3,600</td></tr>
+            <tr><td>営業利益率</td><td>12.8%</td><td>14.7%</td><td class="pos">19.9%</td><td class="neg">7.7%</td><td>6.9%</td><td>7.7%</td></tr>
+            <tr><td>親会社帰属純利益</td><td>1,990</td><td>2,695</td><td class="pos">3,592</td><td class="neg">1,185</td><td class="neg">204</td><td class="pos">1,200</td></tr>
+            <tr><td>EPS（円）</td><td>72.9</td><td>77.2</td><td class="pos">102.2</td><td class="neg">16.8</td><td class="neg">2.9</td><td class="pos">17.0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="alert alert-warn" style="margin-top:14px;">
+        <b>【注意】FY24～FY25は見掛けの利益が大きく変動</b>：FY24はデリバティブ評価益56.4億円で経常利益が膨張，FY25は評価損18.3億円+持分法損失4.4億円で経常赤字（△6.4億円）。実態的な営業利益ベースで見れば，FY24→FY25は微増（23.7億→25.5億）。純利益低迷は一時的非経常要因が主因。
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 市场·护城河·竞争者 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">市场份额・护城河・竞争対手</span>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">主要竞争对手及差异化</div>
+        <table class="info-table">
+          <tr><td>省エネEPC</td><td>大気社（6535）、オリジン（2303）、東洋エンジ等。テスHDは工场・事业所特化型で中规模案件に强み</td></tr>
+          <tr><td>太阳能EPC</td><td>グリーンエナジー（9269）、SDSHO等。FIT太阳能市場は成熟期</td></tr>
+          <tr><td>蓄电池EPC</td><td><b>最重要战场</b>。競合は出光興産系・三菱電機等大手。テスHDは实绩・PF・プロジェクトファイナンス対応で先行優位</td></tr>
+          <tr><td>再エネ発電所保有</td><td>エネコア、イーレックス等。テスHDは自家保有+EPCの垂直统合が強み</td></tr>
+          <tr><td>バイオマス燃料</td><td>伊藤忠、三菱商事等商社が支配。テスHDは小型特化・PKS→EFB転換で差異化</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">护城河评估</div>
+        <div class="moat-grid">
+          <div class="moat-item">
+            <div class="moat-icon">🔧</div>
+            <div class="moat-name">EPC工程实绩</div>
+            <div class="moat-score strong">★★★★</div>
+          </div>
+          <div class="moat-item">
+            <div class="moat-icon">🤝</div>
+            <div class="moat-name">战略パートナー</div>
+            <div class="moat-score strong">★★★★</div>
+          </div>
+          <div class="moat-item">
+            <div class="moat-icon">⚡</div>
+            <div class="moat-name">発電所資産</div>
+            <div class="moat-score medium">★★★☆</div>
+          </div>
+          <div class="moat-item">
+            <div class="moat-icon">🔋</div>
+            <div class="moat-name">蓄電PF优势</div>
+            <div class="moat-score medium">★★★☆</div>
+          </div>
+          <div class="moat-item">
+            <div class="moat-icon">💴</div>
+            <div class="moat-name">定价权</div>
+            <div class="moat-score weak">★★☆☆</div>
+          </div>
+          <div class="moat-item">
+            <div class="moat-icon">🌐</div>
+            <div class="moat-name">网络效应</div>
+            <div class="moat-score weak">★★☆☆</div>
+          </div>
+        </div>
+        <div class="alert alert-info" style="margin-top:12px;font-size:11.5px;">
+          核心护城河：<b>大型系统用蓄电所EPC实绩稀缺性</b>（市場初期）+ 与東京センチュリー・大和エナジー等战略资本关系形成的<b>案件来源优先权</b>。行业景气周期目前处于<b>蓄电系统需求爆发初期</b>。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ 中期経営計画 TX2030 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">中期経営計画 TX2030（2025-2030）</span>
+    </div>
+    <div class="card">
+      <div class="card-title">数值目标一览</div>
+      <table class="fin-table">
+        <thead>
+          <tr>
+            <th>指标</th>
+            <th>FY2024实绩</th>
+            <th>FY2025实绩</th>
+            <th>FY2027计划</th>
+            <th>FY2030计划</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-key"><td>売上高（百万円）</td><td>30,643</td><td>36,684</td><td class="pos">83,000</td><td class="pos">123,000</td></tr>
+          <tr><td>売上総利益（百万円）</td><td>6,553</td><td>7,453</td><td class="pos">13,200</td><td class="pos">21,500</td></tr>
+          <tr class="row-key"><td>営業利益（百万円）</td><td>2,370</td><td>2,548</td><td class="pos">6,400</td><td class="pos">13,400</td></tr>
+          <tr><td>ROE</td><td>3.4%</td><td>0.5%</td><td>5.8%</td><td class="pos">11.7%</td></tr>
+          <tr><td>ROIC</td><td>1.6%</td><td>—</td><td>3.0%</td><td class="pos">5.7%</td></tr>
+          <tr><td>系統用蓄電所累積施工容量</td><td>0 MW</td><td>0 MW</td><td>100 MW</td><td class="pos">700 MW</td></tr>
+          <tr><td>再エネ発電容量（累積）</td><td>231.8 MW</td><td>～350 MW</td><td>380 MW</td><td>470 MW</td></tr>
+          <tr><td>バイオマス燃料供給量（年間）</td><td>10.4万t</td><td>—</td><td>35万t</td><td>50万t</td></tr>
+        </tbody>
+      </table>
+      <div class="alert alert-info" style="margin-top:14px;">
+        <b>阶段划分</b>：FY2024-2027为「成长投资準備期」，FY2028-2030为「成长扩大期」。
+        FY2027目标营收达830亿日元，是FY2025的2.3倍，营业利益率目标达7.7%。
+        FY2030目标营收1230亿、营业利益134亿（利润率10.9%），ROE 11.7%。
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">战略四大支柱进度</div>
+      <div class="progress-row">
+        <div class="progress-label">蓄電EPC</div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:52%;background:var(--accent)"></div></div>
+        <div class="progress-pct">先行</div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label">FIP転+蓄電</div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:60%;background:var(--accent2)"></div></div>
+        <div class="progress-pct">进展中</div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label">再エネ発電</div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:75%;background:var(--gold)"></div></div>
+        <div class="progress-pct">順調</div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label">バイオマス燃料</div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:25%;background:#8b5cf6"></div></div>
+        <div class="progress-pct">準備中</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑥ 财务状态 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <span class="section-title">财务状况分析（BS · PL · CF）</span>
+    </div>
+    <div class="three-col">
+      <div class="card">
+        <div class="card-title">資産構成（FY25）</div>
+        <table class="info-table">
+          <tr><td>総資産</td><td><b>1,512亿日元</b>（+32% YoY）</td></tr>
+          <tr><td>流動資産</td><td>419.9亿（うち現金228.8亿）</td></tr>
+          <tr><td>固定資産合計</td><td>1,092.8亿</td></tr>
+          <tr><td>有形固定資産</td><td>787.4亿（+17.6亿）</td></tr>
+          <tr><td>　うち建設仮勘定</td><td>298.1亿（↑大幅增）</td></tr>
+          <tr><td>　うち土地</td><td>52.2亿（変化なし）</td></tr>
+          <tr><td>無形固定資産</td><td>152.1亿（↑94.2亿増）</td></tr>
+        </table>
+        <div class="alert alert-warn" style="margin-top:10px;font-size:11px;">
+          みやこ匿名組合连结化导致资产大幅增加（+3213亿）。建設仮勘定大增代表蓄电所等在建项目。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">负债・资本（FY25）</div>
+        <table class="info-table">
+          <tr><td>有利子負債</td><td><b>874.9亿日元</b>（+25.1亿）</td></tr>
+          <tr><td>　短期借入金</td><td>139.2亿</td></tr>
+          <tr><td>　長期借入金（含1年内）</td><td>735.7亿</td></tr>
+          <tr><td>自己資本</td><td>425.6亿</td></tr>
+          <tr><td>自己資本比率</td><td><b>28.1%</b>（FY24: 34.9%→悪化）</td></tr>
+          <tr><td>利益剰余金</td><td>137.8亿（FY24: 147.2亿→减少）</td></tr>
+          <tr><td>ROE</td><td>0.5%（FY24: 3.4%）</td></tr>
+        </table>
+        <div class="alert alert-danger" style="margin-top:10px;font-size:11px;">
+          有利子负债比率57.8%，财务杠杆持续加大。ROE大幅下滑至0.5%，主因纯利益极低（非经常损益）。TX2030计划2030年ROE 11.7%，目前差距较大。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">キャッシュフロー</div>
+        <table class="info-table">
+          <tr><td>営業CF（FY25）</td><td><b>+78.1亿</b>（FY24: △0.4亿→大幅改善）</td></tr>
+          <tr><td>投資CF（FY25）</td><td>△91.7亿（設備投資）</td></tr>
+          <tr><td>財務CF（FY25）</td><td>+37.9亿（借入増）</td></tr>
+          <tr><td>FCF（FY25）</td><td>△13.6亿</td></tr>
+          <tr><td>期末現金</td><td>164.3亿（↑）</td></tr>
+          <tr><td>設備投資主因</td><td>有形固定資産取得88.7亿（発電設備）</td></tr>
+        </table>
+        <div class="alert alert-success" style="margin-top:10px;font-size:11px;">
+          营业CF从去年的几乎为零大幅改善至78亿。デリバティブ损益调整后，运营现金流实态稳健。FCF仍为负但在投资扩张期属于正常。
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">FY2026 H1（上半期）实绩 vs 计划进捗</div>
+      <table class="fin-table">
+        <thead>
+          <tr>
+            <th>指标（亿日元）</th>
+            <th>FY26 Q1</th>
+            <th>FY26 H1（中間）</th>
+            <th>FY26通期予想</th>
+            <th>H1进捗率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-key"><td>売上高</td><td>127.1</td><td>270.4</td><td>470.0</td><td class="pos">57.5%</td></tr>
+          <tr><td>営業利益</td><td>9.95</td><td>32.72</td><td>36.0</td><td class="pos">90.9%</td></tr>
+          <tr><td>経常利益</td><td>5.77</td><td>25.84</td><td>18.0</td><td class="pos">143.6%（超過！）</td></tr>
+          <tr><td>親会社純利益</td><td>0.25</td><td>13.18</td><td>12.0</td><td class="pos">109.8%（超過！）</td></tr>
+        </tbody>
+      </table>
+      <div class="alert alert-success" style="margin-top:14px;">
+        <b>FY2026上半期は経常利益・純利益ともに通期予想を超過达成</b>（前年比デリバティブ損益影響の反動が主因）。
+        营业利益进捗率90.9%は非常に高く，通期目标的実現はほぼ確実とみられる。
+        上方修正の可能性も十分あり。
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑦ 主要客户・合同 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <span class="section-title">主要客户・重要合同・股东信息</span>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">重要合同（近年大口受注一览）</div>
+        <table class="info-table">
+          <tr><td>2025.04</td><td>静岡菊川蓄電所EPC・O&M（自社開発）～約50亿日元，2027.03完工予定</td></tr>
+          <tr><td>2025.04</td><td>DEIバッテリーファンドα（大和エナジーインフラ系）熊本锦町：约40亿日元，2027.12完工</td></tr>
+          <tr><td>2025.01</td><td>FIT太陽光→FIP転換+蓄電池5件：约56亿日元</td></tr>
+          <tr><td>2025.09</td><td>DEIバッテリーファンドβ：<b>系統用蓄電所約130亿日元</b>，2028.04納期</td></tr>
+          <tr><td>2025.11</td><td>東京センチュリー系SPC：<b>系統用蓄電所約90亿日元</b>，2028.06納期</td></tr>
+          <tr><td>累計</td><td>蓄電池EPC大口受注累計<b>約367亿日元</b>（FY26 H1時点）</td></tr>
+        </table>
+        <div class="alert alert-info" style="margin-top:10px;font-size:11px;">
+          受注残高346.9亿日元（前年同期比231%増），うち蓄電池が9割占める。蓄電池EPC引き合いは系統用150件+、蓄電池併設120件以上（2025年3月末点）。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">前10大股东（FY25）</div>
+        <table class="sh-table">
+          <thead>
+            <tr><th>顺位</th><th>株主名</th><th>持比率</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>合同会社ストーンサイド（创业家族系）</td><td>7.37%</td></tr>
+            <tr><td>2</td><td>石脇 秀夫（会长）</td><td>6.80%</td></tr>
+            <tr><td>3</td><td>合同会社たかおか屋（创业家族系）</td><td>6.70%</td></tr>
+            <tr><td>4</td><td>日本マスタートラスト信託（外资・机构）</td><td>6.63%</td></tr>
+            <tr><td>5</td><td>株式会社Ｋ（创业关联）</td><td>6.10%</td></tr>
+            <tr><td>6</td><td>株式会社瑛（创业关联）</td><td>5.47%</td></tr>
+            <tr><td>7</td><td><b>東京センチュリー株式会社</b>（战略合作）</td><td>5.00%</td></tr>
+            <tr><td>8</td><td>山本一樹（社长）</td><td>2.20%</td></tr>
+            <tr><td>9</td><td>石田智也</td><td>1.98%</td></tr>
+            <tr><td>10</td><td>公益財団法人石脇奨学財団</td><td>1.70%</td></tr>
+          </tbody>
+        </table>
+        <div class="alert alert-warn" style="margin-top:10px;font-size:11px;">
+          创业系（石脇家族关联）持股约25%以上，东京センチュリー作为战略合作方持5%。整体为<b>创业家族支配型</b>+战略合作资本介入的结构。機関投資家保有が增えれば株価の安定性が増す可能性。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑧ 近3年主要变化 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <span class="section-title">近3年重要変化 (Changes)</span>
+    </div>
+    <div class="change-grid">
+      <div class="change-item">
+        <div class="change-item-title">📊 业务结构变化</div>
+        <div class="change-item-body">
+          <b>FY23</b>：大型開発型EPC（太阳光）が利润驱动，营业利润率历史最高达19.9%。<br>
+          <b>FY24</b>：大型EPC案件消化完毕后出现「谷底」，营业利润率下滑至7.7%。同期大量人力投资・开发前期支出先行。<br>
+          <b>FY25以降</b>：<b>蓄電池EPC</b>が新成長軸として台頭。受託型中心にシフトし，安定収益基盤构建中。エネルギーサプライの発電資産ストックが着实に拡大（231→403MW）。
+        </div>
+      </div>
+      <div class="change-item">
+        <div class="change-item-title">🏢 资本・提携变化</div>
+        <div class="change-item-body">
+          <b>2024.12</b>：東京センチュリー（リース大手）が株式5%取得，资本・业务提携。系統用蓄電所開発で協力。<br>
+          <b>2025.02</b>：大和エナジー・インフラと業務提携（3年内2GWh共同開発）。<br>
+          <b>近3年增发等</b>：発行済株式数に変化なし（70,518,974株で維持）。增发/合股均无变动。<br>
+          <b>2025.03</b>：株主優待制度新設（初めての導入），株主还元意愿强化信号。
+        </div>
+      </div>
+      <div class="change-item">
+        <div class="change-item-title">⚡ 有価証券・土地资产変化</div>
+        <div class="change-item-body">
+          <b>土地</b>：FY24→FY25間で土地資産52.2亿円で変化なし。新规发电所用地为建設仮勘定计上。<br>
+          <b>有価証券</b>：无形固定資産が大幅増加（FY24: 76.2亿→FY25: 152.1亿）。これはみやこ匿名組合連結化やのれん・資産計上に起因する。<br>
+          <b>発電設備</b>：有形固定資産+17.6亿，建設仮勘定+6.5亿（蓄電所开发継続）。
+        </div>
+      </div>
+      <div class="change-item">
+        <div class="change-item-title">👥 株主优待変化</div>
+        <div class="change-item-body">
+          <b>2025.03新設</b>：株主優待制度を初めて導入。<br>
+          「株式への投資魅力向上・中長期保有株主の増加」が明示的な目的。具体优待内容为QUOカードPayなど（詳細は開示資料参照）。<br>
+          <b>配当</b>：FY25配当金は5.12円/株（配当性向176%），実質DOE政策ベースの維持方針。FY24は16円から大幅减配（利益急减に連動）。将来配当の正常化はEPS回復が前提。<br>
+          <b>総合</b>：株主还元政策は改善方向。
+        </div>
+      </div>
+      <div class="change-item">
+        <div class="change-item-title">🌍 地域・セグメント売上变化</div>
+        <div class="change-item-body">
+          <b>国内</b>：売上の大部分（95%以上）は日本国内。<br>
+          <b>海外</b>：インドネシア（EFBペレット工場2026.6月操業予定）、シンガポール（PTINTINATIONAL GREEN ENERGY：バイオマス燃料）。海外売上比率は現在低水準だが，FY2030に向けバイオマス燃料50万トン/年供給目标で拡大予期。<br>
+          <b>エンジニアリング比率</b>：FY24约43%→FY25约45.6%（蓄電池受注拡大で将来的にさらに上昇見込み）。
+        </div>
+      </div>
+      <div class="change-item">
+        <div class="change-item-title">📉 10年股价走势概要</div>
+        <div class="change-item-body">
+          <b>FY2021-2022年</b>：在1700-2600日元高値圈（再エネブーム+FIT开发型EPC好调）。<br>
+          <b>FY2023以降</b>：EPC案件一巡+大型案件不在→株価急落，2023年末860円台。<br>
+          <b>FY2024</b>：進捗不透明・業績悪化懸念で430円台まで下落。<br>
+          <b>FY2025～现在</b>：蓄電池受注加速+TX2030計画が评价され，300→600円台まで回复中（2025年4月时点624円）。<br>
+          <b>高値比</b>：2600円高値から约76%下落水準，回复途中。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑨ Top5风险 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <span class="section-title">Top 5 投资风险</span>
+    </div>
+    <div class="card">
+      <div class="risk-item">
+        <div class="risk-num">1</div>
+        <div class="risk-content">
+          <div class="risk-title">法规制度风险（FIT/FIP制度变更）</div>
+          <div class="risk-desc">日本再エネ特措法・電気事業法等の法令改廃リスク。FIT買取価格引き下げや制度変更により既存発電資産の収益性悪化・減損损失发生可能性。再エネ优先政策の継続は前提だが，买取価格调整は常に存在。</div>
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-num">2</div>
+        <div class="risk-content">
+          <div class="risk-title">高有利子負債と金利上昇リスク</div>
+          <div class="risk-desc">有利子负债874.9亿（占总资产57.8%），处于高水准。日本が金利上昇局面入りした場合，利払い负担増大→P&L压迫。プロジェクトファイナンスにおける財務制限条項（財務コベナンツ）抵触リスクも懸念。</div>
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-num">3</div>
+        <div class="risk-content">
+          <div class="risk-title">蓄电池EPC受注案件の開発要件リスク</div>
+          <div class="risk-desc">大型蓄電所EPC受注契約には「開発要件が整わない場合の契約解除条項」が含まれている。开発进展如不顺利，受注キャンセルリスクが存在。受注残346亿の一部が消滅する可能性。</div>
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-num">4</div>
+        <div class="risk-content">
+          <div class="risk-title">デリバティブ・持分法投資による業績ボラティリティ</div>
+          <div class="risk-desc">FY24に+56.4亿評価益、FY25に△18.3亿評価損と大幅变动，导致经常利润剧烈波动。投资者が実態的な収益を见极めにくく，PER等のバリュエーション指标が歪む。持分法投資（TOLLCUX社等）の損失も不確定要因。</div>
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-num">5</div>
+        <div class="risk-content">
+          <div class="risk-title">建设资材・电力价格变动与自然灾害</div>
+          <div class="risk-desc">EPC工事の资材コスト上昇（钢材・太阳能パネル・蓄電池価格变动）によるEPC採算悪化。JEPX（卸電力市場）の価格急騰リスク（猛暑・寒波時）。バイオマス燃料調達価格变動。台風・地震等による発電設備の损傷リスク（損害賠償・修繕費用）。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑩ 估值评估 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <span class="section-title">估值评估 — 现在是否便宜？</span>
+    </div>
+    <div class="val-grid">
+      <div class="val-item">
+        <div class="val-metric">PBR（现价/BPS）</div>
+        <div class="val-number" style="color:var(--green)">1.03x</div>
+        <div class="val-note">BPS ¥603 → 股价624<br>接近净资产，偏低</div>
+      </div>
+      <div class="val-item">
+        <div class="val-metric">PER（FY26E EPS估算）</div>
+        <div class="val-number" style="color:var(--gold)">~37x</div>
+        <div class="val-note">EPS~17円（FY26E）<br>相对传统建设业偏高</div>
+      </div>
+      <div class="val-item">
+        <div class="val-metric">EV/EBITDA（参考）</div>
+        <div class="val-number" style="color:var(--text-dim)">~17x</div>
+        <div class="val-note">EV≒时价+负债<br>EBITDA FY26E估70亿</div>
+      </div>
+      <div class="val-item">
+        <div class="val-metric">股价 vs 10年高值</div>
+        <div class="val-number" style="color:var(--accent2)">-76%</div>
+        <div class="val-note">高值2600円比<br>回复至约1/4</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">估值综合判断</div>
+      <div class="alert alert-success">
+        <b>PBR 1.03倍：从资产价值看处于低位</b>。発電所資産・EPC実绩・受注残高346亿を背景にすると，純資産が一定的に担保されている。FY2023年以前の高値圏（PBR 2.5-3倍）対比は大幅割安。
+      </div>
+      <div class="alert alert-warn">
+        <b>PER约37倍（FY26E）：増长预期込み的価格</b>。FY25实际纯利润極めて低（204百万円）のため，纯利润ベースのPERは形式上100倍超（非意义）。FY26E利润正常化後のPERは約37倍，成長株としては妥当水準だが割安とは言えない。
+      </div>
+      <div class="alert alert-info">
+        <b>结论：「PBR视角では割安，成长期待込みの评価は中立」</b>。蓄電池EPC事業が想定通り拡大し TX2030の途中经过（FY2027: 営業利益64亿）が見えてくれば，大幅上値余地がある。现值624円はFY2027以降の成長を半分程度折込んでいない水準と推察される。
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑪ 催化剂 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <span class="section-title">近期引爆点 · 催化剂</span>
+    </div>
+
+    <div class="catalyst-item">
+      <div class="catalyst-tag">🔋 最重要 · 中期</div>
+      <div class="catalyst-title">蓄电池EPC受注残高の継続拡大 → 売上贡献显現</div>
+      <div class="catalyst-desc">
+        FY26H1时点で受注残346.9亿（前年比231%増），蓄電池EPCが9割。2025.09受注130亿+2025.11受注90亿等，大型案件が继续积累。
+        大和エナジー・インフラとの2GWh协议+引き合い150件以上という潜在パイプラインが本格受注に転換すると，FY2027以降の売上急伸が确认でき，株価再评价的トリガーになる。
+        <b>次回注目点：2026年5月15日通期決算での受注残高更新と中期計画進捗</b>。
+      </div>
+    </div>
+
+    <div class="catalyst-item">
+      <div class="catalyst-tag">⚡ 近期 · 短期</div>
+      <div class="catalyst-title">FY2026通期决算（2026.05.15）での業績超過 + 上方修正期待</div>
+      <div class="catalyst-desc">
+        FY26 H1时点で経常利益・純利益ともに通期予想を超過（143.6%・109.8%進捗）。
+        下半期（FY26 H2）に蓄電池EPC売上がさらに積み上がると，<b>通期業績の上方修正</b>が市場サプライズになりうる。
+        5月15日の通期決算発表がカタリストとなる可能性が高い。
+      </div>
+    </div>
+
+    <div class="catalyst-item">
+      <div class="catalyst-tag">🏭 中期</div>
+      <div class="catalyst-title">佐賀伊万里バイオマス発電所の通期寄与（年约75亿円売上）</div>
+      <div class="catalyst-desc">
+        新规稼働のバイオマス発電所（67MW）が年間约75亿円の売上貢献見込み。FY26下半期から安定的なストック収入として積み上がる。
+        24時間稼働が可能で太陽光比で安定性高く，エネルギーサプライセグメントの利益率改善が期待される。
+      </div>
+    </div>
+
+    <div class="catalyst-item">
+      <div class="catalyst-tag">🌱 中期</div>
+      <div class="catalyst-title">インドネシアEFBペレット工場（2026年6月）操業開始</div>
+      <div class="catalyst-desc">
+        バイオマス燃料のインドネシア現地製造工場が2026年6月稼働予定（初年度約1万トン）。
+        PKS（パームカーネルシェル）からEFBペレットへの転換で燃料調达コスト削减+供给能力拡大。
+        中期的に年50万トン供给目标（FY2030）。商業化確認がバイオマス事業の独立評価を可能にする。
+      </div>
+    </div>
+
+    <div class="catalyst-item warn">
+      <div class="catalyst-tag">⚠️ 注意 · 短期</div>
+      <div class="catalyst-title">日本の金利上昇と有利子负债负担</div>
+      <div class="catalyst-desc">
+        日銀の利上げ継続となれば，874.9亿円の有利子負債の利払い增加が業績圧迫要因になりえる。
+        現在の低金利環境を前提とした投資計画・財務計画の見直しリスクに注意。金利敏感度の高い銘柄。
+      </div>
+    </div>
+
+    <div class="catalyst-item danger">
+      <div class="catalyst-tag">❌ リスク · 中期</div>
+      <div class="catalyst-title">大型EPC受注キャンセル（开発要件未達）</div>
+      <div class="catalyst-desc">
+        蓄電所EPC契約には「開発要件が整わない場合の解除条項」が存在。
+        現在の受注残346亿の中に，開発許可取得や電力系统连接が難航する案件が出た场合，受注残高の大幅压缩→株価下落につながる可能性。案件の進捗情報を継続监视する必要がある。
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑫ 投资建议 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">12</span>
+      <span class="section-title">投资建议（短期 · 中期）</span>
+    </div>
+
+    <div class="rec-box rec-short">
+      <div class="rec-header">
+        <span class="rec-icon">📅</span>
+        <div>
+          <div class="rec-type">SHORT TERM · 短期（1-3ヶ月）</div>
+          <div class="rec-action">谨慎观望 → 关注5月决算</div>
+        </div>
+      </div>
+      <div class="rec-body">
+        目前股价624円，从高值暴跌后处于回升轨道中（300→600円台）。
+        <b>短期内最重要事件是2026年5月15日通期决算</b>。H1超過执行率（经常利益143%）和蓄電池受注の堆积使得<b>上方修正的可能性存在</b>。
+        如担心持股风险，可在5月决算前观察，若通期上方修正确认后追加。
+        目前正处于蓄電池受注利好持续释放期，短期持有者可在600円前后评估建仓。
+        <b>注意</b>：米国関税政策等グローバルマクロのリスクオフ局面には素材・エネルギー小型株も影響を受けやすい点に留意。
+      </div>
+    </div>
+
+    <div class="rec-box rec-mid">
+      <div class="rec-header">
+        <span class="rec-icon">📈</span>
+        <div>
+          <div class="rec-type">MID TERM · 中期（6-18ヶ月）</div>
+          <div class="rec-action">积极关注 · 分批建仓</div>
+        </div>
+      </div>
+      <div class="rec-body">
+        中期的には<b>テスHDのストーリーは明確で魅力的</b>。
+        日本政府の脱炭素政策（2030年再エネ比率36-38%目标）+系統安定化のための蓄電池需要爆発という国策追い风，加之蓄電池EPC市场初期のポジション确立，TX2030計画の進捗が見えてくれば，<b>FY2027の営業利益64亿（現在比2.5倍）</b>に向けた株価の大幅上值余地がある。
+        <br><br>
+        <b>中期ターゲット：800-1000円（+28%-60%）</b>。催化剂は：①FY2027計画への進捗確認，②追加大口受注発表，③バイオマス燃料商業化，④有利子負債比率改善のシグナル。
+        <br><br>
+        リスク管理として，ポジションサイズを限定し，<b>最低2-3回に分けて平均コストを下げながら構築</b>することを推奨。もし株価が500円以下に調整した場合はバリューとしても魅力的。
+      </div>
+    </div>
+
+    <div class="verdict-box">
+      <div class="verdict-header">
+        <div class="verdict-label">OVERALL VERDICT · 综合评判</div>
+        <div class="verdict-rating">⚡ 积极中性（Constructive）</div>
+      </div>
+      <div class="verdict-body">
+        テスHD（5074）は<b>「国策×再エネ成長×蓄電池EPC新星」</b>という强力なテーマを持ち，
+        PBR 1.0倍という割安なバリュエーション，FY2027以降の利益急拡大シナリオ，そして東京センチュリー・大和エナジーという強力な戦略パートナーを保有する。
+        <b>FY26上半期の超過達成</b>で足元の业绩モメンタムも支持されており，5月通期決算での上方修正が最も近い株価催化剂となりうる。
+        <br><br>
+        一方，<b>高財務レバレッジ（負債比率57.8%）・EPC受注の開発リスク・デリバティブ損益のボラティリティ</b>が継続的な要注意ポイント。
+        成長シナリオが実現すれば相当な上値余地があるが，不確実性も高い<b>中高リスク·中高リターン</b>の投资対象。
+        长期保有的视角で（2-3年），蓄電池需求的拡大トレンドを信じられる投资者にとって<b>积极的に分析・ウォッチリスト入れ値する価値がある銘柄</b>と判断する。
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="report-footer">
+  <p>本报告仅供个人投资参考，不构成投资买卖建议。投资有风险，请依据自身风险承受能力做出决策。</p>
+  <p>数据来源：テスホールディングス有価証券報告書（FY2025）・決算短信・中期経営計画TX2030・Kabutan・Yahoo Finance Japan・ログミーファイナンス・各社適時開示</p>
+  <p>作成日：2026年4月16日 ／ 分析対象：テスホールディングス株式会社（5074・東証プライム）</p>
+</div>
+
+</body>
+</html>
