@@ -1,0 +1,644 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《滚雪球》54张扑克牌</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  background:#1b2838;
+}
+
+/* ═══ APP SHELL ═══ */
+#app{display:flex;flex-direction:column;height:100vh;width:100vw;overflow:hidden;}
+
+/* ─── HEADER ─── */
+#header{
+  flex-shrink:0;
+  background:linear-gradient(160deg,#120820 0%,#1e1035 70%,#281545 100%);
+  color:#fff;padding:12px 20px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.hd-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.hd-row1{display:flex;align-items:baseline;gap:10px;}
+.hd-title{font-size:18px;font-weight:700;letter-spacing:2px;}
+.hd-title em{font-style:normal;color:#8e44ad;}
+.hd-sub{font-size:11px;opacity:.65;letter-spacing:.5px;}
+.back-btn{
+  font-size:12px;color:rgba(255,255,255,.65);
+  text-decoration:none;padding:5px 12px;
+  border:1px solid rgba(255,255,255,.2);border-radius:20px;
+  white-space:nowrap;transition:all .2s;flex-shrink:0;
+}
+.back-btn:hover{color:#fff;border-color:rgba(255,255,255,.5);}
+.hd-legend{display:flex;flex-wrap:wrap;gap:6px;}
+.legend-pill{font-size:11px;padding:3px 10px;border:1px solid rgba(255,255,255,.2);border-radius:20px;opacity:.8;}
+
+/* ─── MAIN (preview lives here) ─── */
+#main{flex:1;position:relative;overflow:hidden;background:#f0ebe0;}
+
+/* ─── PREVIEW ─── */
+#preview{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:28px;background:#f0ebe0;
+  transition:opacity .3s ease,transform .3s ease;
+}
+#preview.hidden{opacity:0;pointer-events:none;transform:scale(.96);}
+#preview.fanning{animation:previewFade .25s ease forwards .45s;}
+@keyframes previewFade{to{opacity:0;pointer-events:none;}}
+
+.deck-btn{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;padding:0;-webkit-appearance:none;}
+.iso-wrap{perspective:900px;width:300px;height:270px;display:flex;align-items:center;justify-content:center;}
+.deck-iso{
+  position:relative;width:148px;height:228px;
+  transform:rotateX(22deg) rotateY(-22deg) rotateZ(2deg);
+  transform-style:preserve-3d;transition:transform .4s ease;pointer-events:none;
+}
+.deck-btn:hover .deck-iso{transform:rotateX(16deg) rotateY(-26deg) rotateZ(2deg) scale(1.05);}
+.deck-btn:active .deck-iso{transform:rotateX(25deg) rotateY(-18deg) rotateZ(2deg) scale(.97);}
+.top-card{background:#000;overflow:hidden;cursor:pointer;padding:0;display:flex;flex-direction:column;position:relative;}
+.bc-img{width:100%;flex:1;object-fit:cover;object-position:center top;display:block;min-height:0;}
+.bc-hint{font-size:9px;color:#ddd;letter-spacing:2px;text-align:center;padding:5px 0 4px;background:rgba(0,0,0,.65);flex-shrink:0;}
+.dl{position:absolute;border-radius:9px;border:1px solid rgba(0,0,0,.07);}
+.dl:nth-child(1){inset:0;transform:translate3d(4px,4px,-5px);background:#ececec;}
+.dl:nth-child(2){inset:0;transform:translate3d(8px,8px,-10px);background:#e6e6e6;}
+.dl:nth-child(3){inset:0;transform:translate3d(12px,12px,-15px);background:#e0e0e0;}
+.dl:nth-child(4){inset:0;transform:translate3d(16px,16px,-20px);background:#dadada;}
+.dl:nth-child(5){inset:0;transform:translate3d(20px,20px,-25px);background:#d4d4d4;}
+.dl:nth-child(6){inset:0;transform:translate3d(24px,24px,-30px);background:#cecece;}
+.dl:nth-child(7){inset:0;transform:translate3d(28px,28px,-35px);background:#c8c8c8;}
+.open-label{
+  background:#1b2838;color:#fff;padding:14px 44px;border-radius:50px;
+  font-size:15px;letter-spacing:2px;margin-top:40px;box-shadow:0 4px 20px rgba(0,0,0,.28);
+}
+
+/* ═══════════════════════════════════
+   VIEWER  —  fullscreen overlay
+═══════════════════════════════════ */
+#viewer{
+  position:fixed;inset:0;z-index:50;
+  background:#ece7db;
+  display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;
+  transition:opacity .35s ease;
+}
+#viewer.active{opacity:1;pointer-events:all;}
+
+/* Top bar: suit tabs + close */
+.v-head{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px 6px;
+}
+.suit-tabs{display:flex;gap:5px;}
+.stab{
+  padding:5px 12px;border-radius:20px;font-size:14px;font-weight:500;
+  border:none;cursor:pointer;background:rgba(0,0,0,.08);color:#777;
+  transition:all .2s;-webkit-appearance:none;
+}
+.stab.on-black{background:#1a1a1a;color:#fff;}
+.stab.on-red{background:#c0392b;color:#fff;}
+.stab.on-joker{background:#6c3483;color:#fff;}
+.close-x{background:none;border:none;font-size:20px;cursor:pointer;color:#bbb;padding:4px 8px;transition:color .2s;}
+.close-x:hover{color:#333;}
+
+/* Body: centers the 3×3 grid */
+.v-body{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+
+/* ─── 3×3 CARD GRID ─── */
+:root{--cw:200px;--ch:308px;--pgap:10px;}
+.v-grid{
+  display:grid;
+  grid-template-columns:calc(var(--cw)*.2) var(--cw) calc(var(--cw)*.2);
+  grid-template-rows:calc(var(--ch)*.2) var(--ch) calc(var(--ch)*.2);
+  gap:var(--pgap);
+}
+
+/* Peek slots — overflow:hidden clips the full card to show 20% */
+.pg-tp,.pg-bt,.pg-lf,.pg-rt{
+  position:relative;overflow:hidden;
+  border-radius:10px;cursor:pointer;
+  transition:opacity .15s;
+}
+.pg-tp:active,.pg-bt:active,.pg-lf:active,.pg-rt:active{opacity:.75;}
+
+.pg-tp{grid-column:2;grid-row:1;}   /* top    → prev suit  */
+.pg-ct{grid-column:2;grid-row:2;}   /* center → active card */
+.pg-bt{grid-column:2;grid-row:3;}   /* bottom → next suit  */
+.pg-lf{grid-column:1;grid-row:2;}   /* left   → prev card  */
+.pg-rt{grid-column:3;grid-row:2;}   /* right  → next card  */
+
+/* Full-size card rendered inside a peek slot;
+   always anchored top-left so the TL corner (rank+suit) is visible */
+.peek-card{
+  position:absolute;top:0;left:0;
+  width:var(--cw);height:var(--ch);
+  background:#fff;border-radius:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,.18);
+  border:1px solid rgba(0,0,0,.07);
+  overflow:hidden;
+}
+
+/* ─── CENTER CARD ─── */
+.card-stage{width:var(--cw);height:var(--ch);perspective:1000px;}
+.card-inner{
+  position:relative;width:100%;height:100%;
+  transform-style:preserve-3d;
+  transition:transform .56s cubic-bezier(.4,0,.2,1);
+  cursor:pointer;
+}
+.card-inner.flipped{transform:rotateY(180deg);}
+.card-face{
+  position:absolute;inset:0;
+  background:#fff;border-radius:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,.18),0 2px 8px rgba(0,0,0,.08);
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border:1px solid rgba(0,0,0,.07);
+  overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+  display:flex;flex-direction:column;
+}
+.card-face.back-f{transform:rotateY(180deg);}
+
+/* Card corners */
+.crnr{position:absolute;display:flex;flex-direction:column;align-items:center;line-height:1.15;padding:9px 10px;}
+.crnr.tl{top:0;left:0;}
+.crnr.br{bottom:0;right:0;transform:rotate(180deg);}
+.crnr .rk{font-size:clamp(13px,calc(var(--cw)*.105),26px);font-weight:800;}
+.crnr .sy{font-size:clamp(11px,calc(var(--cw)*.086),20px);}
+
+/* Card body — front */
+.card-body{
+  flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:8px 18px;margin:clamp(40px,calc(var(--ch)*.155),58px) 0;
+}
+.c-badge{
+  display:inline-flex;align-self:flex-start;
+  font-size:clamp(9px,calc(var(--cw)*.05),11px);font-weight:700;letter-spacing:1px;
+  padding:2px 9px;border-radius:10px;margin-bottom:8px;color:#fff;
+}
+.c-title{font-size:clamp(14px,calc(var(--cw)*.093),22px);font-weight:800;line-height:1.4;margin-bottom:10px;}
+.c-div{width:28px;height:2.5px;border-radius:2px;margin-bottom:10px;opacity:.35;}
+.c-body{font-size:clamp(12px,calc(var(--cw)*.07),15px);line-height:1.85;color:#3a3a3a;}
+
+/* Card body — back */
+.back-body{
+  flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:8px 18px;margin:clamp(40px,calc(var(--ch)*.155),58px) 0;
+}
+.bq{
+  font-size:clamp(12px,calc(var(--cw)*.068),15px);line-height:1.85;
+  border-left:3.5px solid;padding-left:12px;
+  margin-bottom:12px;color:#2c2c2c;
+  font-style:italic;word-break:break-all;
+}
+.bsrc{font-size:clamp(10px,calc(var(--cw)*.059),13px);color:#999;line-height:1.6;}
+.bsrc b{color:#666;}
+
+/* Color utilities */
+.cblack{color:#1a1a1a;}.cred{color:#c0392b;}.cjoker{color:#6c3483;}
+.bgblack{background:rgba(26,26,26,.04);}.bgred{background:rgba(192,57,43,.04);}.bgjoker{background:rgba(108,52,131,.04);}
+.bdblack{border-color:#1a1a1a;}.bdred{border-color:#c0392b;}.bdjoker{border-color:#6c3483;}
+.dvblack{background:#1a1a1a;}.dvred{background:#c0392b;}.dvjoker{background:#6c3483;}
+
+/* Footer: dots + position label */
+.v-foot{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  padding:6px 16px 12px;
+}
+.dots{display:flex;gap:4px;flex-wrap:wrap;max-width:260px;justify-content:center;}
+.d{width:6px;height:6px;border-radius:50%;background:rgba(0,0,0,.15);cursor:pointer;transition:all .25s;}
+.d.on-black{background:#1a1a1a;width:18px;border-radius:3px;}
+.d.on-red{background:#c0392b;width:18px;border-radius:3px;}
+.d.on-joker{background:#6c3483;width:18px;border-radius:3px;}
+.pos-lbl{font-size:12px;color:#aaa;letter-spacing:.5px;white-space:nowrap;}
+
+/* Slide animations */
+@keyframes sL{0%{opacity:1;transform:translateX(0)}45%{opacity:0;transform:translateX(-60px)}55%{opacity:0;transform:translateX(75px)}100%{opacity:1;transform:translateX(0)}}
+@keyframes sR{0%{opacity:1;transform:translateX(0)}45%{opacity:0;transform:translateX(60px)}55%{opacity:0;transform:translateX(-75px)}100%{opacity:1;transform:translateX(0)}}
+@keyframes sU{0%{opacity:1;transform:translateY(0)}45%{opacity:0;transform:translateY(-50px)}55%{opacity:0;transform:translateY(65px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes sD{0%{opacity:1;transform:translateY(0)}45%{opacity:0;transform:translateY(50px)}55%{opacity:0;transform:translateY(-65px)}100%{opacity:1;transform:translateY(0)}}
+.as-L .card-inner{animation:sL .36s ease forwards;}
+.as-R .card-inner{animation:sR .36s ease forwards;}
+.as-U .card-inner{animation:sU .36s ease forwards;}
+.as-D .card-inner{animation:sD .36s ease forwards;}
+
+/* Fan animation */
+@keyframes deckLaunch{
+  0%{transform:rotateX(22deg) rotateY(-22deg) rotateZ(2deg) scale(1);}
+  40%{transform:rotateX(12deg) rotateY(-28deg) rotateZ(-2deg) scale(1.08);}
+  100%{transform:rotateX(5deg) rotateY(0deg) rotateZ(0deg) scale(0.05);opacity:0;}
+}
+.deck-iso.launching{animation:deckLaunch .55s cubic-bezier(.4,0,.6,1) forwards;pointer-events:none;}
+
+@media(max-height:600px){
+  #header{padding:8px 16px;}
+  .v-head{padding:6px 12px 3px;}
+  .v-foot{padding:4px 16px 8px;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ═══ HEADER ═══ -->
+  <header id="header">
+    <div class="hd-top">
+      <div class="hd-row1">
+        <span class="hd-title">《滚雪球》<em>54张牌</em></span>
+        <span class="hd-sub">巴菲特和他的财富人生</span>
+      </div>
+      <a class="back-btn" href="https://dongtao2026.github.io/research-lab/index.html">← 返回数据库</a>
+    </div>
+    <div class="hd-legend">
+      <span class="legend-pill">🃏 王·元原则</span>
+      <span class="legend-pill">♠ 黑桃·投资哲学</span>
+      <span class="legend-pill">♥ 红心·人格与性格</span>
+      <span class="legend-pill">♦ 方块·商业智慧</span>
+      <span class="legend-pill">♣ 梅花·人生与命运</span>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN: preview only ═══ -->
+  <div id="main">
+    <div id="preview">
+      <button class="deck-btn" onclick="openViewer()">
+        <div class="iso-wrap">
+          <div class="deck-iso">
+            <div class="dl"></div><div class="dl"></div><div class="dl"></div>
+            <div class="dl"></div><div class="dl"></div><div class="dl"></div><div class="dl"></div>
+            <div class="top-card" onclick="openDeck()">
+  <img class="bc-img" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEARgBGAAD//gB2RmlsZSBzb3VyY2U6IGh0dHBzOi8vemgud2lraXBlZGlhLm9yZy93aWtpL0ZpbGU6VGhlX1Nub3diYWxsXy1fV2FycmVuX0J1ZmZldHRfYW5kX3RoZV9CdXNpbmVzc19vZl9MaWZlX2Jvb2tjb3Zlci5qcGf/4gIcSUNDX1BST0ZJTEUAAQEAAAIMbGNtcwIQAABtbnRyUkdCIFhZWiAH3AABABkAAwApADlhY3NwQVBQTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWxjbXMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAApkZXNjAAAA/AAAAF5jcHJ0AAABXAAAAAt3dHB0AAABaAAAABRia3B0AAABfAAAABRyWFlaAAABkAAAABRnWFlaAAABpAAAABRiWFlaAAABuAAAABRyVFJDAAABzAAAAEBnVFJDAAABzAAAAEBiVFJDAAABzAAAAEBkZXNjAAAAAAAAAANjMgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0ZXh0AAAAAEZCAABYWVogAAAAAAAA9tYAAQAAAADTLVhZWiAAAAAAAAADFgAAAzMAAAKkWFlaIAAAAAAAAG+iAAA49QAAA5BYWVogAAAAAAAAYpkAALeFAAAY2lhZWiAAAAAAAAAkoAAAD4QAALbPY3VydgAAAAAAAAAaAAAAywHJA2MFkghrC/YQPxVRGzQh8SmQMhg7kkYFUXdd7WtwegWJsZp8rGm/fdPD6TD////bAEMABgQFBgUEBgYFBgcHBggKEAoKCQkKFA4PDBAXFBgYFxQWFhodJR8aGyMcFhYgLCAjJicpKikZHy0wLSgwJSgpKP/bAEMBBwcHCggKEwoKEygaFhooKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKP/AABEIAYQBCAMBIgACEQEDEQH/xAAdAAABBAMBAQAAAAAAAAAAAAAABAUGBwECAwgJ/8QAVRAAAQMDAwIEAwQHAgkHCQkAAQIDBAAFEQYSITFBBxMiURRhcQgygZEVI0JSobHBFtEXJDNWcpSV4fA0U1VigtLTGDdDV5KisrPDJjZUZYSTpMLx/8QAGQEBAQEBAQEAAAAAAAAAAAAAAAECAwQF/8QAKxEBAAICAgECBAYDAQAAAAAAAAECAxEEEiExQRMyUYEicZGh0eEFYfDB/9oADAMBAAIRAxEAPwDyvWR1rUVkdajbesE4oJrWiRDJOaxRRRQBmthxWO3zrdtClqCU9ScCiNmGlPuBCMDuSegq09CeHaZbQmXBt93nCWUJxuPtmlPhVohct8SX2k+U2QTuSSpxfYAdAB+fNX+2ymCyhC3UxgAMbRuWR8uwHzqM7Mtu00zboqBILcVtAwGWk5KB8zTfeWYGf1UcLJ6OOkkk/nT1JcbKdqFOOjGcrPqPzPQCmeXb2HyrLClnAJ5CePlzj86JtAr3b0PEqjenA5BYUnH4mopJsch5ourUFt44OCoH8QDVynTiJCPKaTtyCAhQUnP0IJH5Gm5vT6jM8l1vypB6LSkjf9U9FfUYPvmhtR0q2qQSSlQA496QqiqHQZHyq97lp1e0peiK8wDC8ApIFQW72FUdzalvfzwUnBNXZtXjjRSR94D6VyI5/Z/LFSKTDAJwVA5wQRg/lTa+ypGfMSCn5pzRrZuKc9U1xU2M8ClSkpznBHzTyK0OQOMKHyP9KKRrRmuK0cZPb2pcdiuMgH2NcnGikEjjiqEPT51qRSkt5HI7Zrm40UAUVwPWsg8Vkjj50AcVBgjFYrYgmtaAooooCsGs1g0JFFFFGQKzWBWRRqBRRRQFbYrWujSVOLCU9TQlhKcqwBzVjeHmkpNzusaO0na+7tUt3bu8hJGQlIPVZ6n2GKY9C2F/UWpYdstyMoKt7rxGQEjkk/KvX2i9IQ9N21a47iUK582WR+scJOTjPAGf5fKjMyVWDTsSy21qMDhtA4G7aSe5UruT1OK7SpdriY8stLUBgZQCPwzn+VNd+ukRgEtOs4zyuS4opP0yKhVz1EEncWYykKTvQ6Wt6Pl93oOOCc1GUtuOq4DZVi3xnlfvJRk5/AY/Oml7VzaRubgRXM+kpWgIUf8AtDgfjjNRxqe7dVqOXW0YB8tYS4yB04UjBH4jIpU3aNoLuQM/uOFY/GiHBjUNucWtLrMmE6eTtSEn80+k4PYinmNqBl5CWLoETI6OW3CjY6ge5x1+o/Ko38MMJBRkjOMjt8v7q5/DBCgWzhSDkbTnB+Q96Cbz348lvaiR5iAgeU/wVJ7c+4/4IqttRtNOOuNugNrwSgp+6v6dvwpw+LdQd0XLasZKVcBXP8/nSG4rEtsuBoFKiVONuDkfNJ7Gggs+IStxDyNxb64Hqx9O9R2dBcQkuRz5qByoJ+8ke+O4+YqYXNKCnyHgErT9xSiQoD5e4/iKjry1Mry44oLHReM/xFVUTkITuAyAT0zSNxpaOTj61K7ghtwkrQ2tpeNwGPve/wDvH44polwUtqHkKJQRlJIwfxopkUvjChkfOsbyCAk4HZJ/pSl+O4nlTYUPcHOKRrH7J4579PzosBYGeM49uhB+VaEjoeQe4oSsnjPPTBrBz6gOPlTauC04PHIPStRW+eO9a454oumK0rpWqulBrRRRQFYNZrBoSKKKKMgVkVgVmjUCiiigKUskNpAP/pOMJPOPb5UnAp40oho3+EuQUhppxLitw4wD1OPbg0Jen/BrTkTS+kmZkxtDVwlID0nAGW0kkoaz9OT8z9KnEyQ7MgJlyEEReUsR1HaHD7q+Q60w2otymYDTyiIaW961jnKcAjr3ORWurLsZRW2xhhgJ8poc5I7gD58j+NRzlW2tbk7OmuoYWVpyU+YR97HVQHTA6ClWnNKyklqfNedjqcSE/Dp4GwcJSR7YwT86lFn06hhaZ09O9w4LbSk4CPYke/y7cU7vglRWT155NEMzbTUNxHkIS0MYA/47fWl7agGspSCTwDu4P4UmeZWpfmKwRiuamXAgKBIT9OfwoMuydvoVyPfPAprkSgHNyRgZ+8jgg/KlTxQrIdyoE5CSOnzpLKQEoUhQOwgY29QaAceDaVlz1jgZx398UyXKbtw42Nu0bVjGAqlb+W4aW/UtZI4PUj/jH8aj0xKwThSievHHFBvOeafQhD6ULSRnnose4HQ/wxTM9HYUwpSC4lWMbT6kq57+3Wlj7q0suAqSodRuSPSfce1RWVKcQ4pQJQTkEpOMg9RVV3d2NpXlRCBxtUP4g/I0nWyNij56FoH3VpBwr6jsaRv3MurKnUtlRGN23k/Mn3+dJUz1pHCwkkg8UGXWi3lwIVtA6pVxz70ieKSClQCVjjqcGlb7zbzGVFLaifUe6vnjvSda0E4Cd3zX1P5dKKQrbyMKCUn36VyWDv56f1rsUE7sAkHkfKtVH7w9W88AdjRSVYx061qBnB/h7V127id2QoDP1rTlPBwT1BHQijQKD9fnXJYruDxj36Gubg7j8qo40UGioCsGs1iiSKKKKIBWaKKNM4rFbDpRgUAPnSu3v+S4eAclJGeBwoHr17Ulp10rAVdNQQYiU7yt0cZwMDkk/QZoj09o2c/P0tapMpooddjpBChg4AxlX9PlipDGtiG5Akujc6BhtKv2B7/NR/hSCxESEBbZy0yry20pHp2oAAP8/wAakzDCylS1Ebum3HQVlgkdjLU4VOHaB86TushaiE5UB19jTymOp9O1z9rvjGKJTAQ2W0EfM+9EMElhK0kjJxx8qRPR1rB3HA/d+VP8aKkFWeSeMGuFwj4PpbIAHJ61RHfhQog7dxzjbiuMhglKklJx1z7GntLKkg5Cgk88jrSWWjdk4V7YA6fWgiVxRsbBBVu9+lMsxvcStKtpBx9alc1jcc4JAOMj3pqnwRsWG0np2OaCGzXUEqRj1Ht7VEbuQkqTzj59qmNyjbHSCRjru6VEbuArJ4KeRVWEfUvg4Oc0ncWR0JrZ1OxWRymtF4PXg0VkLz8zXRO4kHnGaTA4rogjPKQSe5zU2FjW9Li1tHKeRtB65+X0pOSkbUc5z36VsXVAAIUQPlXF5akpAyDx35qjQJ5ynarvtzhQ+lbPtDykvtncnqeMbT/vrqgJfcCmkqQ6edvUE45x7c/zrony2Xmndv8Ai8hJC0DoCOFJ/kaNQbcEZHYGhafet3W/KfUjdkdN3uOxrUklOD+NVXAisYrckjisYB69aDSsGtiMVqahIooooyzRRRRpsB3rHU0Y4zWO9BsOelWF4XwFNfG3VSAW2U+Sg9Stw/sp/vqBRm1OyWm0Y3KUEjj34r0X4c6fS3+hLeSotM7n1pI6EHJKvqQKMytDSlpMG0R46kjztoU6odNx5P5VI22OAEoII7nqa6R45G3OBxzTgEkDYkJBGE9ajJvXF2JwQSrsMdaRPsk7kgcn3TT8pngqClBRHtnNIXkesqBQo9sH+dA0IbG9z1ZI71rOCFtkgELT3HQc0uKUKUPNG0Z57nP4VrLi+jc0sYI5A6/lQNqWkCPlXJVkpH8qQvw9zWTyVc8U/GO2Vpb5UQQAUjjPek77ak5SsBXVOSMVBDJkZKXDtAyoc9qRuxSpA42pCuT7Gpe/DStO3CQrAAzTdcGUN5B2hPfA/j/vqoqy/Rn0E5PpUc56jNQW9RFKdKktkg/P7tWpezl91tKApO0kjrzUPusQ7c7Fc9QnsPxoQrKU0W1ZAPBpKsElXsKk0+2EOKUtJQSeB7e1MFwZWw4QTjB5zVaISfc1sDgVoVZ5xgmsk4+dQdQcj51q6cc+1COtZXwlYHdOP60VvaUkyeFHCcrP4d6e3IO6DdWFNqBYUh5JH7JVxn585FNNhTm5ISnG89u31/pUt+KWiO4hSGwpMf4dYScFxG9JSoDuQd2RVRCN4cbSFAZSNv171ycxwfpWZqCxLeZycIVgHpn2Nabsj6j3qtuax6jWucEVuo5JIrQ9eaHu3xxnj6VyNblQIzjmtDQYoooqMs1lPWsVsMUakHpQkZFZo6dKIctMpSq/QQ4oJHmg8+/YV648PreEyVugK9De3BOcbj/urx7bnQxcYrx6NuJUeccA17d8NG/Os5fHRxSlDP7o4FRJS9CU7uOeBXVO1IBAP1rqyylSBz2wBQpBSo4APzzVZaeYME4UT7mk60pfThQKXOwHWu5SMkcg9q4uJbcT6yd3bJ5oEi4uSCfujuetaRUEr2g5WkZznv2yK6yN7KgN6xx370JbdGDlJPUnjNQcyFbzjIGfem+a4tBOcKBGcKHSlzoKUZKVFR5JxTSt5SngBz32qyDigTqeCneVeWrPBzxSC7KJzvbyk9FJ5FKZqm/KSohSQrjIGcD6e1NZeWM5d8yOrGFDkJHvjrURG5rAc8xslKVbvSV/39qjc5so3MurSsK5K++P61MrmlTi9yWy4B6uR0NQu5OOMktLQlbafUE90/P6VRDby06hK21pKkg53jPfp1qK3EBTfABPfPBqdTi3IDrSvQkc+vioTe2lsuKUsgpznPfHvVVHXcBwhJyDWpBH4VlQw6Uk55yDWccfzqNNmznBrdRzx71xSMc+9bZPNA5aXa3XxvIyAlSv4U/XlAYkttH0h9txTKj+yoq3DJ+ZQR/2hSTREMrlyX3NyGW2FfrM49Shx/U1yv00PyMfdG0HKSRtV149sGqnuYZxLznmY68Z/lSYcdeorucqSQonpWik4Oe+PzqtOGc0fWsqGFHArBwOmaKwoYHH41rW6iRzWiqEsUUUVGWaB1ooo02zxQOawOtbURINH2MXfUMKHJaWph9t1SMHaFkIVtAV81gJ/HFe0dCxlwNHWlh0frjGQVEDjcRk/wA68+eC1hhT7SoTQ65JYWJa2CCklCiny1IUD2Kc9j9avh9qfEUExZQKwchHBRjvgHGPnjvUZlPYu1TTYA7dzXQNncrkjB7UhtRkKjNh8bVgZOBxTog5Jzwao4LR19I/LFI3EgpIOMdcK706EDABxmuS29oPQpPQUQzbA44MbkhOVYPP0rRznJzyeAfenRLKdo3JSN3y60leYGeAAOwx3qBBJdb24OwkDnNNfl4Sl1xr1Hj0joKclIEiT5aTkH72OoHv/wAe9dLghtJGAAAMUESuCmeR5yUZ4woFPP48UxTGVspdWwPMbWRuIGMfOpJdWG5LOcbsEhRH91RhKVtKLLhVsIynjqewqIaZC1JVujPFKwnjJwMf8e9Mt3UpxRBZ3FYSpSgT/EU8XppTcdDyCAN/pUodB7UylzchanUKSo9AeUrHf8aoil1QXXm0J9JIIV/1gKimoEq3LjrSSEj0KPXpmpxd7clxoqihWCkFtYOcK+fzqHfEJuEVZUnbIbBC/qO9VUP8kJfSAckDP1rDmEqxW7yglwcY2kprg44VKzRpsTilUOMHHklzPlD1LIHO3GePrkD8aRFQ39Onanhx5uPE2oz5m1IVzyVYH8BioHazzgxkKKFEJL72OhKjtCPwSP40yTXESHX3kjYhfrQknJx0H1NFoJ811bh2gt+rtn/jtXKepJWkJ4TtwfrVIJscZB6nrWqhkfyrZPAT7deKwTxkdfaqrgrG7nr0rG05PFZV972rHPQ1FaEY65rU81urpWhoMUUUUZZoo7UUaFZHPHc1kp9G4EH3A6inO2OzIDTsyOwyEow35jyAopJ/dCup69AcD2okrc8G3kRLj8S44CiVHQUxiogr24BUMfdIUCOeoIOMVfomtvOmMxNW+ACoshIwSO/Pzxz2rxpp1u6TLgBa32npLqgdhVtOR09sde1Wj8JrpuP5lw00p7djL7EhxJOP+sSpH51GZXyu5Xm37vh7e4rbla0KZUjjPPq5Cz9DTlatZsPJX8UstrwCGyjafzOKo7TWvZGnX0C5oucOOknCZSS6yR3T5jeR+OOKmUXV8XU0falUJaRnY7GeStSAccFJOT+AFEXBFvcGasJjvoU4fujOc0vKgpQz1AwM1TcOYuCFIfSlO0HDyN21JHcnAIBqw9P3YTY5BW0paBgFte4LAHUZ5obPaHEuNZVjAJBz3pHOdDEZRSQSePliu0NstxE+bwvcpWD8zTDe7k38WzG3gKW5g5HUCgW2hJUHnFbST6E5Hy55pLdQEP7VZ8tXBHX/AI61ymXly3qYiRI25Styioj0pSOSr+PWofcZVymqL6JJ8tXqCD1Uf3UA8H2z170Dw/IiKUSXQUggEDp+Pt9ajlzdZRJDm9KkjONp+7x3HcGmKdBmB5KUfrVOAq8sNrCgec9AR/SmSU0pD5ZksusbUqHmIdWFNnPIGRjb16gj6UDvNfaejSHGXFGOkguoSNwT7HB5xn8qhN9mpYWpT6FuQwBucSPU2k9CR7E8bhx+NKXoN6t0v4qEpEtrAO1zuOmQpORz0wcikc+XFnPEIiOWyWFqW6062SySepQdpxnuOOfeiGR/UDTUgpC9zCh6SCQpP++ofcpi41xceZWHELGCcY3D2NKr7AQhYVFSlLmP1jbLm9APukdRn26UwrUrBCxVaiHJxW9SlDoea5isgdRWSNox3qNNc4Oe9d2XkpKQpJVjoD0P1pOr73NCT6uBk9qoVB4BRySSoHJ7DitFrUdm4+o84H9a5EFKsDsOvzoIKSg5z1zRXUY2p5IHIrUL+tcydx+Wc4rmoqzyao3UeTxWATXMk1jNQbqOa0NGaKJMiiiiiMiiiijR40mhp/UUJMhlLrYJOwjhRSkkZHcZFJbxcHLjcZMlwp/Wurd2oTtQCpWTtT+yPl7AVvp2SIt+t7yz+rS+nd9CcH+BNJJkdcSW/Gc4cZcU2r6g4oifeAUNUzxWsg2hTTRcedB6bUtqPP44r0RbGLii9SIqpEkWxt4uIDbhTkZ6ZHbNVN9lGCl/VF8mkArjQUtpJ7b1jP8ABNelEMN7FOqwATmpLM+rNvtFr1Al2LdocaS+jkKUNrmD0KVjCvl1ryvr7S7ca6KFuZkRr81JcbmRVEIbQgY2LQserJ6kHPyr1U6iNK8pSHSFtnIUhe1Q/Gmu/actVyW3Ju6WJb4TtQuSQVAY6Ejkj60R530zrm5aWuLEHWdqFxhK4Q4SPN29y24OF4zylXP0r0DAt9gusGLcbQrdEkpyy8wopx7jn7pB4IPSq+1boeHd7RLgxfMbOxTsZDajsbeAJSQOnJ4J9jVJaI17fdMyvLs13bjsym0l5EpKVMKIHUgj0qzkBQ5xgGg9yoJYgtKHrwnA46/M1TPiDqBFuuqJm8NtpXyFK+775/I1Wbnj5qF5LaJL8IEcZEcjHz4qEXm8XDVUlu6XmQvY6pXw0dB2pSlJwVHHcnP8aC7v8LGm7jcmjOnKipaQpAfDan0/IBKQSDnviuifFHTqStlu+RHGlAgqVHcZKv8AS3Dn8MVRk3UN5aWA1c7gUADCTKcCSB2wCOKtjTDuitW6cafmaaizbun0uoW88F7vkrf0oHaHqO23CQ8WdT2Zxb6toL8lCFJTx6QDjj6k/KnxzS0u4Nodbnx5cYcoTG8l0YH+jz+R5qMJ8HdPXt9MeHaBCeUn9Y5HlOrbbPbG4nOP4+1QbxM8LY2iFTZFrnXN9FuSyqRIDSQlsuEBJykpIySAKCcXuyTIUgMhbjClEbRv4x7AYyOKRXS03AL8t20xXW8epRcOffrk84qrrbfNXuR2BCu0m4sqO5tl1wPKyM8BK/Vng/dNTDSXi2hkqg6rhuISDtEthJUWexCm1c4/GmjRDcrelmSlh5p5KSglOx/Kmj/UfjUHvsVDS17EDIGcgED8quu8JZu9ukTrG+xIghJ2rTtOenq6ZyORiqt1ARMZkPvb0qyAVBSQFAcDjtnjtVIQlKDt3GuSuOTXeU8hKAhKsqB5A6Uiypw0agFXPua3QlRPJx8q2abA59u9d2UhW4kd6K1WnDacgA1zKCs+nnArvIHTH1NcUPBtZBFFatJJOD1rV8YUK7FSSrIri/6nOOgFBxNFBrNE0xRWaxQFFFFEZoooo0Keb8TORHuySFGQAh/H7LyQAc/6Qwr55PtTNS22zfhVONuo82I8NrzRON2OhB7KHUH+hNCV6/ZNKfO1WBkOeXGx9Nzmf6V6OjshxOFDIB6GvOf2bGmrHqe6NypDbcW5Qm1xVyCGi4QvIGD3wTyOD79q9KMIDRwoH1c1GJJzp1mWSsqKSegFaK08lBVlW4eyjxT9FXhobRz7UOIcKhu4Se1NIjJtDokICCduQc5+6BXn3wD8L7TqWz3K/ant/wAVBdWpiC0t1aAraolbmUEHjhI567q9Ea9nvW7Tklq2bTdp/wDiFuQVYJfdBTv+iE7ln2CDSO3QoWm9PwrRbU7YUFgMtHHKgOSs/NRyo/M0HnXxZ8MtOWq3Sp2nXJUJ5hO4RXXC604O4So+oHHuTn5VWQfCLRZHc/qw06yoeykuFX8lirp8aLgHbfJSg8OjB/H/APyqKtZTIs0yIo/ro6xJbGOqcbXP/wCivwNIWDkofEsK28lPSrK8C9Pi4fHPqUEttKGWzxk9uarnQ0J67XIRmSQQkqURzgCr38OIj2lbk444nMB/CXCnqk9lCqkrFtkSbbkqet01ZJUCUE7wO3qSe35VFPFG2tauZD64yY9zaQG3FBWWXkj3B5SfbrU2kW119YnWleUhO04Vyr5EdKZLobghoKVCWFEg4Scbv+M1BSrujl+hySEt+UDsQ191Ge+epP8AAVyFmtt6jfo6+JcaUEkR7tj9ayrPG/8AeQScbT0HQirGWtDruJaZDZz91bZAI+tMuuVxo0MojpSU7Qcj2HNE288PG56bu0uImQ7FlMrLTvkuEBWD8uo7isSblcZ8cNvyX3k5+6o5JJ4+tOOt4jh1C1tQS9LYZcCO5KkgAU/yLIxpp4ORZCJUpoAF1aQdisc4Seg6/Oq1tB1wXGNvxKSgkZ2E8/jWwbHbHHYClE11Tziioj1HOdtJtxFFZI9PHWt0kp+XOa5hWMZ71vSGgRvB+YpCsELOaWFW0j2pK4rKQPagEnB5ro4MKJ+Qrm0gqI9h1NbunKqDjRQetFAVis1iiSKKKKIzRRRRoUUUUHq77P1ptGpPCaLDu0NqQI819IKhyg5Csg9R97tiporQ2pLNn+x+qXExh9yJcR5iUD2BIPH1qDfZPeI0RcUHoLivH/7bdegWTuTz9OKOaug/4nwQkOQrNcVYyrykkfhwaTu6p8TDIVHi6GW84Bw4ClplX/bcWMflVokYVnvSG4zTHbHlDc4egHUe5oqA6XtV8curt91w7FduyW1R4UWMrczBaVguYV0U4vAClewwODilepJhQysZ2q28Zp3efCGwFJJHWoZql39TuO3ONuT3zUR5/wDEi6rcmqYSr9Wc5Ge9QCPJdttwZmxwlSkK5SoZSoHgpI9iCQfrUm12cXx5AXkZztxjFRJ1RCCO2elFhLdHXVjTmqY90Zyq0ydzZJ5LecZSr5g/mOa9QWFEa625BbUHGXTgFJBCh0GD9f5V40t7zjS1BlSDvACmnBlDn1FWPoHXFw0kULbS8iF5gK40kFUcn/quDlJx70Jh6ktTzmmf1Lu9UFR+8Mko/DuKcLvLRKi7mwFoIyCk/wAcVXUDxe09d4qBLaksO4wSkB9HPzR/dSxvWdgSgti4JDZAyFNrBA+mKIWXFSXCoE+YTxjHBJ9j71F39N+bJS7OcV5AWkLjpPqX1JGD1HHanFGprRJeWqD5z8lvhvyWlHOe444wKjmtdXC1xmlyEKVdHmiIkFtJLji+gUrH3Ujqffp9CKl1NMauHi3Nlo8tUaEpO1J/Vg+WgAJ+R3D+FNWprgZriiQcAdFj1c/PvSyJanY8JZeaW9LfKnZDquhUScD8zn6mmVcZ4vKaWoFI4wen0FVozEe+fqDWpzW72EOKSB0rXGR2o1DCRk11SOOa5o610/aorm8cH8K1ZaSsZVkCt1kB3BGQa3R7AYFUcR+4noOprko9TXZz0j/Srgo8VBrRRRQHvWKz71iiSKKKKIzRQKyOtGmKK2xRQ29N/ZTe26WuqP3bhn820/3V6GjrI6V5g+yxLIjahjZ4Q4w6B9QsH+Qr0ky8A1k/nRiTk+6EtnOPrSHyi4ouDkq/LFR28Xlx6Wi220ByY4M5P3W0/vK9h/OpJaf8WjNNOuF5SAAVqGN3uaiEMyIQFbFYSodDkYqB6rYLjClFPKVFPbPT86taWll5laWz+sx94Dofaq11spMdp5QP3U546pNB5Z13FWzfHHCoqQ50J/lUVWA5uAOTUx1s6Z9yKWElSkgEBNML9rcjxy44O4yodyfb8aLBkLS0glPbnirv+zZeAZk+3SHElLm0lpeCFjkdDwaqJlv9YUqHBpdo+5uab1jEloK0ttuAOBIydh68fxoT5eur14baPuY3SNMW0EnJWw2Yyifq2U1GnvCvTKTujG9QwDwGLk4P/izVpQFpftrDqFhwOJCgocgpPNI5rCjuGO/b86IqSRoSzwHg6zJvbi0cgvXJZx+QGa5OQrbEc8xiI38RwXH15W6r5KWokn6dKl98VjeM9feq9vUlLBWpOcrPeiN5sVl5DjjOwYB6dKrLWYbYYV5aU71LwSmpCi6OpcUjOE434zUR1E75zuFdck5Ix9cUWESWQo5rXtWyxhRHFBHIFV0gJHeug6CtB863R05oNkgKH0PFboSODSaMv1kfMmt3ntqCB16CqhK+5vdUR06CtM5rFFQZorFFDYooooCiiiiM0UUUabdqAcijtRjFEW39mm4/Da6kwFH9XOiKAHutBCh/DdXp6c+pqGot5UvHCR3NeMPC26Cz+IdgmKOECUlpf+iv0H+Cq9uRxlWCMrAI+lSWZNGj4pYt6HXwBOfUtyQo/eKgogJ+gHapNHHmIUEkpUBwfY0xRXAiIoL+824sKx75z/Wl1pnBSSVBSUrHAUMEj3ohS8mcRuZYLqT/AM2r2+WarfXdr1DeHDEtNplF1wbQ4obEJ+alHgVa8Z0bMqABTyK1Mnf6VEJJJSKCgofgvcoBMl+5w3HuVEpQVDI9unFMNy0hNSryVNxXN3pJUlQAH59a9MXNsqhqSgjG045xjiq6v7aUzmWkcq9JUR06UFNxtFQ5MhDLzG14Z3BpR2ge31zUjtWkrTapRdRFZWSAfMUMnd+NShmMlhxx0JOccccJzwM/Omy7OpRuWnJxgBOeooieaOvbLBatr5SlhX+Qc6Af9Uj+VSW4jCfTke4+dUE9d1eYkAlWxW5J7irO0vqHz7c23OdHlYSlt9Z5Gf2Vfj0NAi1A35hWpPCsHHHT/fVY39BWraQABxn51aupAEpVuJSflVYXsrccUlpOVE4wDgYoIDPWW3nPM/ySh368e34013PdIYD+fvBQKzz0HT+gqQ3djy20pdSkKVktoOOfcf1yabG7apoTGXuEutlACuyh6sj8qqoU82W1YUNqu49q0I4GaW3Y7pgO0oVtAUPnika/+MUhuGM5PHStkj581y6VsF7PUe1FaSNrTvp5zyR7VwUoqOTQolSiT1NYomxRRRRBRRRQFFFFAUUUUGayOtYoxRpvRWKzRllKlIUFIJSoEEEdQa9xaGv6L/pu23RBz8UwlagOy8YWPwUDXhyr3+zlrBDaHtMzXNq9xehZ/azytH8Nw/GpJK+HXCq9KjoAKHEeYvPYjp+eaXPRlPYDeUuIwU47UhhNhU5bvXKcE+wp2bUG3cpJwRgmjJE1cnY5CZjZTtJG9HKVD5+1PcJ1p5SVpWktgcDPTNc1ojSGvUn1Y6UxybGj/KRH1sOclQSop7cdPwoJHdJDbcdaEFJO3PHaoBc3m0yVObkAHGPqcZArWfbbuHG0tXKQtvqVFQPGM/3VH7xHuJjKbXJUXfVjKE8jjjpwaIVSZaBCbdQB+sKjuBz0JA/lUKustRkqKVp2LPKcnHtXG7u3cKSh6W2lKhnGwYSB9Kiyrqr44pRJS8z6dyS0MpHTOc/Wgdbo6EIW6pJyB2HJPfipLp6Q4Irbik72uElA7Z6DFQyIqWt1T7LbXltblJS4jeDVqaRjRbnaYl0bHw+7JfaB4CwOcf7+lA4aR8+6xLrBmqKvhNjjIUn1IQrcCknuMjj5VFtQ2V5EgGMMZVyT0/4+dWlpmCiJbZU17IXOUkgH/m05Cf5k/iKiepHkeY84Bwjkk/yoKyeS2iY6zLw7I2BO9wDISpXOPzxTPJAMEEjKtgWrPYgn/fSbVN0U5dMsq5R0+ZycfxJpBepwZZCGTwpoIznqe5/nVVC7isOSVODO1XKQeuKSKPFdJCsvK54TwDXEmjcME4rk4f2fbrWzisfXFcqEiiijFEFFFFAUUUUBRRRQFFFFBmiiijTIFBHNGaM0Ga7wpT8KYzKhurZksrC23EHBSodDXGiiPXvg/q1ertMrmyEpbmsu+RISn7pUADuA9iD0+tWJvBKcc++e9eY/s0XtMPUVxtLq8Jmsh1se6285H/skn8K9Ktr9BKTjjmoxJSlQSRjP4Vq88EpOQFKHAz/WuSlEnGBn3zjNJpBUGzhXBHTqcUHOROd2JARlYOOccfOopdZaMvOLKjtOQM5Ip5uCwhKlOZwMpz3zTM62h3YVYJAytORwMcURWupW5lxdcbaBZSobtyewrnYdIB1JQnc20cF5aiNyvY/jU3cgeaynaMFLh4A5UPn+BrtFR8I65HT6y4lIyOiT7H86CPTmGmIbbYQhpto+k44J9qSeG761asTp/wA1Xwc1ZdfQDwCkbjj2yng0431bHwiPLKvMB3JCjuwOgGf61CfDa5BvxaguNhOwF5CsHsU4yfehD0jqieW46GmQAAcYHGBVL6yvymmZDKVZeIO1IqcauvAajOLOSojaOeM1QmpbkfipMhavMcIKUDP8TRTFLkbnBlXJTlavz/vpFc5pUhST98hKfoBzikglEkkkkZz9aSOOFatyjyarUQ0UaUJt85baFtwpK0ODKVBlRCvocc1wWjY3ucyARwO5qx9DX663DTmvXJU+Sos6faaaSHFBLaESGEJCQDgYSMfifc1i0zWNw1GlbSIkplK1vx3m0pX5aitspCVYztOe+OcUnq1rZdG7n4Xuv6sXcrmwdQxWihqSG3CExHEA7lJV0SB25wMmk0jRenrBdZI1JcHxbBfJlpQtClJcS1HUgKdAS2sKX+sSdpwOD7giRk9pXqrMUpmwJcFW2bFkR1cHDzakHnp1FPek7ijTOvINyYjfpePbJfn+WWyjzm2yTuwQSn0jdyOO/SpveLPHuNrtTtl1BOvGjLje2m3mJJ2Tbe+sKASvO5JKkFXrGUqKO2Ktr9ZIjao6zVtjw4s92uH6Nsz0+LIj6nFgdflOIdS42rzSHQkJTtUkNEbckKyORUft9l05ctPy76hu5xoVquMaPOYU+ha3ozxXhbatow6ny1ZBBScgjGCDIyRJ116oJXRbDqGW3ltOJacJCFlJCVEdcHocZFWpdfDSNFbubLAkmVAvaI5UqQkoXbl8okgBOQkZRlf3fWOODXZlOnJ2jNFw7w3d1WuReblHiFiSgLjNrVGAUrcghZGQdoCcnPIqfFj2XrPuqA0pbt8xxTKW4khangVNBLSj5gHUp45/CrIjeHtvbmv2mY5OM5Crq0qYoJaZK4iVKR5KeVOg7DvJwBuAByOZZ4dPvC8+Cqg86FfDXBGd5+758gY+mBjFLZYiNx/3r/BFNzpQVFHaiurmM1msUCixLNFFFFZBxRmsVkdaB30peHrBqK3XWOnc7FeC9g/aT0Un8QSK9j227sT4bTsZzehwbknHUHkV490tED89Li05Sj7o+dXhol+fHJbQQY59QSrsfkf6VJYldLTgLW0c54zWji0KKkAqKVcq74GPeonEv7alFtZLa+hT0UKco08Bvc2oqB7KOKMs3XBcJWMpPCUgcHFMEpxaFNunBO48juPb86WzrkN4KynZjgk4x7VH3JiELWXVKWhBzwe3agfBIbcUfPGSAdpHv7fWotqm4FLLe30Y6qRxzjmk796bYUt110JQnqAeDk8AVX+rtTMSW1rKuM+lA/b/AA7CgXSdRJbacUSCr0pbPc57Y9qiGmrqiDrNEvenCVKwtXueD+AqPS5MiUsrcO0FWRnrSdtpZUChQ3fI5NVrS3NV6xakISyhW8p9C2wc4B/az86rO4THZSnC6vhRJOO9Olo0tqG7JAg2yY8n/nFNlCfzV1p8Z8L74TuuHksI9irNRYhAkJW8cNp/uFdFlqKMnDj3b2FTG8Wm2WBrbJkF1391PUn5D+tQeY8JDylhAbR+ygdhVWHBxS3VlazlR7mp5ZY1wtNkcRZJsKQ3fWBHfZdjpUsowF7SSSUpyhZyMctDsRUBNSKNYmGY1knSn31MTUPPutsJCVtttrKCAonGTg84wMjrUmNkTo9R7dqCHY0WdC7YqCZrc1SFpCiHwNidysZxhRGPu9e+KeY901S6m/B+XbHXpNxVIdjPwGXmTKIQC83vSQhRC+oAz3pulaDa/tBCtMe6O71yDBffKNyfM8sOJUBuBwc7cc42Ek8gU0aY06zcbTJuE2Q8ppptb5YjvJCtiMDcs4VtytSEgFOTnIBxWem2uxwt9qvdhuovMe4NC8tErcLzQdSPMS6Fle4EKG1Ks5B+8PmR1/8AtIJbVqgC3NtW+SLl5UdnY0XkrKErXlPqIwcA8AE4HJBEaFcuF1vAt5faiRZKGsOvblMpdbdcQlxQRjIS2pKj03KA70vsegYTk+VGvDtzjvxo6XVpbUMqy+tBTggYOEZA5znPyp0mfU7R7OMt7VKHXWHJkWPKnXU3YusM4PxDbanEvIcSMg8rwkdCegpLfYV6uNxat86TCaiXS4+YVRGA2H3fUnzVISAOMqG3gJ3KwPVktms7AiwuwWmS+oOpWpDjshKlO4UE7g2kfqhu3JwVEkpJ4Fa2nTbx1e/Y70XYz8QvB9tp1KlBxCT6UqyUZJAAOcHpnvSKaOx6mt6tbcWW7p50dy2ItAX6UlUMJSrygn5AA+/FaQmdUWqDbIrLtuLUR9UqAp1KFKjvr252qI4V6EHB4ykY5rS76Ot9ol2U3OdOYgzHGPPWUpUtCVbt69qSVAnaClO08dTnil0zQEOKFx1S7g7N+JjQi2gpCPPdKFeUVkbd2wunkjbtGetOh2hz0/eNXRl26A1ItxRBWWmXpMdp9SUSwtS0biklSVBThIPfI6nFb2afqGMnTs22TIoNoTJbt5VDRlsqWvIweFFR3HKuElX0pFqDR0KFZJNwhzd7jXmP+W29vyguNpaQPSFZSCtSiQOg4GKxonSlsvdmmyJsxyM5GRvJVKQhvatKkIz6SQfNKDt6qSCAMkUnHBFtIPcWFRZ8hhwtlbayk+Xnbn5Z5orremExbrJZQFAIXjCn0PHPf1o9KvworbBFQKKKAzRRQKLtmtm0KccShCSpSjgAdTWlWF4fWFDSUXWcBvP+QQew/eNF2d9K2AWuKh2YAX1DO392p3ZXx5ox0puU2l5GQeSK4Q3VRXyVnCR1J4AoylF+mxGLY9IuAQWWUlZUeFAD2PWqfg+Jt0YeXuYQ9G3EpSVFKkpzwCea4eJWrFXeT+jYLiV29ogqWg8Or/uFRVl8W8KSQl1biSl5B5SAegz796aNLJc8SmX2wDGfDpTkgEEA+2fpSZzXiZcJaW2XULbHJUkBOO3NV3Db8x4OJIQ02Nzil52ge3zzSl5pFxuATZYshxTo3fDNoUtSSOuAOSO9DqsTw4sLms4k9+fcH2WWntnltJGTkZ6np+VWZbvD7SbIAlW4PnqpSnFbz/2s1FfBRp63wLmxNZkxX1uodU0+wpvGQQMEjnOKszzUDqRU2aaW7SOiIZJY07CUT1L4Lp/94nFSKCxaIaQINugxwOnlMJT/AEqNP3KNGbU46tCUp5KlKwB9TVZ6v8YI8VK49gSJT/I845Dafp+9/KguTU2qLdZ7e4/NkNtNpH3lH+Q71501t4pS7m64zZgY8fOPOWPWofIdqgN8vdwvksybpKckO9txwlPyA6Cm4nNXS6dXnlurU44tS3FcqWo5J/GuROaxRRRT6jUDiYdnZ+EYWbYHEtlZUQsLXv8AUkEZwSeOhHUGmKs5NCYSuHrea1dodzmMMzbjHkLkqkuuOBbylJI9YCtp7chIJwATikGnNRzLCk/AtxlFSws+c3vCiOm5J4UB1AOQDzjIBDIkDv8ASjNE0lUfW9whTZT9vjQovxMhEtaAHHB5qW1oKsuKUo581ZIJIyeOgrmzrG6syGn2THbW2htBw3nzEocU5tVknIK1ZI6EADpxUYB5JNbZ6mi6PF5vky9NQk3FSHFRW3G0uBOFL3vLdUVe53OK6Y4wKT2e5v2ec3LiJZLqMEeYjcOCD0/AUgBx0oUrnmgkk7WE2bAixXosQGOGwh5BdS56E449eElQ+8UgE0kf1LcH51qkOFot2xSFRIwThpsJIOMZyc7UgkkqIAGeBhlyPwoyPcUNQkVz1fMnwDFXEt7JKVoLrLJSrYpRUU7clI5I9QG70p54rWy6wuNojW9hhqI63Bmpnsh1rOHEgAZwRxx9fnUcrBqpLKjuUSccnPFFYoqIKKKKAooooFFvj/FTGmuylc/SrRly/KiNpbOAgAACq7sICHVOnqOBThdbyUN+U0dzh/hQS9GqmIDQVJWc4yEpGVGmNzVMfUF5ixL49Jt2n1ubZCoiA48E/vYPXnGQO2evSoYXllxS1nepYwc1oOOmc0WHqb/yetIyICFwL3eVJeQlxmRvZdbUkjIUAEjIIIPWqX8UfDS4+H0yOZT6J1plkpYmNJ2EqABKVJOdquc4yQR0PXF0/Zf1Ui6aUe05KkoNwtrpVGaUrC1x18kJB+9tVnp0ChTz4y3azS5mntJyrUrUc6TcEvPWuK4Q8hpLawVApUNq/VkAnBCTnA5r5tMuXHm6W8w9lqY7Y+0eJeQSohJQFHZnOKkHh9qKVpTWVpvENxSFMPJDgH7bSjtWk/IpJFTGTf8AwlS8tLehb5tSSBuupSfxHOPzqw2vDOyv2eJcY3hjcXm5LQeDCdRpTIQk8p3NqA5IwcAk+4zxXrvmrEatGt/l/Lz1pM+i/ZY3qcZe/XN5KdrnqBH0NecPE3WsHS+obna4Z+KejPFCW0q4TwDtUr5Zx78VKofjHDeurWmZ9pu1imqR5Ak3S4COtBA43OeWSknGN5HXGT3pDc/Cy3NPuOK8NZs9SiVqWxqlC1rJ5JwoJJJrxcbeC09/f8nozTGWI6+yq7Hp7Wniw3PkQSyIULA2uu+S0pZ5DaM/eXjnngdyMjMAvdpn2O5v267xHoc1hW1xl1OFD5/MHqCOCORXoxjxetPh/Bj6fOhL3aGY27YxIkBKiScqVlSMqJJ6/TtUD8YfFCw6/skZlrT0mLdYzg8mY7ISopb53NnCQSCcEA9DnHU59dMmW1/NfwuFq0ivifKstPWs3u+QrYiVFhrluhlL8pRS0hR6biASATgZx3qyJfgLqyM4pCpmnlLTwQLkhJH4KxSb7P2iRqzWSZNygplWCAhS5YdyEOKUkhDYI/ayd3yCTTtqjwIuMK/S2rZerC3bysrjCfPSy95Z6bkkdR0z0OM1b5oi/SLaSKTNe2jR/gQ1b/zti/2qz/3q7teA2tXkBbLdqcRnG5FxaUM/UGuX+BK+f9PaR/2uj+6vQvgrp6RpjQDFsmSIEl5Mp5wuQXw82QrbxuHfjpXHNyLY67raJ+zpix97amFAOeAmt20KW41a0ISMlSrg2AB8yTXJnwO1Wt1CXH7E2gqAUv8ASjJ2jPJwDzir+8cLLdtQ6NatVnudvt6ZEkfFGbKTHQ82BkICj19QBwPYVQP+BO+f9PaR/wBro/uq4c9r17WtEfYy44pbUQ9Mx9KaTb0pG0yuNbJlmjo2JbedbKlK/ac3A5C1HJJBHt0FeW/G3w8Y0Fe4v6OmplWu4pW5GSpYU61tICkLxwRyMK7+3FT3ws8EG0ahVM1XMs10gRUbkxIEwPhxw8J8zbghA5OO5AHTNPfiZ4DW+4x3p+h0CDcUjd+jVL/Uv/JClHKFewJ2np6a5Yr1w5NTfe/0bvW2Sm4rrTzDigZFSnQ90tGnNQSBq/Tgu8Py1sOxXVKadZcB4IPGCCMEHsT3q6vCyxeHPiR+l3GtDG2C3lrI/Sr7nmeZv9iMY2fxr2Zc3w43MeHClO86hR2hdH3bW18Ta7I22XQguuOvKKWmUD9pasHAzgdCSTXHWGlLzpG6/AX+EuK+RubVkKbdT+8hQ4UPp0717FiWrSHhdp663GHEFrt3oXKWFuPrcIO1CRuJPVWAOmSSapzXPikNc6IfhP8Ah7cFsPBRhzfPUtDDw43oIaGcdCAeehrhj5N8l91r+F1vhildTPlTeh5SIWtLBKdbbdaZnsLWhxIUlQDicgg17muOnrJJedEyx2iQdxBLsFpRP/u14KjNPxpzBcZdQpDiTgoIOcivoRJOZDhH7xNcf8hOprMOnFje9qA1b4bWjxBv14i6SFo09J09I+CkMpjKSJJUMhwlHpSMhaQAnPpJPUYo7Xeib1oe6Nwr9HSgup3sPtL3tPJBwSlXyPUHBHcciru09ri06O8bfENvULzkaDcJJCZKWluJQ42skBSUgnBClcgHt71INQ2q3eN063qhvy4+lrR5wVcfJ2OTH3An0MpXyEoCQVKUOpwB3rpTLfFMRb5dev2/lztSt43HzbeTKKmHiboK5aBvghzVCRDfBXEmoThD6B14/ZUOMp7fMEEle6totHavo80xNZ1KH0UUVUFFFFAoQ+WUYR1pOSScnk0UUUVffgr4eaE1vpdT0p27qvcRW2aymQhtKdxOxaBsOUkDHJyCD8qoSp/4GaqZ0n4iwJU+R5FskpXElrPICFjhR+QWEK+grlnraaT0nUt45rFo7eiy9e/Z/YhWuRcdG3GY7IjIU8YUwpKnEgZPluJA9QAPBHPvnrFvB6OrTei9YeIT6CHokY2+2LP/AOIewlSx/ohQ/NVeltQ6ntljtvxKpcWTJfHlwosd5Djkx1fpQhsA85URz0A5qpfE5+yeHOj9E6VudrcvUVjzJTsVuT5KJD6ONzh2kqQXHHDtGM7RzgYrw4s2TJXpbzuf293py46VntVEfAHwpcv0uPqTUUY/oZlW6LGcT/y1YPXH/Ng9f3jx716BvOsbdFv7FjiuC6aikqIEGMsEtd1LeX0aSByc+rHQVR0++eL/AIgPi22u0StPW3aG1JYYVDaQjoNzq+cAfspPToKn+krNpHwVsDjl7vEf9LzEj4iRtKnXRnhtlsZVsB6k4yeTgAAZzxN53edz7RC4Z6xqviPeZNHjboLW+uVQlMHTkhiB5nkIYU4y+oKxlKlO8EenjBA56Uw+EuvLxoq+MaG8Q2X4sc7W4j0oeqKT91JV0UyTwDnCexxmkmufH66zVLi6JgOW5jp8bJbDkhX+inlCB/7R+YqS2fQukvFmxM32VM1MzdUgR5IlTfOcZWkZ2/rEcoIORjA5PQgitxE1xdc0fh/16wz4m+8U+VxX+y2/UFtdtV/htzITmUqbcGSg9NyD1SodiK8I6ttH9n9U3e0eaHhBluxg5+8EKIB+vFelPES++IHhtpFAiyYF6t6MRm706woS42fueajcUE9g5znAzyRXlh95yQ+48+4p15xRWtxZypSickk9yTXTg0msTO9wzybxaY8al7w0Db7dbNEWGLY0t/o8xGnULbH+WUpAKln3UVZz+XaqE+0VarlqvxFDGmbRPurlqgsxpqoUZb3lOqU4sIVtBwQFfnkdqqeya21PYrcqBZr9coUNRJ8liQpKQT1IHYn5VjTatVOGWvTJvqypSTJVby6ck5wVlHf72M/Orj4047zkmUvmi9Ypor/wb62/zP1F/s17/u16a+znFfheGKI0tlxiSzcZTbrTiSlSFpKQUqB5BBGMfKvOoHibkYGtM/8A6qvSP2f0SUeGEUz/ADvjVzpan/Pz5nmeZhW7PO7IOc85rHMtM4/Mx6rxo1kM32lrTPvmmNP260RHpk965r8thlO5a8MKUcD5AE/hVBf4KNe/5o3n/VlVf/2lItymaa09HsTMx+5Lua/KbhpUp04YUVbQnnpnOO2aoP8Asz4k/wDQ+rv9Wkf3VriW1ijzCciN5JWt4OqR4S6W1JcdeRpFrkSnmER4biAJElKErP6tBIJGVfeOAMdaZLt9o++uSlG0WS0RooPpTJDj7hHzUFJH5Cqi1Lbr7bpjSNTRblGlKbCmxPbWhZRk8jfzjOf400V2jj47TN7eZlz+Lesda+IOepr3M1Jf514uZbMya6XXS2gITk9gB0FX39kP/k2r/rD/APq1SuhLBbNR3ZyDddQxbCPJU41Iloy0tQxlBVkbTjJB5zjHUivSP2fNNW/Tbeok23U9qv4fMfeYO79Tt8zG7Pvk4x7GufMtEYpr+TfGifiRJ4+0L/5nb/8A6cb/AOeivMekvEvV2kbW7btO3p2HDcd84thptwBWMEjck4zxnHtXtO8zbdbbeqben4seCw4hZek42IWFDYeQed2MfOqzvk3w8d1TaNTWK9WZvUcaY2CiJ6vjkOKDa0LQBgq2rOF/nkdPLxcsVpNJruHfkY927RKj2/GrxEdeQlWqZWFKAOGmvf8A0a9mSBtecA7E1VXil4PWbUMV+ZYIce26gYJWjyQGmZJB5StI4BPOFDHPXPUWq6oLeUpPQnPNc+Tkx5IrNI06YKWpMxZ5f8W/EvX2l/EW92uFf5UWC09vjNpbQUpaWkKRglOehFMF48TPFizpiu3e6XSIiS2l1hcmGhKXEKGQUkoweDVy+LPhyjXmotL3GLgNNSVQLmofeDCFE7vwIWj6qTVhawuVit2npL2qlwm7IfSpqWgOIXjohCDypWOgSM/Su8Z8cVrEUiZ93H4Nt2ntp4t1d4g6o1fBjw9R3VU2NHcLzaCy2jCyMZylIJ496K7eJ72jpF/be0CzNYt7jW55qQMJQ7uOQ2CSQnGOpPOe1FfRprrGo08k7mfPlD6KKK0yKKKKAooooCiirC8LPERrR6zCutjtl3sz7/mvB6Khb7ZwAVNrUPYA7Txx2yTUtMxG4jaxETOpT77L2iFuz3dYXFlSWI25m3bhgOOkELcHuEjIB6bj7ppg+0renVeLKW2FYVaI0dpGeQF484n81/wr1cgtqZb8gp8jYkt7E7U7CAU4HYYI4rxR43yFyfFrVS3eqZq2xn2RhI/gBXz+NknNnm8/R681Ix44rD2fbrxHvVji3xl4fASo6ZQdcWAltKhk7ieBg5Bz3Fd4UtqRHalQX23mHkhTbzRCkrT2IPcfwrzD4JaCvWr4UN7UkuenRENwuMQFvLDctzOSEIzgI3Z3L+oHOSPUbaQpbbaEpQnhCUpG1KR0AAHQD2rxZ8dcVusTt6cN5vXcxqDBqubrdpGdGwrJOUE/cmyXEOqV7JSNqPzVVMeG3jXfLz4gtW/W02DDtzzbrASWkMoZeHKSpZ5HIKeTj1VMdJ68R4haw1fpR9t23W9qItuMuO4UyfS5scc3j9rkEJHGBg55zCPD/wCz/LY1bIe1Yph+zQHMsoaXn4/uCR1Qj97PPYe9ejHWlKWrmjU/u43m1rRbH6LG8f7m3C8JbwjyHJPxwaYQptBWhGVpX5ilDgABPB7kivGRr3NqPxC0ZYGXWrrfbYoEFpcOPiSSnGNhbRkAY4wcCvIfiW7pZ/VLz+hkym7S8hLhafRsDTpzuSgZJ2dMZ9yOgFd+BMxWazH3cuVqbbiUaix3pchDEVlx59ZwlttJUpR+QHJp6smoNTaV+Ibs1yulp88pLyWHFtb9ucZxjOMn86a7TcZdoucW4W19ceZGcS606g4KVA5BqzZ32gfEGUolm5RInyYgtH/4wqvZft6ViJj/AL/Tzxr3lGR4m68z/wDe2/8A+uuf31dPhV4u6ZtGgYkXUlwn/ppD8h2TmMt1TynHVL37uhJ3c5IOc1WH+HTxG/zi/wD4Eb/w6P8ADr4jf5wj/UI3/h1wyYbZI6zWP1/p0pkik7if2/tIvF/xia1I3amdIN3W3OQZC5AnqX5L2VIKMICCSkYKsnPOaSeEaNeeIF9ej/201HCtsRvzJUoTnllGchCUp3jKifmOAT2po/w6+I3+cQ/1CN/4dXF9nfXepNauahGprl8amGhgsjyGmtpUVhX3EjPQda55K2w4p1WPH3/8bpMZMkbmfKp/GDw91tZlpud9uMrUduaT5SbiXXHiyjJIS4lWVNjJPunJ65qqa+gOorqxYtO3S6y2VSI0OMt51hOMupAwU88YOcc14Lvcxi4XibMiQmoEd95brcVkkoZSTkIBPYdK3xM1stZ3HonIxxjnxJFXo77If/JtX/WH/wDVqhbBp286hfWzYrVOuLjeN4isKc2Z6biBxnB6+1enfs56Kv8Ao6Hf1ajgiEqcY/koLqFqOzzN2Qknb94dacy0fCmN+TjVn4kSfPtC/wDmcv8A/pxv/norx7aZq7ZdYc9lIU5FfQ+kK6EpUFAH8q926w05E1dpuXZLk7IZhyShTi46khYCFBfBUCB05JFUvd/DbTupoyLR4b2RCYqHgZWqJkhxbPpOChjnDxznJSnaMfPI8/DzVpSa2deTjm19weLz9oC0zoBZ0parrIv8vCGGX2ElDa1Hn7qiV4ycAAZ4zjpV1upCXFJByAcZqp12nSvgfo966Q44mXt3/F2JEkgPyXVfspx/k2wDlW3nGASSRVsPJ2LWnOccV5c0U8Tjjx5+70YZt5i8+Ub0PNMpepo6ztVBv8yPnGcJUUuJOO/3z+VeQvFmRqZWt7hE1lNdl3GI4W0knDYQeUlpI4ShQwoAAdeea9G+Hl1S14z+JdjcWdzz6JzKSePR6V4+eHEn/s1nx18Njre0N3C0Np/tDAQQ2kYHxbXXys/vDkp+pHcY9GG9cOb8XpOnDJWcmPcezx/RWzra2nVtuoUhxBKVJUMFJHUEdjRX1Xha0UUUBRRRQFFFFAUdqKddJIhu6qsqLmpKYCprKZClnCQ2XBuJPtjNJnUbPV7xtLC4tmt0d3PmsxGW15/eDaQf4iqT1po/Rdu8ULzqXxAvkRqE+4iTFtDZUt5/KQCpxKRkI3BWAOvcgdb7k5Eh3fwd5yPxrzN9rcwP09p5LakG6oiuJkpB9SWt4LW726uEfIj5V8Xibtk1E62+lyNRSJ+h+mePceffLRZdHWctRnpLMX4iYgDagrCdrbKDhIx0yT9BV+p2tzB2Slzr8ga8lfZfbsjuv3G7qwhy6BguWtTnKUupOVYHde3JTnpg98V6d1HfbbpqyyLte5KY0Fnqo8qWo9EIH7Sj2H4nABNXlY60vFKR/aYLzas2tKlNA+G2qNPeIknWVxkW202piTIefTMf9S4yyoKJCeEjacgqIwcHB6VdN9s1p1TYlwLqw3OtspCXBtWQFDGUrQpJ+eQa8i+KnildtdylRwVQbE2rLMFCvvey3T+2r+A7DqTL/AzxfTYGmdO6rdUbODiJMIKjEyfuK7lvPPuk+4PHfNx8tqxkn5o+jnjzUrM19pba3+z1d4TrkjR8lF1h9RGfUlqSn5dkL+oIPyqn77p68WB1Ld7tU63rUSEiSwpsKx1wSOfwr3Dq7VVr0tpR3UM55D8AJT8P5DiVCUtX3EtqHBzycjOACe1eNtf6/v8Armb5t6lq+EQsqYhNEpYY4x6U++O5yT7114mXLk+b0hzz48dPl9UTqwdEa001ZtPO2/UWh7ffpAdK2ZKniw4EnqlagCVAEce2TUEhKYTMYVMQ45FDiS6htQSpSM+oAkHBxnnBq2Ztp8FArMbUurCk84EVCtvyOUJ5FenJrWpifs4V+sSa3ddaJWskeF1sA9v0pJ/oRWn9t9Ff+rC2f7Ulf96lRtPhD21Nqr/UG/76x+ifCL/ObVP+z2/765/h+k/u15+sE39uNFf+q+2f7Ulf96rj+zre7JeXdRfoLS0WwFptjzSxLde87JXgHeTjGD096qX9E+EX+c+qf9nt/wB9W/8AZ7iaQiu6g/sZdLrPKkMfE/Hx0tBA3L27cHnPOa48nr8KdRP7uuDfxI8p34oJ3eGmqx/+WPH8gDXhSvemv0Jc8PtVJWpKEm0ygVK4A/VnGT9cV4LrP+P+SWuZ80Lr+y3qhNr1dLsMhQSxem0pbJPR9vcUD8QVj6lNekNUajs+lbWq4X+c3DjchAPLjqh+yhA5Uf4DuRXgmLIeiSWZMVxbUhlYcbcQcKQoHIIPYg08ax1betY3UXHUU1UuSlAbSdiUJQkdkpSABzknA5Jrpm4kZcnbfj3Zx8icdOq3p3joxfNZwWrrbSjRCFqS/DPrcfBGEreA4WEnCvLHp7Hdwa9D3G9Wq2afVeZc6O3ZWWEupktkFstY9Hlgdc8BIHU4FfP2pfpzxBvVmtsO0umPc9PxpPxX6KntB1haueD325JVtzjdzjNTNw62108a/wC/Ux8ia77FniFrS4eI2t2H0NOpjBxMe3QQdxbSVDAwOq1HBJ7njoBXtqV/l3ce5qsfBnVOlNWRpD9h07bLHeYiQZDLEVpKglXAWhxKQSnPB6EEj3BNmJQpwkISVH/jrXi5V9zFOutPVx66ibb3t5X1jqT+xn2nJ94WFGM1KQJCU/tMuMpC+O5wokD3Ar1E/Ijx4q5bsphuEhAdMlbgS2G8ZCyo8AYIOa8V+N90h3jxV1DNtr6JERTyG0OoOUr2NpQSD3GUnB70zXHWWoLjpiBp6Zc33bNBz5MY4A65AURyoDsFE7egxXsvxfjVpPp4jbzUz/Dm0LB+0FqLQuo56JOmW5D19Du2VOaR5cd9AB6g8rXnHqwMjru4wVT1FeulIpWKw89rdp3IooorbIooooCiiigK2abW84htpCluLUEpSkZKiegA7mtak/haSPE7SBAJP6Yh4A7/AK5FBJrZq/xWtdtat0KVqFEZKdraVRVLUkeyVKQVAD5HioBe03MXF1y+JmCe9+scVMCvMXn9olXJ+tehrpqeJAZ17apXiy81cZ1wbMNW24n4ENvuFxAIRxkED05B2+2DUJ8SL4v/AAkaNm2bUC50mPabcybnD/xh0ubdq1hCyCVkknYvacnnBNSKVr5iCbTPqruzW29Nm13a0tPIU7PEWG+0sBRkp2KCU85BG9Bz05FPnirrbUerr2GNUIZjP20qjGGwkobbcBw4ojJ9RI5OewA4FX/C/tJb7dpFFzvGqUvP6vjxVG5QkQXHGXGwVAJS45vTlsYORjKhj2gGvpl5F7ssfV0/VyrTcbyl9+HdLKiM2UJcyrygl1wrICyAkAfeFJrEzv3O060pOVbpkWDCmSYrzUSalaozq04S6EqKVFJ74UCD863vNrnWS5P267RXYk5ggOsOjCkEgEZH0INen9SWx64NaZlwdKXiz3Bxme+3GRHiz3o6FzHVKbVAfCPQd4UHBgI3JTz1pi+0Vapk+yu6mmxbzFizXhJaiO2CKwqIoLDJTJkpWXCVDKkg7gcpz040ilTYNXv2Fe61X5dlghUkgx3THYyPUvkbU8Dk+wqNV6W1VBhXTwkhSSrW9zAVIubbU26MvSI7IaaShbqCnKmtpSvakZCFFWdpzTVr6YLhY/GGG/EtaWbLc4rFv8i3sMrYQZLiVALQgKPCUjkn+Jpo2oz9EXD9Bm8/CPfooSfhPitv6vztu/Zn97bzj2rF2tU20Pss3KOph11huShKiDltxIUhXB7pINejWbBpFjS2mIpvDcy0R7JepWG4BWufI8tYefbKgEp8vy/QV4PoSB1JDfr+32B/w61Pco+nnWnY1osDUC6TVqcddDjbRwngISpLaAlWwZJJOcHACghap5sxu4iPfowSBEMnb6PNKSoIz77QTj2onWqdAhwZUyK6zHnNl2M4sYDqAopJHyyCK9CxLTBcsNgsL9rsjenXtLrvUl0OJVORLMRzc+20XQpZy2j9nbweR1CKW7GvwvbNw0xa0WOJo52ZYpSx5klLDYDbBU4lZSHAtRK044VuBoKNhafvE6MiRCtNwksLztcZjLWlWDg4IGDyKkvhpqjVOkW73cdLttLitstqnh5pLiEp3hKFEHnO5WBj3q5/CORJb0poRTUuc0GXIaG0NS3W2/112lIdy2lQSvchIB3A8Co3pZyw27wd1Fc52lbYJs6C043EEuT/AI1GbmMNqdd/W5RuePp27clpfbrLVi0alYmYncK31Z4gax1hFU1eLnKegE5+HZbDTJx7pQADjHfNR+72G62ieqFcoEiPKSlCy2pGThaQpJ49wRVzeDN+1BdNOuW9oy27ZZI62obUT4htLzrsgOKCnEuJTvAKiN37IIxnmpVfr1qjT2nH75bFXVudbpDTyGXnJMhDrWF+YVgPKSG0jGdw7jBGKlaxWNRCzMz5l5cpfebPcLLJaj3WKuM86yiQhK8eptYylXHYiksWO9MlMxorS3pD6w222gZUtSjgADuSTVqfaNsqLfqmBLhuiRAXETbg8BgB+HiO6jHXIKEn6KFVFTUtl2udDt8GdKiutRJyVqjOqThLwQraopPfB4qxPA5caDLulwYhTb1qJbC4VvtNvKm39riFB6R5m0hAQjIHCiVL6DGasTUWkA9pnR7J8KdUywxCfT8Mi5qSqLmU6rY4fI5JzvHCeFgYOM1RQ+i9V3bRt7F0sTyGpPlqaWHEBaHEKxlKknqMgH6gU56t8StW6rQtq73mQYisgxWMMs49ihGAr8c1FJS2nJTy4zSmWFLUW21L3lCc8AqwM4HGcDNcqxNKzPaY8rFp1rYooorSCiiigKKKKAooooCiiigKdNK3b9A6ns94DXnG3zGZflZxv8tYVtz2zjFNddoUcypTbCXGm95wVuq2oSO5J9hQWPeLt4XXa7zrjJt+tkPy31yHEtzYu0KWoqIGWicZPvTXqPUmlUt6fjaW0yPh7Yt11927rS47OKyCEulrZlKcYGD37c52uxtj9+N5gIgv2+YlcdqOdoVHUkBvc41lJGU/rARxlQ5ylQp1ej2NzV+o33FQW4jjsoxVpUjy3MPnjG5WEbSnCgBwOAetVDtpbxJ0/GtVgZkWuJZnYeqY11eatrTqm1MNtFJUS44slWTjAwMc1AbtqmM+EfofTtosshmQl9mbb1yUvoKSSMFbygOcHgAggYqfx3bMdTSH20wI8ee5CLLrbjalFDjbpUQg5CVB0JBBAICU5HOSxxRZRJmvretbLYVI8tbCknGUMp3hBHCVb1Hb+yAsBJIopNJ8QdrWi5nkNXa6WiPLamou7XnsyFPPPK9WVZX6XepIwaRa51FZ5tj0naNPfHOMWWM6hb85pCFOOOPKdICEqUNo3Y5PPtTlZn4Juk2MI9miLXK8tqQtxBS1he7eOSCNuE+kgEfMk0u00rTptKXVOW1uWm1uCSCkFAdckekLCkdNqmk7klRT6uMgmgZdQa+k37TQF0kS39Qu3mRPkSOEoWy4w01sBByOGynaBgJwPlS3Vvi9etT23UtvnRLciHeZDT4DcdDbkfY4Vgb0JSXOuMubj7Yyar2RHLAay42vzEBXoVnb8jVm6lYsjdjk/AP2mU6uOwpAZW0lwrbV5f5YBKscqJBHHII3smudPxbHoqBcRcFswbZdrdcRFbT5iBLLoSpvcQlRAcB5xWl71ZpOdYpcaVP1XenEQURrdCkMtw4kd5DSGm3ylt9eVJQgfs+rocDp31Uu0fou1otrUaRGYcbUWElsLQ0XXNwIST6zhAUrBITjtTfrpu1zXIzVsVaIkVTillaFICOBjC9nIXyCAARhQBOUkUDonxN06P0UF6ecckRNMqsyrgpxfnpeMdxrKEBzyy3lY5Undgk9cCo9YNSWqz6EuzRuN2lXufAXa2oS2h8NEaVIQ6taVlZPqCPuhI9RVn3rq21FRqy1PSolsZYlBCAsutOee5vTucUhtSktHnhOAnAwcnJKoiyztTvst3C2IhPNORvMXHS22yt18jIPG4hOV7uABwD0yG2n9e2WyWGx2dUC43SH5iX7qZUgtqbKS55aIe1X6oILq3N3BUtXOBXOfrqDddP6vfusicu+XVli3Q4rUZtEWPFaeZcRgpI2YDRTsSnGTnucKGvg39QXdySm2QVTSHfOcCCiOp4HeMhRSGkoKwB94qKO2SNrMmwwHJkG8RbYxJkvuoSlexfw6SEFrdncACoE+lfAJJ9NAm0HrizWLQc2zXJqc7KfuaZafJYYcQEBlaP/AEwUN2Vdk9B17VL7v4y2C6u6okuW+6R5N2tD8BsBqKoJWplDaSpaUJc2+jJ5OM4wQAKijYgvtTVg2hmel6UtmKh9n0h9WzaokhCwhG5SdqgEn6iusB/T69NtL8yAlxFtLDrklsLKVjYSlKMgk7isjuVd9qTQMehtTWTSFqfu0WJJl62ClNwXH0I+EgpIx54GcuOjJ2hQ2gnPOAKNC61jWuHNseq7eq9aXuDofkR/M2vMPgYEhhf7LmOD2UPSeKerhDsq7G8WpNoMxppMPYhxGVJKm1qdycEqA3JCueAc+rIKO5SLM/b7i/5cKSYiUuNtlSW0uvreQkY2qBIDTahtHpH3sgmgaLI7oUGcu7/2pYWZKvhEwlsL2xz0C1KAyv3IABqT3TUXh3cbTYre7/bNtu0R3I7S2zG3LC3luknnjBWRx2ApsVItipdlEpu2iF8cw3IQ0W1LKUYKlZ6AKyQdwI4+VL4bun5esrY8yYSkOStzqVlLRHpc3b1K9AGQnpxjGMUVXN5/R/6VlfoUy/0b5h+H+L2+ds7b9vGfpSOrAtZtblzaeeMV1hVnlJTtfZbSnawoJQpBSClwHjJJK1EEE12al2mNKmzZLsB9xSWnEeWWyhwJQpSNrYSnYApLYLZGcjBOFZoK5oq17W3p+BdG2ZptzhZfYecWtzIbX5TQWpRGUkFZWSkFWMKwOBmvtRRkt3CU60IzbXnqbQ0ytKsJHQ+kkHIxyCRk1A00UUUBRRRQFFFFAUUUUBRRRQFFFFAUUUUBRRRQFFFFAUUUUBRRRQFFFFAUUUUBRRRQPOj4SLhqOHFcbS4lZV6TjBwgnoevTp36AgnNSsWi2tKgqEdlcdm2yC4pCErzLQxucSsleSUkgjoOmAearuiqJv4gWSJbdRxmXo71vYU+uO8+1HIYKUKCd7KFYUvCMEknClE4NI9M2mHOtN6d+Bk3J9h5tDCWMhzYtt8b9oPQLDRPXpjvUVWtS8blFWBgZOcD2rFBZumrDBXf7yiTbm4zTbCH0RZqNy20ko5I35TnPPfHFKdM2OwzYloYTEjSJMyRLhqeClr2jy0YdKB1UneFhKVHABJIOcVSOOlZSpSSCkkEexxTY6SvKEp74YqLG8+WVDBKc8ZH0orlRUBRRRQFFFFAUUUUBRRRQFFFFAUUUUBRRRQFFFFAUUUUBRRRQFFFFAUUUUBRRRQFFFFAUUUUBRRRQFFFFB//2Q==" alt="滚雪球封面">
+  <div class="bc-hint">54 张 · 点击展开</div>
+</div>
+          </div>
+        </div>
+        <div class="open-label">发　　牌</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ VIEWER OVERLAY ═══ -->
+  <div id="viewer">
+    <!-- Top bar -->
+    <div class="v-head">
+      <div class="suit-tabs" id="sTabs"></div>
+      <button class="close-x" onclick="closeViewer()">✕</button>
+    </div>
+    <!-- 3×3 card grid -->
+    <div class="v-body">
+      <div class="v-grid">
+        <div class="pg-tp" id="pgTp" onclick="prevSuit()"></div>
+        <div class="pg-lf" id="pgLf" onclick="prevCard()"></div>
+        <div class="pg-ct" id="pgCt">
+          <div class="card-stage">
+            <div class="card-inner" id="cInner">
+              <div class="card-face front-f" id="cFront"></div>
+              <div class="card-face back-f" id="cBack"></div>
+            </div>
+          </div>
+        </div>
+        <div class="pg-rt" id="pgRt" onclick="nextCard()"></div>
+        <div class="pg-bt" id="pgBt" onclick="nextSuit()"></div>
+      </div>
+    </div>
+    <!-- Dots footer -->
+    <div class="v-foot">
+      <div class="dots" id="dots"></div>
+      <div class="pos-lbl" id="posLbl"></div>
+    </div>
+  </div>
+
+</div><!-- #app -->
+
+<script>
+// ════ DATA ════
+var SUITS=[
+  {id:"jokers",n:"王",s:"\uD83C\uDCCF",c:"joker"},
+  {id:"spades",n:"♠",s:"♠",c:"black"},
+  {id:"hearts",n:"♥",s:"♥",c:"red"},
+  {id:"diamonds",n:"♦",s:"♦",c:"red"},
+  {id:"clubs",n:"♣",s:"♣",c:"black"}
+];
+var SORD=["jokers","spades","hearts","diamonds","clubs"];
+
+var DATA={
+jokers:[
+  {r:"JOKER",vc:"red",ft:"找到湿雪和足够长的山坡，然后开始滚",fc:"\u201c滚雪球\u201d是巴菲特对自己一生的最精准比喻。复利需要三个要素：优质的本金（湿雪）、持续运转的时间（长坡），以及不中途打断的耐心。缺少任何一个，雪球就会停止增长，甚至融化。财富如此，知识如此，人生中任何复利系统皆如此。",bq:"\u201c沃伦用手接着雪花，一开始是一次一捧。接着，他把这些少量的积雪铲到一块儿，捧起来揉成一个雪球。雪球变大之后，沃伦让它在地上慢慢地滚动。每推动一次雪球，雪球就会粘上更多的雪。他推着雪球滚过草坪，雪球越来越大……从那里开始，沃伦一直朝前行进，目光投向白雪皑皑的整个世界。\u201d",bs:"序言·雪球的比喻"},
+  {r:"JOKER",vc:"black",ft:"短期内市场是投票机，长期内市场是称重机",fc:"这是巴菲特在1999年太阳谷年会上最重要的一句话，出自他的导师本杰明·格雷厄姆。投票机反映情绪和偏好，每天都在变；称重机反映内在价值，最终总会胜出。如果你的投资只依赖别人的情绪，那迟早会被称重机揭穿。",bq:"\u201c短期内，市场是投票器；而在长期，市场是称重器。重量最终才是有价值的，但是短期内，数量很重要。\u201d",bs:"第2章·太阳谷演讲·1999年"}
+],
+spades:[
+  {r:"A",ft:"\u201c一鸟在手胜过双鸟在林\u201d——投资的本质是贴现未来现金流",fc:"巴菲特在太阳谷的演讲中用伊索的寓言重新定义了投资：你现在投出去的钱，值不值，取决于未来能收回多少、什么时候收回。利率是对\u201c时间\u201d的定价，它像物理学中的重力一样影响所有资产的价值。简单如此，但多少人真正在用这个框架做决策？",bq:"\u201c伊索称不上是一位金融家，但是他说过\u2018一鸟在手胜过双鸟在林\u2019。不过，他并没有提到时间。……利率——借贷成本——是对\u2018时间\u2019的定价。金融领域的利率就如同物理学当中的重力。利率变化，所有金融资产，包括房子、股票、债券的价值都会发生变化，就如同鸟的价值会波动一样。\u201d",bs:"第2章·太阳谷演讲"},
+  {r:"K",ft:"改变世界的发明，不等于让投资者赚钱的生意",fc:"汽车改变了美国，但2000多家汽车公司最终只剩3家，且都曾低于账面价值出售。飞机改变了旅行，但航空业整体对投资者是\u201c死亡陷阱\u201d。创新的价值会流向消费者和员工，不一定流向股东。买\u201c未来大趋势\u201d的股票，往往是赚了噱头、赔了真金。",bq:"\u201c这清单上面有2000家汽车公司……虽然汽车对美国产生了巨大的正面影响，但却对投资者产生了相反的冲击。……历史上，对航空企业的所有股票投资都赚不到钱，和几年前的情形如出一辙。\u201d",bs:"第2章·太阳谷演讲"},
+  {r:"Q",ft:"巴菲特的\u201c能力圈\u201d：在自己画的圈里，做足够的事",fc:"巴菲特拒绝投资互联网股票，不是因为保守，而是因为他无法评估这些公司的内在价值。他把自己周围\u201c画个圈\u201d，在里面做好三件事：钱、投资和自己的生活。不熟悉的领域，无论多么诱人，都不是他的地盘。边界清晰，才能在边界内无所不用其极。",bq:"\u201c他相信自己所谓的\u2018能力范围\u2019，在自己周围画个圈，待在里面，做好三件事：钱、投资和自己的生活——他可以因此被视为一名绝对意义上的专家。\u201d",bs:"第3章·习惯性动物"},
+  {r:"J",ft:"巴菲特最爱的生意，是\u201c不受约束的收费桥梁\u201d",fc:"这是巴菲特在《布法罗晚报》诉讼中被律师揭穿的秘密：他喜欢拥有定价权、不需要持续投入资本就能持续赚钱的生意。护城河越宽，竞争对手越难渗透，定价权就越牢固。他用\u201c收费桥梁\u201d比喻，后来演变成了他著名的\u201c护城河\u201d理论的早期版本。",bq:"\u201c沃伦喜欢拥有一家具有垄断地位或者在市场占据主导的报纸，就像拥有一座不受约束的桥梁收费站一样，你可以随心所欲地抬高收费，想抬多高就定多高。\u201d",bs:"第42章·最高荣誉·布法罗诉讼"},
+  {r:"10",ft:"当大家都看好股市的时候再入市，就不得不出高价了",fc:"1979年的市场一片哀鸿，巴菲特却在《福布斯》上写文章说这是买股票的最佳时机。他总是在别人恐惧时贪婪。对着眼于长远价值的投资者来说，市场下跌不是风险，而是机会——前提是你有足够的现金，以及足够的勇气。",bq:"\u201c\u2018未来的事永远没有人知道，\u2019他写道，\u2018但是当大家都看好股市的时候你再入市，就不得不出高价了。那些着眼于长远的投资者一直要学着如何与不确定性周旋。\u2019\u201d",bs:"第42章·最高荣誉·1979年市场低谷"},
+  {r:"9",ft:"\u201c空穴不来风\u201d——人们往往相信自己相信的，而不是真相",fc:"巴菲特用一个关于石油勘探商的笑话揭示了人性：即使你知道地狱里没有石油，但如果所有人都跑过去了，你也会跟着跑。1999年的互联网泡沫中，整个会场的亿万富翁们就是那些跑向地狱的石油勘探商。从众是人类的本能，逆向思维是极少数人才有的能力。",bq:"\u201c这就是人们认识、感受股票的方式。人们很容易相信\u2018空穴不来风\u2019这个道理。\u201d",bs:"第2章·太阳谷演讲·石油勘探商寓言"},
+  {r:"8",ft:"把账面盈利当成真实财富，是牛市末期最危险的错觉",fc:"巴菲特在1999年指出，过去17年间道琼斯指数几乎纹丝不动，而同期经济规模却翻了5倍。当投资者把账面财富当成既得利益时，往往是最危险的时刻。真正的财富是变现后的现金，只有落袋才算数。",bq:"\u201c在这17年的时间里，经济规模增长了5倍，《财富》500强企业销售额的增长超过5倍。然而，在这17年里，股票市场完完全全落在了后面。\u201d",bs:"第2章·太阳谷演讲·道琼斯幻灯片"},
+  {r:"7",ft:"1924年的创新：公司可以保留盈利并以同样的回报率再投资",fc:"这是巴菲特提到的埃德加·史密斯发现的核心，也是复利效应的商业基础。一家好公司留存的每一分利润，如果能以相同的资本回报率再投入，就会像滚雪球一样加速增长。这就是为什么巴菲特宁愿让伯克希尔不发红利，而是把利润留在他能产生更高回报的地方。",bq:"\u201c史密斯发现了5个原因，但是其中最新颖的一个原因是，公司可以保留一部分盈利，然后以同样的回报率进行再投资。这就是收益再投资——1924年的创新理念。\u201d",bs:"第2章·太阳谷演讲·埃德加·史密斯"},
+  {r:"6",ft:"凯恩斯的警告：以历史数据预测未来，极其危险",fc:"1999年的牛市中，人们用过去5年的高回报率推断未来20年也会如此。巴菲特引用凯恩斯的话作为警示：历史数据只告诉你\u201c过去发生了什么\u201d，不告诉你\u201c为什么发生\u201d，更不告诉你\u201c未来会如何\u201d。没有理解底层原因就做外推，是最常见的投资谬误之一。",bq:"\u201c凯恩斯在他的书的序言中写道：\u2018用历史的眼光对未来进行预测，是非常危险的事。\u2019巴菲特赞同这一观点：人们不能因为前几年股票价格的加速上涨就以此类推。\u201d",bs:"第2章·太阳谷演讲"},
+  {r:"5",ft:"巴菲特的投资起点：把股票当成公司的一部分来对待",fc:"本杰明·格雷厄姆告诉巴菲特：买股票不是在买一张价格波动的纸，而是在买公司业务的一部分所有权。这个简单的认知改变了一切——你只需要关心公司能否持续赚钱，而不是明天股价涨还是跌。这个框架让巴菲特在人们追涨互联网股时，能够保持绝对冷静。",bq:"\u201c巴菲特明白，市场并不只是人们买卖股票的地方，股票似乎是赌场里的筹码，筹码则代表了公司业务。巴菲特思考的是筹码的总体价值。这些筹码值多少钱？\u201d",bs:"第2章·太阳谷演讲·准备过程"},
+  {r:"4",ft:"\u201c估值不是预测\u201d——巴菲特从不预测短期涨跌",fc:"巴菲特在太阳谷的演讲是他30年来第一次公开谈及市场，而他的表达方式非常精确：他讲的是估值——当前价格与内在价值的比较——不是预测——明天或明年的涨跌。这两者有本质区别。估值是科学，预测是运气。他只做前者。",bq:"\u201c朋友们，我今天想谈论一下股票市场。我会讨论一下股票的定价，但是我不会对它们下个月或下一年的波动进行预测。估值不是预测。\u201d",bs:"第2章·太阳谷演讲"},
+  {r:"3",ft:"巴菲特每天80%的时间在阅读，其余时间在思考",fc:"他的办公室从不开门迎客，但他的大部分时间用来阅读年报、报纸、行业报告和书籍。他说，阅读是他的\u201c知识储蓄\u201d，每一次阅读都在为未来的某个决策做准备。这是他比任何机构投资者都有优势的地方：没有人逼他每季度交出业绩，他有时间慢慢积累洞见。",bq:"\u201c在阅读、研究和时不时的会面中间，电话铃整天都会响起。……在闲余时间，巴菲特会琢磨他还没卖的数百家公司的报告，一部分是缘于兴趣，一部分是为了以防万一。\u201d",bs:"第3章·习惯性动物·办公室日常"},
+  {r:"2",ft:"\u201c胖者生存法则\u201d——在报业竞争中，第二名终将消失",fc:"巴菲特分析过大量行业，发现报纸行业有一个特殊规律：一个城市终究只能养活一份报纸，因为广告商只愿意为最大的读者群付费。他把这叫做\u201c胖者生存\u201d——不是零和游戏，而是赢家通吃。在布法罗，他接受了长达5年的亏损和法律战，只因他知道最终的结局。",bq:"\u201c巴菲特有着坚定的投资信念……\u2018经济形势不可避免地导致每个城市只能有一家报纸。我把这称为\u2018胖者生存法则\u2019，并且你会获胜。没有第二的位置，也没有仁慈的救援团。\u2019\u201d",bs:"第42章·最高荣誉·报业竞争"}
+],
+hearts:[
+  {r:"A",ft:"你是靠\u201c内心记分牌\u201d活，还是靠\u201c外在记分牌\u201d活？",fc:"这是巴菲特从父亲霍华德那里学到的最重要的人生课。内心记分牌意味着：你知道自己做得对不对，不需要别人的掌声来确认。外在记分牌则相反，你总在等待他人的肯定。巴菲特说，大多数人在意自己的名声，而真正的英雄在意的是自己的行为。",bq:"\u201c巴菲特给我上了很多课，最精彩的一些来自我对他的观察。第一堂课就是：以谦卑之态屈人之兵。……\u2018当我的观点和他人不同的时候，艾丽斯，选择不太讨巧的那个。\u2019\u201d",bs:"第1章·不作逢迎·序言开篇"},
+  {r:"K",ft:"巴菲特看到的每一美元，都是未来更多美元的种子",fc:"9岁开始卖可口可乐，11岁第一次买股票，他对钱的感受从未只是\u201c消费\u201d，而是\u201c再生\u201d。他会为了31美分的差价而在脑中计算；他不买豪宅，因为那代价是多少张股票未来的复利？这种对钱的极端珍视，既是他成功的根本，也是他在情感关系中最大的弱点之一。",bq:"\u201c他那件价值不菲的杰尼亚上装肩膀处打着褶儿，像是批量生产出来的便宜货。每天，无论伯克希尔\u2013哈撒韦总部的其他15名员工如何着装，巴菲特都是这身行头。……他穿着一件普普通通的白衬衣，衬衣领子太小，将脖子勒得紧紧的，领结与领口不太贴合。\u201d",bs:"第1章·不作逢迎·办公室描写"},
+  {r:"Q",ft:"维护名誉需要一生，毁掉只需五分钟",fc:"这是巴菲特在接手所罗门公司危机时对自己子女所说的话，也是他整个职业生涯的行为准则。所罗门事件中，他选择了最透明、最彻底的合作方式，不惜放弃一切法律保护特权，只因他知道：如果公司最终破产，人们会记住他试图挽救；如果他逃避，名声将永久受损。",bq:"\u201c巴菲特曾经这样教导他的子女：维护一个好名声要花上一辈子的时间，但毁掉它却只需要几分钟。\u201d",bs:"第49章·愤怒的众神·所罗门危机"},
+  {r:"J",ft:"巴菲特最深的需求，是被爱和被认可——这是理解他的钥匙",fc:"他愿意在任何场合演讲，不是为了名利，而是因为他真的渴望被认可。他害怕让任何人失望，他对批评极其敏感，他在《巴伦周刊》封面被批评为\u201c过时\u201d时大受刺激。这个内心世界中充满渴望与脆弱的男孩，和那个无坚不摧的\u201c奥马哈先知\u201d，住在同一具身体里。",bq:"\u201c巴菲特希望得到人们的喜爱。他通常很受人们欢迎，而不是被人暗地里嘀咕。……巴菲特背地里被称为\u2018新好男人沃伦\u2019。\u2018沃伦错过了这班车。\u2019\u201d",bs:"第2章·太阳谷演讲·演讲后的反应"},
+  {r:"10",ft:"在飞机颠簸时巴菲特继续看报，这不是勇气，而是逻辑",fc:"他理解概率。颠簸不代表危险。市场下跌不代表持有的企业变差了。他的从容不是性格特质，而是他对\u201c波动\u2260风险\u201d这一认知的极度内化。多少人因为市场的短期震动而忍不住采取行动？巴菲特的竞争优势之一，就是他能在噪音中保持绝对安静。",bq:"\u201c当飞机摇摆、机上的人随之颠簸的时候，巴菲特却继续着他的阅读，稳若泰山。……之后的两个小时，巴菲特一直埋头读报。\u201d",bs:"第2章·太阳谷·飞往爱达荷"},
+  {r:"9",ft:"巴菲特的节俭，不是吝啬，而是对复利的虔诚信仰",fc:"他不花钱装修领带，不是因为买不起，而是因为在他眼中，那不是\u201c一条领带的钱\u201d，而是\u201c未来某笔巨额财富的种子\u201d。这种节俭背后是深刻的时间观：你今天花出去的每一美元，都放弃了它本可以成为的未来。而他，永远在为未来那个更大的雪球服务。",bq:"\u201c很少有比从朋友那里得到一件免费的高尔夫短袖衫更令巴菲特觉得高兴的事了。他花了好一会儿仔细察看今年的赠品。\u201d",bs:"第2章·太阳谷·艾伦公司年会礼品"},
+  {r:"8",ft:"巴菲特把伯克希尔当成\u201c西斯廷教堂\u201d——展示其信仰的讲义",fc:"他给股东写信、开年会、接受采访、到大学演讲……这些不只是公关活动，而是他内心深处\u201c布道者\u201d人格的自然流露。他相信自己发现了可以传授的真理，他渴望别人也能理解并受益。正是这种布道冲动，让他留下了投资史上最宝贵的文字记录。",bq:"\u201c伯克希尔\u2013哈撒韦就是巴菲特的\u2018西斯廷教堂\u2019——不只是一件艺术品，而且还是展示其信仰和理念的\u2018讲义\u2019，这就是为什么芒格会把公司称为巴菲特的\u2018传教公司\u2019。\u201d",bs:"第3章·习惯性动物·巴菲特与芒格"},
+  {r:"7",ft:"巴菲特在嘈杂环境中仍能保持绝对专注——这是他最强的肌肉",fc:"在奈特捷飞机上，一家人玩闹喧嚣，他埋头读报两小时不抬头。在太阳谷豪华的娱乐活动中，他会独自回到公寓看财经电视。窗外是绝美的山景，他合着百叶窗。他知道，让他前进的不是外部刺激，而是他内部持续运转的思维机器。",bq:"\u201c窗外，奥马哈晚春的清晨景色宜人，但是褐色的木制百叶窗紧闭着，遮蔽了满帘春色。面对他桌子的电视被调到CNBC频道。\u201d",bs:"第1章·不作逢迎·办公室环境"},
+  {r:"6",ft:"巴菲特在所罗门危机中的表现，揭示了他处理极端压力的方式",fc:"当财政部宣布封杀所罗门、公司濒临破产时，别的董事在发呆，他已经开始计算下一步。这种对\u201c能控制的\u201d和\u201c不能控制的\u201d的区分，让他在最黑暗的时刻保持行动力，而不是被情绪淹没。",bq:"\u201c我知道让一切恢复正常极为重要，我也知道不管我有多努力，有些事情都是无法控制的。我可以整夜不睡，苦苦思索这一切，但无法保证一切都有个好的结果。\u201d",bs:"第49章·愤怒的众神"},
+  {r:"5",ft:"芒格的格言：\u201c告诉我我将死于何处，这样我就不去那儿\u201d",fc:"这是芒格和巴菲特共同的思维方式：想清楚失败的原因，然后反向行事。他们研究破产的公司、失败的投资、糟糕的管理者——不是为了悲观，而是为了构建\u201c失败地图\u201d。很多人花90%的时间想如何成功；他们花60%的时间想如何避免失败。结果，他们成功得更多。",bq:"\u201c芒格说：\u2018我一直在以伟大代数学家卡尔·雅各比所建议的热情，寻找逆向洞察力。逆向，一直逆向。\u2019他用了一个聪明农夫的故事来说明这一点，这个农夫说：\u2018告诉我，我将死于何处，这样，我就不去那儿。\u2019\u201d",bs:"第3章·习惯性动物·芒格的哲学"},
+  {r:"4",ft:"1999年，当所有人嘲笑巴菲特\u201c错过了互联网\u201d，他不动声色",fc:"互联网泡沫期间，巴菲特的BRK股价大跌，媒体封面写\u201c沃伦，你怎么了？\u201d。他从未为此辩解，也未改变策略。这种对独立判断的坚守，不依赖外部验证，是他穿越周期的核心品质。",bq:"\u201c巴菲特大受刺激的神经让他迫切地想要反击，不过最终，他只字未提，未作任何回应。\u201d",bs:"第4章·沃伦，你怎么了？·BRK下跌"},
+  {r:"3",ft:"所罗门危机中，巴菲特主动放弃所有法律保护权利——这是他的底线",fc:"面对来自国会、财政部、美联储的同时施压，巴菲特的策略不是打法律战，而是彻底透明：主动放弃律师-当事人保密特权，告诉检察官他们发现什么就公开什么。他的逻辑是：如果你没做错，就没什么好隐瞒的；如果你做了错事，隐瞒只会让事情更糟。",bq:"\u201c\u2018纠正过来，迅速纠正过来！\u2019他说。当巴菲特说\u2018迅速\u2019的时候，他的确是指\u2018迅速\u2019。……奥尔森当场放弃了所罗门公司的\u2018律师——当事人保密特权\u2019……他说不管MTO在调查中发现什么，奥伯迈克都会知道。\u201d",bs:"第49章·愤怒的众神·合作策略"},
+  {r:"2",ft:"巴菲特的演讲从未失去幽默感——即使在最严峻的场合",fc:"所罗门新闻发布会上，他面对150名虎视眈眈的记者，谈完了10亿美元的\u201c恶作剧\u201d后，问道：\u201c还有没有什么人没被我挖苦到？\u201d太阳谷演讲中，他在讽刺一屋子的互联网富豪时，拿出了珠宝放大镜和免费礼品。他的幽默让人卸下防备，让不舒服的真相更容易被接受。",bq:"\u201c这时，巴菲特走到投影幕前，浓密的眉头动来动去，他指着一张有一对赤身男女的漫画……意思就是买互联网股票的人被忽悠了。但大家都僵硬地坐在那儿，一声不吭。没人笑得出来，连轻笑、窃笑都没有。\u201d",bs:"第2章·太阳谷演讲"}
+],
+diamonds:[
+  {r:"A",ft:"巴菲特对他的首席执行官只有一个核心要求：所有坏消息，必须立刻告诉我",fc:"在遴选所罗门新CEO时，他说：\u201c我需要一个这样的人：他会通知我所有的坏消息，因为生意场上的好消息根本就不用处理。\u201d坏消息传得越慢，损失越大。古特弗罗因德的错误不是发生了问题，而是发现问题后花了四个月没有上报，这才是真正的罪过。",bq:"\u201c他会通知我所有的坏消息，因为生意场上的好消息根本就不用处理。无论出现了什么坏消息，我都必须知道，因为只有这样才能采取对应行动。我需要道德高尚的首席执行官，他不会因为我打算开除他而陷我于死地。\u201d",bs:"第49章·愤怒的众神·CEO遴选标准"},
+  {r:"K",ft:"芒格对组织失灵最精准的诊断：\u201c吮拇指\u201d——明明需要行动，却坐在那里苦思",fc:"所罗门的莫泽尔事件被发现后，高层管理者没有立刻开除他、没有立刻上报监管机构，而是反复开会、权衡利弊，拖了四个月。芒格把这叫做\u201c吮拇指\u201d——面对清晰的问题，却用思考代替行动。很多组织灾难的根源都在这里：人们都知道该怎么办，但没有人先动手。",bq:"\u201c芒格说：\u2018所谓的\u2018吮拇指\u2019，是说本来必须采取行动的时候，你却只是干坐在那儿苦思冥想，这就是浪费时间。\u2019\u201d",bs:"第49章·愤怒的众神·所罗门危机分析"},
+  {r:"Q",ft:"\u201c我们没有公关问题，真正出问题的是我们自己的所作所为\u201d",fc:"所罗门危机中，有人花钱雇了一屋子的公关顾问。巴菲特听了15分钟就站起来走了。他告诉助手：\u201c谢谢，我们不需要他们。\u201d他相信：修复名誉的唯一方式是改变行为，而不是改变叙事。公关活动可以管理印象，但无法弥合行为与价值观之间的真实鸿沟。",bq:"\u201c\u2018天知道，这并不是我们被误解了，\u2019巴菲特事后说，\u2018我们没有公关问题，真正出问题的是我们自己的所作所为。\u2019\u201d",bs:"第49章·愤怒的众神·公关顾问插曲"},
+  {r:"J",ft:"《布法罗晚报》胜诉后，巴菲特没有与员工分享利润——这揭示了他的资本观",fc:"员工的辛劳已经通过工资得到了报偿。真正承担风险的是资本，因此回报归资本所有者。他有严格的\u201c风险与回报\u201d对应观：谁承担了不确定性，谁就应该得到相应的回报。管理者的核心职责，是把钱放到回报最高的地方。",bq:"\u201c资金承担了风险，因而才能收获回报。……他认为，员工所付出的时间和辛劳已经得到了恰当的回报——不多也不少，正合适。\u201d",bs:"第42章·最高荣誉·布法罗胜诉后"},
+  {r:"10",ft:"好的管理者，是那些每保留一美元利润，就能为股东创造超过一美元市值的人",fc:"这是巴菲特评估管理层质量最重要的标准之一。如果一家公司把钱留在公司里，却没有产生对应的价值增长，那就应该把利润发回给股东。他自己就是按这个标准被股东衡量的——而过去数十年，他每留一美元，都创造了远超一美元的市值。",bq:"\u201c巴菲特在1978年的年度报告中简要陈述了商业活动是如何运作的，这一次他要讲一讲如何评估管理绩效，解释一下为何短期收益是投资决策的最差标准。\u201d",bs:"第42章·最高荣誉·年度报告思路"},
+  {r:"9",ft:"巴菲特每天阅读几十份报告，但他关心的不是数字本身，而是数字背后的生意逻辑",fc:"他记得GEICO卖了多少份保险、喜诗糖果卖了多少磅，不是因为他喜欢数字，而是因为这些数字告诉他\u201c生意健不健康\u201d。财务数字是症状，生意逻辑才是病因。真正优秀的投资者，能从数字中读出公司的竞争地位、管理质量和未来走向。",bq:"\u201c巴菲特从清单上知道——上周GEICO又卖出了多少份汽车保险，又偿付了多少索赔；昨天卖出了几磅喜诗糖果；范奇海默公司又拿到了多少件监狱看守制服的订单……所有关于成本、销售额的数据都涌进巴菲特的办公室，他记住了这当中非常多的数字。\u201d",bs:"第3章·习惯性动物·日常工作"},
+  {r:"8",ft:"巴菲特对股东的称呼始终是\u201c合伙人\u201d——这不是客套，而是承诺",fc:"他给伯克希尔股东的信从不是\u201c尊敬的股东\u201d，而是\u201c亲爱的合伙人\u201d。他把自己的几乎全部身家投在伯克希尔，和股东同甘共苦。他在太阳谷演讲中说1美元工资，不是作秀，而是他一贯的逻辑：我和你们站在同一边。这种对齐利益的方式，是他赢得终身信任的根本。",bq:"\u201c有人问他的工资是多少，他回答说：\u20181美元。\u2019坐在观众席上的董事们听得目瞪口呆。这是他们第一次听说。\u201d",bs:"第49章·愤怒的众神·所罗门新闻发布会"},
+  {r:"7",ft:"巴菲特对工会说的话，是他商业谈判哲学的缩影：利益一致，才能共赢",fc:"收购《布法罗晚报》前，他亲自和工会领导者坐下来，告诉他们：在两份报纸并存的城市里，罢工只会让两败俱伤。他不回避对抗，但先把利益框架说清楚。很多商业谈判失败，不是因为双方利益不可调和，而是因为没有人愿意先把话说清楚。",bq:"\u201c\u2018听着，我们可能犯各种各样的错误，但是在这个有两份报纸的城市，只有一件事情能够毁掉报纸，那就是无期限的罢工。你们完全有能力对我们这样做，但是如果你们做了，要知道，我们会两败俱伤的。\u2019\u201d",bs:"第42章·最高荣誉·工会谈判"},
+  {r:"6",ft:"巴菲特的管理哲学：如果你必须问我下一步该怎么做，那我就挑错人了",fc:"任命莫恩为所罗门CEO后，巴菲特在新闻发布会结束时几乎立刻说\u201c我得回奥马哈了\u201d。莫恩震惊地问\u201c这里该怎么办\u201d，巴菲特回答说：\u201c如果你必须问我这样一些问题，那就说明我挑错人了。\u201d这是他授权哲学的精髓：选对了人，就彻底信任；否则不如不选。",bq:"\u201c\u2018如果你必须问我这样一些问题，那就说明我挑错人了。\u2019巴菲特撂下这句话就走了，把他的7亿美元和名声都交到30个小时之前才遇到的人手中。\u201d",bs:"第49章·愤怒的众神·莫恩上任"},
+  {r:"5",ft:"巴菲特的饮食哲学，也是他商业哲学的隐喻：简单、可靠、经过时间检验",fc:"他在华盛顿接受精致小牛肉，碰都不碰；他在太阳谷等候着汉堡和可乐。\u201c3岁小孩不吃的东西，我也不吃。\u201d这不只是饮食偏好，这是一种认知框架：经过千百万人长期验证的东西，才是可靠的。无论是食物还是生意，他都偏爱那些被时间检验过的简单事物。",bq:"\u201c\u2018谈到食物，我总是遵循一条很简单的原则，\u2019巴菲特说道，\u20183岁小孩不吃的东西，我也不吃。\u2019\u201d",bs:"第49章·愤怒的众神·华盛顿午餐"},
+  {r:"4",ft:"\u201c我是来拯救公司的，不是来看着公司垮掉的\u201d——勇于担责的极致表现",fc:"所罗门危机中，没有人比巴菲特更有理由置身事外：他只是股东，不是管理者，不是肇事者。但他选择了接手，以1美元年薪，冒着名誉受损的风险，走进最黑暗的漩涡。他的逻辑：如果有能力帮忙，就没有资格旁观。这是他对\u201c责任\u201d最深层的理解。",bq:"\u201c他这样做不仅仅是因为他的钱在里面，更重要的是因为他很在乎他的名声。……要接任董事长、拯救这家公司，巴菲特必须让自己的名声冒更大的风险，但他别无选择。\u201d",bs:"第49章·愤怒的众神"},
+  {r:"3",ft:"喜诗糖果改变了巴菲特：他第一次愿意为\u201c无形资产\u201d支付溢价",fc:"在格雷厄姆的\u201c捡烟蒂\u201d体系下，巴菲特只买便宜的公司。喜诗糖果是第一次让他明白：一个有强大品牌认知的公司，可以年复一年提高价格，而消费者仍然乐意购买。这个洞见后来成为他整个投资体系升级的关键节点——从\u201c买便宜\u201d转向\u201c买优质\u201d。",bq:"\u201c……巴菲特的企业帝国现在的价值已经超过了5亿美元，他们控制着伯克希尔近一半以上的股份……这两个公司还拥有国民赔偿公司、罗克福德银行、喜诗糖果……\u201d",bs:"第42章·最高荣誉·企业版图"},
+  {r:"2",ft:"巴菲特处理所罗门危机的方式，是一套精炼的危机管理原则",fc:"他在接手后的第一周做了三件事：找到真实情况（不依赖管理层过滤过的版本）、确定核心问题（道德文化而非技术违规）、然后用行动而非语言表达诚意（放弃法律特权、主动配合调查）。这套逻辑同样适用于任何危机：先把事实搞清楚，再做决策，然后迅速行动。",bq:"\u201c巴菲特下定决心，不管所罗门犯了什么错误都要及时纠正过来。\u2018纠正过来，迅速纠正过来！\u2019他说。\u201d",bs:"第49章·愤怒的众神·危机处理"}
+],
+clubs:[
+  {r:"A",ft:"\u201c这是我所犯过的最大的过错\u201d——巴菲特最深的悔恨，不是投资失误",fc:"苏珊离开奥马哈，不是因为他不爱她，而是因为他把所有的精力都给了工作，把她的需要放在了第二位。他后来说：\u201c这完全是我的错。甚至可以说99%都是我的过错。\u201d这个承认，在他通常强大自信的形象中，显得格外刺眼——也格外真实。成功可以掩盖很多代价，但代价从未消失。",bq:"\u201c\u2018这是可以避免的，这本来就不应该发生，这是我所犯过的最大的过错。从根本上来说，无论我做了什么，只要是和苏珊的离开有关的，都是我一生中所犯的最大过错。……我对她太不关心了，而她总是对我十分关心，几乎是关心我所有的方面。\u2019\u201d",bs:"第42章·最高荣誉·苏珊离开奥马哈"},
+  {r:"K",ft:"\u201c你是谁啊？\u201d\u201c是你的儿子。\u201d——他直到47岁才开始反思与孩子的关系",fc:"全身心投入事业的父亲，对孩子来说可能只是一个有名字的陌生人。巴菲特的孩子们说，他虽然温和可亲，但真的不了解他们。他自己也承认：虽然他对孩子们的影响和付出的时间不成比例，但很多伤害已经无法弥补了。这是\u201c选择专注\u201d必然要付出的代价之一。",bq:"\u201c有一个笑话讲得十分真切——\u2018你是谁啊？\u2019\u2018是你的儿子。\u2019这就意味着在接下来的几十年中，他要尽力去修复他们之间的关系。但是很多伤害已经是无法弥补了。\u201d",bs:"第42章·最高荣誉·家庭反思"},
+  {r:"Q",ft:"\u201c沃伦，你怎么了？\u201d——当所有媒体都在嘲笑你，你需要的只是时间",fc:"1999年底，BRK股价大跌，《巴伦周刊》封面批评巴菲特已经\u201c落伍\u201d，背地里他被称为\u201c错过这班车的人\u201d。两年后，互联网泡沫破灭，他又回到了全球首富的位置。当整个市场的\u201c投票\u201d都在否定你时，你唯一能依靠的，是你对\u201c价值\u201d这件事的独立判断。",bq:"\u201c现在，在新千年即将来临之时，巴菲特成为《巴伦周刊》的封面人物，配的大标题是：\u2018沃伦，你怎么了？\u2019……巴菲特大受刺激的神经让他迫切地想要反击，不过最终，他只字未提，未作任何回应。\u201d",bs:"第4章·沃伦，你怎么了？"},
+  {r:"J",ft:"父亲的基因：对权力的不妥协，与对道德的坚守",fc:"巴菲特的父亲霍华德是内布拉斯加州的国会议员，以拒绝为自己加薪而闻名，是共和党内少数坚定反对麦卡锡主义的人。沃伦从父亲那里继承了两样东西：对权贵的不迎合，和对道德承诺的绝不妥协。父亲的肖像一直挂在他办公室墙上，正对着每一个进门的访客。",bq:"\u201c在桌子后面、沃伦头顶上方的墙上，挂着一幅他父亲的肖像，正对着每一个进入房间的人。\u201d",bs:"第1章·不作逢迎·办公室陈设"},
+  {r:"10",ft:"巴菲特和芒格：两个互补的大脑，合并成了一个更强大的投资系统",fc:"他们走路一样笨拙，穿衣风格一样呆板，思考方式一样深刻，但性格截然相反：巴菲特需要被爱，芒格只需要被尊重；巴菲特擅长表达，芒格更愿意直接刺穿对方的论点。他们从1959年开始的对话持续了几十年。两个大脑比一个大脑更能发现盲点——这是他们成功的重要原因。",bq:"\u201c自从1959年通过朋友在午餐时认识后，这两人一直是彼此最忠实的听众。……到了最后，他俩能读懂对方脑子里的东西，无须说话，靠心灵感应就可以。\u201d",bs:"第3章·习惯性动物·巴菲特与芒格的关系"},
+  {r:"9",ft:"巴菲特选择留在奥马哈，是一个影响了他整个投资生涯的战略决策",fc:"在纽约，他会被无数的\u201c大象聚首\u201d分散注意力，被每天的市场噪音裹挟。在奥马哈，他的日历是空旷的，他的思维是自由的。他说，距离华尔街的噪音越远，越容易独立思考。奥马哈不是偶然，而是他主动为自己创造的思考环境。成功需要正确的环境，不只是正确的方法。",bq:"\u201c他绝大多数时间都在奥马哈度过，但是他的日程安排会围绕着一连串的董事会会议和拜访朋友的旅行，这些安排不疾不徐，非常有规律，就像月相的变化一样。\u201d",bs:"第3章·习惯性动物·生活规律"},
+  {r:"8",ft:"苏珊、阿斯特丽德与沃伦：一段揭示人性复杂性的关系",fc:"苏珊安排了阿斯特丽德来照顾沃伦，然后搬去旧金山追求自己的人生。这段关系令外界困惑，但它揭示了一个真相：人类对爱的需要并不总能用传统框架来界定。巴菲特说：\u201c苏珊把我组成了一个整体，而阿斯特丽德则使我保存了这个整体。\u201d他们选择的路径，远比大多数人以为的婚姻关系复杂。",bq:"\u201c巴菲特最后解释为什么苏珊要这样离开：……\u2018苏珊把我组成了一个整体，而阿斯特丽德则使我保存了这个整体。她们都需要给予，而我是一个伟大的接受者，因此，对她们都不错。\u2019\u201d",bs:"第42章·最高荣誉·三角关系说明"},
+  {r:"7",ft:"声誉是他最不愿动用的资本——所罗门危机中最关键的一个电话",fc:"当他终于拨通布雷迪的电话，用颤抖的声音说出\u201c这是我生命中最关键的一天\u201d时，他是在动用他最后的筹码——他在几十年里小心积累的声誉。他极少这样做。而当他做了，对方听出了他话语中的情绪，才松动了立场。声誉是你最不该轻易动用的资产，但当命运要求你押上最重要的东西时，你必须毫不犹豫。",bq:"\u201c他必须聚集全部的勇气。巴菲特非常痛苦，以至于他的声音都有些失控了，他说：\u2018尼克，这是我生命中最关键的一天。\u2019\u201d",bs:"第49章·愤怒的众神·与布雷迪的电话"},
+  {r:"6",ft:"\u201c表扬单个人，批评一类人\u201d——这是他保持独立性的公开法则",fc:"太阳谷的演讲充满了对互联网投资者的讽刺，但他没有点名任何人。他的逻辑是：批评行为和思维模式，而不是个人。这样，他可以让真相穿透防御，让听众自己对号入座。他用了整场演讲时间\u201c挖苦\u201d了在场的每一个人，但没有一个人能具体抱怨他说了什么。",bq:"\u201c巴菲特的信条是\u2018表扬单个人，批评一类人\u2019。他并不是故意要让演讲这么具有挑衅性和令人倒胃口，因为他也非常在意别人怎么看他。\u201d",bs:"第2章·太阳谷演讲后的反思"},
+  {r:"5",ft:"1999年的互联网泡沫，是巴菲特职业生涯中对抗全世界最孤独的时刻",fc:"当所有人都在追涨科技股，他站在太阳谷的讲台上预言市场将令投资者失望17年。没有人相信他。他的基金表现落后。媒体嘲笑他。但他没有妥协，因为他的判断来自于逻辑——不是\u201c感觉\u201d，不是\u201c趋势\u201d，而是数字与内在价值之间的比较。在市场的集体幻觉中保持清醒，是投资的终极考验。",bq:"\u201c互联网的新晋大人物一直都趾高气扬，宣扬他们的宏伟目标……整个周五下午，一些互联网的新兴风云人物都在游说赫伯特·艾伦，希望自己能加入……他们认为这是新模式，互联网时代的黎明。\u201d",bs:"第2章·太阳谷·1999年氛围"},
+  {r:"4",ft:"巴菲特的早期投资合伙人，信任他到愿意把毕生积蓄交给他管理",fc:"唐纳德·基奥一家没有投他1万美元，错过了几十年的复利。但那些投了的人，获得了令人难以置信的回报。这种信任的建立，不是靠广告，不是靠业绩单，而是靠他一次次在小事上展现的诚实、能力和对合伙人利益的一贯保护。信任是最慢积累、最快崩溃的资产。",bq:"\u201c\u2018克拉克，你什么时候出生的？\u2019\u20181963年3月21日。\u2019（克拉克回答）历史就取决于这类小事。因此，你应该很高兴，你父母没有给我那1万美元。\u201d",bs:"第2章·太阳谷演讲·基奥家族故事"},
+  {r:"3",ft:"\u201c我赢得了卵巢彩票\u201d——巴菲特对自己成功最诚实的解释之一",fc:"他生在美国、生在20世纪，有优越的基因组合（量化思维+风险偏好+长远视角），在正确的时代获得了正确的教育。他的成功是能力、努力与运气共同作用的结果。承认运气的作用，不是贬低努力，而是一种对现实的诚实认知——这本身，也是一种让他做出更好决策的思维品质。",bq:"\u201c沃伦·巴菲特9岁那年的冬天，他和妹妹伯蒂在院子里玩儿雪……从那里开始，沃伦一直朝前行进，目光投向白雪皑皑的整个世界。\u201d",bs:"序言·雪球的比喻"},
+  {r:"2",ft:"\u201c你会干得比我好，艾丽斯\u201d——他把所有精力留给了他最热爱的事",fc:"巴菲特从不强迫自己做不感兴趣的事——他不参加不喜欢的活动，不吃不想吃的食物，不做不擅长的工作。他说自己每天\u201c踢踏着舞步去上班\u201d。当工作和热情合一时，它就不再是消耗，而是充电。这是他最终能坚持70年、越老越精的秘诀。",bq:"\u201c他从椅子上起身，收起思绪，几大步跨到另一端，坐进一把芥末色的锦面扶手椅子。他身子前倾，那神情不像一位72岁的金融家，更像是一个少年把他的初恋娓娓道来。\u201d",bs:"第1章·不作逢迎·与作者初次访谈"}
+]
+};
+
+// ════ STATE ════
+var si=0, ci=[0,0,0,0,0], flip=false, busy=false;
+function suit(i){return SUITS[i];}
+function cards(i){return DATA[SORD[i]];}
+function cur(){return cards(si)[ci[si]];}
+
+// ════ RESPONSIVE SIZE ════
+function calcSize(){
+  var W=window.innerWidth, H=window.innerHeight;
+  var GAP=10, VHEAD=52, VFOOT=44;
+  var availW = W - GAP*4;
+  var availH = H - VHEAD - VFOOT - GAP*4;
+  // 1.4*cw ≤ availW  and  1.4*ch ≤ availH  with  ch = cw*88/57
+  var cwByW = availW / 1.4;
+  var cwByH = (availH / 1.4) * 57/88;
+  var cw = Math.floor(Math.min(cwByW, cwByH, 320));
+  cw = Math.max(cw, 130);
+  var ch = Math.round(cw * 88/57);
+  document.documentElement.style.setProperty("--cw", cw+"px");
+  document.documentElement.style.setProperty("--ch", ch+"px");
+  document.documentElement.style.setProperty("--pgap", GAP+"px");
+}
+
+// ════ RENDER ════
+function render(anim){
+  if(anim){
+    busy=true;
+    var ct=document.getElementById("pgCt");
+    ct.classList.add("as-"+anim);
+    setTimeout(function(){ct.classList.remove("as-"+anim);busy=false;draw();},200);
+  } else {draw();}
+  drawTabs(); drawDots(); drawLabel(); drawPeeks();
+}
+
+// Resolve effective color for a card (joker cards have per-card vc override)
+function vc(s,c){ return (c&&c.vc)?c.vc:s.c; }
+
+function mkCorner(s,c){
+  var isJ=(s.id==="jokers");
+  var isJokerCard=(c.r==="JOKER");
+  var rkStyle=isJokerCard?' style="font-size:clamp(8px,calc(var(--cw)*.065),13px);letter-spacing:1px"':'';
+  return '<div class="rk"'+rkStyle+'>'+c.r+'</div>'+
+         (isJ?'':'<div class="sy">'+s.s+'</div>');
+}
+
+function mkFace(s,c,isFront){
+  var v=vc(s,c);
+  var cc="c"+v, dv="dv"+v, bd="bd"+v;
+  var badgeBg=v==="red"?"#c0392b":v==="black"?"#1a1a1a":"#6c3483";
+  var isJ=(s.id==="jokers");
+  var corner=mkCorner(s,c);
+  if(isFront){
+    return '<div class="crnr tl '+cc+'">'+corner+'</div>'+
+      '<div class="card-body">'+
+      (isJ?'<span class="c-badge" style="background:'+badgeBg+'">'+c.r+'</span>':'')+
+      '<div class="c-title '+cc+'">'+c.ft+'</div>'+
+      '<div class="c-div '+dv+'"></div>'+
+      '<div class="c-body">'+c.fc+'</div></div>'+
+      '<div class="crnr br '+cc+'">'+corner+'</div>';
+  } else {
+    return '<div class="crnr tl '+cc+'">'+corner+'</div>'+
+      '<div class="back-body">'+
+      '<div class="bq '+cc+' '+bd+'">'+c.bq+'</div>'+
+      '<div class="bsrc">\uD83D\uDCD6 <b>'+c.bs+'</b></div></div>'+
+      '<div class="crnr br '+cc+'">'+corner+'</div>';
+  }
+}
+
+function mkPeekCard(s,c){
+  var v=vc(s,c);
+  return '<div class="peek-card bg'+v+'">'+
+    '<div class="crnr tl c'+v+'">'+mkCorner(s,c)+'</div>'+
+    '</div>';
+}
+
+function draw(){
+  var s=suit(si), c=cur(), v=vc(s,c);
+  var f=document.getElementById("cFront"), b=document.getElementById("cBack");
+  f.className="card-face front-f bg"+v;
+  b.className="card-face back-f bg"+v;
+  f.innerHTML=mkFace(s,c,true);
+  b.innerHTML=mkFace(s,c,false);
+  if(flip){document.getElementById("cInner").classList.remove("flipped");flip=false;}
+}
+
+function drawTabs(){
+  var h="";
+  for(var i=0;i<5;i++){
+    var s=suit(i), on=(i===si)?" on-"+s.c:"";
+    h+='<button class="stab'+on+'" onclick="jumpSuit('+i+')">'+s.n+'</button>';
+  }
+  document.getElementById("sTabs").innerHTML=h;
+}
+
+function drawDots(){
+  var cs=cards(si), s=suit(si), h="";
+  for(var i=0;i<cs.length;i++){
+    var on=(i===ci[si])?" on-"+s.c:"";
+    h+='<div class="d'+on+'" onclick="jumpCard('+i+')"></div>';
+  }
+  document.getElementById("dots").innerHTML=h;
+}
+
+function drawLabel(){
+  var s=suit(si), c=cur();
+  document.getElementById("posLbl").textContent=s.s+" "+(ci[si]+1)+"/"+cards(si).length;
+}
+
+function drawPeeks(){
+  var cs=cards(si), s=suit(si);
+  var pgTp=document.getElementById("pgTp");
+  var pgBt=document.getElementById("pgBt");
+  var pgLf=document.getElementById("pgLf");
+  var pgRt=document.getElementById("pgRt");
+  pgTp.innerHTML=(si>0)      ?mkPeekCard(suit(si-1),cards(si-1)[ci[si-1]]):"";
+  pgBt.innerHTML=(si<4)      ?mkPeekCard(suit(si+1),cards(si+1)[ci[si+1]]):"";
+  pgLf.innerHTML=(ci[si]>0)  ?mkPeekCard(s,cs[ci[si]-1]):"";
+  pgRt.innerHTML=(ci[si]<cs.length-1)?mkPeekCard(s,cs[ci[si]+1]):"";
+  // Disable pointer-events on empty peeks
+  pgTp.style.pointerEvents=(si>0)?"":"none";
+  pgBt.style.pointerEvents=(si<4)?"":"none";
+  pgLf.style.pointerEvents=(ci[si]>0)?"":"none";
+  pgRt.style.pointerEvents=(ci[si]<cs.length-1)?"":"none";
+}
+
+// ════ NAVIGATION ════
+function nextCard(){if(busy||ci[si]>=cards(si).length-1)return;ci[si]++;render("L");}
+function prevCard(){if(busy||ci[si]<=0)return;ci[si]--;render("R");}
+function nextSuit(){if(busy||si>=4)return;si++;render("U");}
+function prevSuit(){if(busy||si<=0)return;si--;render("D");}
+function jumpSuit(i){if(i===si)return;var d=i>si?"U":"D";si=i;render(d);}
+function jumpCard(i){if(i===ci[si])return;var d=i>ci[si]?"L":"R";ci[si]=i;render(d);}
+function doFlip(){flip=!flip;document.getElementById("cInner").classList.toggle("flipped",flip);}
+
+// ════ TOUCH ════
+var tx=0,ty=0,inTouch=false,touchFlipped=false;
+document.addEventListener("touchstart",function(e){
+  if(!document.getElementById("viewer").classList.contains("active"))return;
+  inTouch=true;tx=e.touches[0].clientX;ty=e.touches[0].clientY;
+},{passive:true});
+document.addEventListener("touchend",function(e){
+  if(!document.getElementById("viewer").classList.contains("active"))return;
+  if(!inTouch)return;inTouch=false;
+  var dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+  var ax=Math.abs(dx), ay=Math.abs(dy);
+  if(ax<14&&ay<14){
+    var ct=document.getElementById("pgCt");
+    var node=e.target,inside=false;
+    while(node&&node!==document.body){if(node===ct){inside=true;break;}node=node.parentNode;}
+    if(inside){
+      doFlip();
+      touchFlipped=true;
+      setTimeout(function(){touchFlipped=false;},600);
+    }
+    return;
+  }
+  if(ax>ay&&ax>40){dx<0?nextCard():prevCard();}
+  else if(ay>ax&&ay>40){dy<0?nextSuit():prevSuit();}
+},{passive:true});
+
+document.getElementById("pgCt").addEventListener("click",function(){
+  if(touchFlipped)return;
+  doFlip();
+});
+
+// ════ KEYBOARD ════
+document.addEventListener("keydown",function(e){
+  if(!document.getElementById("viewer").classList.contains("active"))return;
+  if(e.key==="ArrowRight")nextCard();
+  else if(e.key==="ArrowLeft")prevCard();
+  else if(e.key==="ArrowDown")nextSuit();
+  else if(e.key==="ArrowUp")prevSuit();
+  else if(e.key===" "||e.key==="Enter"){e.preventDefault();doFlip();}
+  else if(e.key==="Escape")closeViewer();
+});
+
+// ════ DEAL ANIMATION ════
+function fanOut(callback){
+  var iso=document.querySelector(".deck-iso");
+  var wrap=document.querySelector(".iso-wrap");
+  var rect=wrap.getBoundingClientRect();
+  var cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+  var ov=document.createElement("div");
+  ov.style.cssText="position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden;";
+  document.body.appendChild(ov);
+  // 5 cards dealt one by one to positions around the table (荷官发牌)
+  var items=[
+    {s:"\uD83C\uDCCF",c:"#6c3483",tx:-300,ty:40,r:-5,d:0},     // 发到左侧
+    {s:"\u2660",     c:"#1a1a1a", tx:-185,ty:-210,r:-3,d:60},   // 发到左上
+    {s:"\u2665",     c:"#c0392b", tx:0,   ty:-260,r:0, d:120},  // 发到正上
+    {s:"\u2666",     c:"#c0392b", tx:200, ty:-200,r:3, d:180},  // 发到右上
+    {s:"\u2663",     c:"#1a1a1a", tx:305, ty:50,  r:5, d:240}   // 发到右侧
+  ];
+  var w=56,h=86;
+  items.forEach(function(p){
+    var el=document.createElement("div");
+    // 牌背面深色（模拟正式发牌，面朝下）
+    el.style.cssText="position:absolute;width:"+w+"px;height:"+h+"px;"+
+      "left:"+(cx-w/2)+"px;top:"+(cy-h/2)+"px;"+
+      "background:linear-gradient(135deg,#120820 60%,#1e1035);"+
+      "border-radius:7px;border:2px solid #8e44ad;"+
+      "box-shadow:0 6px 18px rgba(0,0,0,.45);"+
+      "display:flex;align-items:center;justify-content:center;"+
+      "font-size:26px;color:"+p.c+";"+
+      /* 快速弹出（cubic-bezier 模拟荷官甩牌：极快启动，末端略减速） */
+      "transition:transform .2s cubic-bezier(.05,0,.15,1) "+p.d+"ms,"+
+        "opacity .15s ease "+(p.d+190)+"ms;";
+    el.textContent=p.s;
+    ov.appendChild(el);
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      el.style.transform="translate("+p.tx+"px,"+p.ty+"px) rotate("+p.r+"deg)";
+      el.style.opacity="0";
+    });});
+  });
+  iso.classList.add("launching");
+  document.getElementById("preview").classList.add("fanning");
+  setTimeout(function(){
+    document.body.removeChild(ov);
+    iso.classList.remove("launching");
+    callback();
+  },600);
+}
+
+// ════ OPEN / CLOSE ════
+function openViewer(){
+  var btn=document.querySelector(".deck-btn");
+  btn.disabled=true;
+  fanOut(function(){
+    calcSize();
+    si=0;ci=[0,0,0,0,0];flip=false;busy=false;
+    document.getElementById("preview").classList.remove("fanning");
+    document.getElementById("preview").classList.add("hidden");
+    document.getElementById("viewer").classList.add("active");
+    render(null);
+    btn.disabled=false;
+  });
+}
+function openDeck(){openViewer();}
+function closeViewer(){
+  document.getElementById("viewer").classList.remove("active");
+  document.getElementById("preview").classList.remove("hidden");
+  document.querySelector(".deck-btn").disabled=false;
+}
+
+window.addEventListener("resize",function(){
+  if(document.getElementById("viewer").classList.contains("active"))calcSize();
+});
+</script>
+</body>
+</html>
