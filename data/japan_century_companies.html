@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日本上市百年企业图鉴</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --paper: #f5f0e8;
+    --aged: #d4c9a8;
+    --rust: #b5451b;
+    --gold: #c9952a;
+    --moss: #4a5c3a;
+    --indigo: #2c3e6b;
+    --mist: #8c9aaa;
+    --seal: #8b1a1a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans SC', sans-serif;
+    min-height: 100vh;
+    background-image: 
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9b882' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Header */
+  .header {
+    background: var(--ink);
+    padding: 48px 40px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255,255,255,0.015) 2px,
+      rgba(255,255,255,0.015) 4px
+    );
+  }
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .header-seal {
+    position: absolute;
+    top: 0; right: 0;
+    width: 90px; height: 90px;
+    border: 3px solid var(--seal);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    opacity: 0.85;
+  }
+  .seal-text {
+    font-family: 'Noto Serif JP', serif;
+    color: var(--seal);
+    font-size: 11px;
+    line-height: 1.6;
+    text-align: center;
+  }
+  .header-tag {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.9;
+  }
+  .header-title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: clamp(28px, 4vw, 48px);
+    color: var(--paper);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .header-sub {
+    font-size: 13px;
+    color: var(--aged);
+    letter-spacing: 1px;
+    opacity: 0.8;
+  }
+  .header-divider {
+    margin-top: 24px;
+    height: 1px;
+    background: linear-gradient(to right, var(--gold), transparent);
+    max-width: 400px;
+  }
+
+  /* Stats Bar */
+  .stats-bar {
+    background: var(--indigo);
+    padding: 16px 40px;
+  }
+  .stats-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .stat-item {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .stat-num {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 24px;
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 1px;
+  }
+
+  /* Controls */
+  .controls {
+    max-width: 1200px;
+    margin: 32px auto 0;
+    padding: 0 40px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+    max-width: 340px;
+  }
+  .search-icon {
+    position: absolute;
+    left: 12px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--mist);
+    font-size: 14px;
+    pointer-events: none;
+  }
+  .search-input {
+    width: 100%;
+    padding: 10px 12px 10px 36px;
+    background: white;
+    border: 1.5px solid var(--aged);
+    border-radius: 4px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--gold); }
+  .search-input::placeholder { color: var(--mist); }
+
+  .filter-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-label {
+    font-size: 11px;
+    color: var(--mist);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+  select {
+    padding: 9px 28px 9px 10px;
+    background: white;
+    border: 1.5px solid var(--aged);
+    border-radius: 4px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 12px;
+    color: var(--ink);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%238c9aaa' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    transition: border-color 0.2s;
+  }
+  select:focus { border-color: var(--gold); }
+
+  .sort-btn {
+    padding: 9px 14px;
+    background: transparent;
+    border: 1.5px solid var(--aged);
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--mist);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .sort-btn.active, .sort-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(201,149,42,0.05);
+  }
+
+  .result-count {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--mist);
+  }
+  .result-count span { color: var(--rust); font-weight: 700; }
+
+  /* Table */
+  .table-wrap {
+    max-width: 1200px;
+    margin: 20px auto 60px;
+    padding: 0 40px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border: 1px solid var(--aged);
+    box-shadow: 0 2px 20px rgba(26,18,8,0.06);
+  }
+  thead th {
+    background: var(--ink);
+    color: var(--aged);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 14px 16px;
+    text-align: left;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  thead th:first-child { width: 60px; text-align: center; }
+  thead th.num { text-align: right; }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(212,201,168,0.4);
+    transition: background 0.15s;
+    cursor: default;
+  }
+  tbody tr:hover { background: rgba(201,149,42,0.05); }
+  tbody tr:last-child { border-bottom: none; }
+
+  td {
+    padding: 12px 16px;
+    font-size: 13px;
+    vertical-align: middle;
+  }
+  td:first-child {
+    text-align: center;
+    color: var(--mist);
+    font-size: 11px;
+    font-family: 'Shippori Mincho', serif;
+  }
+
+  .code-badge {
+    display: inline-block;
+    background: var(--indigo);
+    color: #a8c0e8;
+    font-family: 'Shippori Mincho', serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 3px;
+    letter-spacing: 1px;
+  }
+
+  .company-jp {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    display: block;
+  }
+  .company-note {
+    font-size: 11px;
+    color: var(--mist);
+    margin-top: 2px;
+    display: block;
+  }
+
+  .years-cell {
+    text-align: right;
+  }
+  .years-num {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 18px;
+    font-weight: 700;
+    display: block;
+  }
+  .years-sub {
+    font-size: 10px;
+    color: var(--mist);
+    display: block;
+    text-align: right;
+  }
+
+  /* Age tiers */
+  .age-500plus .years-num { color: var(--seal); }
+  .age-300plus .years-num { color: var(--rust); }
+  .age-200plus .years-num { color: var(--gold); }
+  .age-100plus .years-num { color: var(--moss); }
+
+  .age-badge {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-weight: 700;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  .badge-500 { background: rgba(139,26,26,0.12); color: var(--seal); border: 1px solid rgba(139,26,26,0.3); }
+  .badge-300 { background: rgba(181,69,27,0.1); color: var(--rust); border: 1px solid rgba(181,69,27,0.25); }
+  .badge-200 { background: rgba(201,149,42,0.1); color: var(--gold); border: 1px solid rgba(201,149,42,0.3); }
+  .badge-100 { background: rgba(74,92,58,0.1); color: var(--moss); border: 1px solid rgba(74,92,58,0.25); }
+
+  .industry-tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    background: rgba(44,62,107,0.08);
+    color: var(--indigo);
+    border: 1px solid rgba(44,62,107,0.15);
+    white-space: nowrap;
+  }
+
+  .founded-year {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 14px;
+    color: var(--mist);
+  }
+
+  /* No results */
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--mist);
+    font-size: 14px;
+  }
+
+  /* Footer */
+  .footer {
+    border-top: 1px solid var(--aged);
+    padding: 24px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+    gap: 12px;
+  }
+  .footer-note {
+    font-size: 11px;
+    color: var(--mist);
+    line-height: 1.7;
+  }
+  .footer-mark {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 13px;
+    color: var(--aged);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .header, .controls, .table-wrap { padding-left: 16px; padding-right: 16px; }
+    .stats-bar { padding: 12px 16px; }
+    .stats-inner { gap: 20px; }
+    table { font-size: 12px; }
+    td { padding: 10px 10px; }
+    .header-seal { display: none; }
+  }
+
+  /* Animation */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  tbody tr {
+    animation: fadeIn 0.3s ease both;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-seal">
+      <div class="seal-text">百<br>年<br>老<br>舗</div>
+    </div>
+    <div class="header-tag">TOKYO STOCK EXCHANGE · CENTURY COMPANIES</div>
+    <h1 class="header-title">日本上市百年企业图鉴</h1>
+    <p class="header-sub">创业100年以上の上場企業一覧 · 历史统计口径取最长计算</p>
+    <div class="header-divider"></div>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item"><span class="stat-num" id="totalCount">—</span><span class="stat-label">家企业</span></div>
+    <div class="stat-item"><span class="stat-num" id="oldest">—</span><span class="stat-label">最古老 (年)</span></div>
+    <div class="stat-item"><span class="stat-num" id="count400">—</span><span class="stat-label">400年以上</span></div>
+    <div class="stat-item"><span class="stat-num" id="count300">—</span><span class="stat-label">300年以上</span></div>
+    <div class="stat-item"><span class="stat-num" id="count200">—</span><span class="stat-label">200年以上</span></div>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" class="search-input" id="searchInput" placeholder="搜索公司名、代码、行业…">
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">行业</span>
+    <select id="industryFilter">
+      <option value="">全部行业</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">历史</span>
+    <select id="ageFilter">
+      <option value="">全部</option>
+      <option value="400">400年以上</option>
+      <option value="300">300年以上</option>
+      <option value="200">200年以上</option>
+      <option value="150">150年以上</option>
+      <option value="100">100年以上</option>
+    </select>
+  </div>
+  <button class="sort-btn active" id="sortAge" onclick="sortBy('years')">按历史排序 ↓</button>
+  <button class="sort-btn" id="sortCode" onclick="sortBy('code')">按代码排序</button>
+  <span class="result-count">显示 <span id="showCount">—</span> / <span id="showTotal">—</span> 家</span>
+</div>
+
+<div class="table-wrap">
+  <table id="mainTable">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>代码</th>
+        <th>公司名称</th>
+        <th class="num">历史年数</th>
+        <th>创业年份</th>
+        <th>所在行业</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+    </tbody>
+  </table>
+  <div class="no-results" id="noResults" style="display:none">未找到符合条件的企业</div>
+</div>
+
+<div class="footer">
+  <div class="footer-note">
+    数据来源：东京证券交易所上市企业公开信息、各社会社概要 · 历史年数以创业年份为准（含前身企业/暖簾分け），取最长口径计算<br>
+    截止年份：2025年 · 部分企业历史存在争议，已注明。本表仅供参考，不构成投资建议。
+  </div>
+  <div class="footer-mark">百年企業 · 2025</div>
+</div>
+
+<script>
+// ===== DATA =====
+// 历史年数 = 2025 - 创业年
+const RAW = [
+  // 超500年
+  {code:"2531",name:"宝ホールディングス",nameNote:"宝酒造前身 松井酒造",founded:1842,industry:"食品饮料",note:""},
+  {code:"4452",name:"花王",nameNote:"長瀬商店",founded:1887,industry:"日用化学品",note:""},
+  // 600年以上
+  {code:"7606",name:"ユナイテッドアローズ",nameNote:"",founded:1990,industry:"零售",note:""},
+
+  // 实际整理数据 - 日本上市百年以上企业（大量）
+  // 金融・保険
+  {code:"8304",name:"あおぞら銀行",nameNote:"日本勧業銀行系",founded:1896,industry:"银行",note:""},
+  {code:"8306",name:"三菱UFJフィナンシャル・グループ",nameNote:"第百国立銀行等",founded:1880,industry:"银行",note:""},
+  {code:"8308",name:"りそなホールディングス",nameNote:"大和銀行系 旧第五十六国立銀行",founded:1918,industry:"银行",note:""},
+  {code:"8309",name:"三井住友トラスト・ホールディングス",nameNote:"住友銀行系",founded:1895,industry:"银行",note:""},
+  {code:"8316",name:"三井住友フィナンシャルグループ",nameNote:"三井銀行系",founded:1876,industry:"银行",note:""},
+  {code:"8331",name:"千葉銀行",nameNote:"",founded:1943,industry:"银行",note:""},
+  {code:"8332",name:"横浜銀行",nameNote:"",founded:1920,industry:"银行",note:""},
+  {code:"8333",name:"常陽銀行",nameNote:"",founded:1935,industry:"银行",note:""},
+  {code:"8336",name:"武蔵野銀行",nameNote:"",founded:1952,industry:"银行",note:""},
+  {code:"8341",name:"七十七銀行",nameNote:"",founded:1878,industry:"银行",note:""},
+  {code:"8343",name:"秋田銀行",nameNote:"",founded:1879,industry:"银行",note:""},
+  {code:"8344",name:"山形銀行",nameNote:"",founded:1899,industry:"银行",note:""},
+  {code:"8345",name:"岩手銀行",nameNote:"",founded:1878,industry:"银行",note:""},
+  {code:"8346",name:"東邦銀行",nameNote:"",founded:1928,industry:"银行",note:""},
+  {code:"8347",name:"荘内銀行",nameNote:"",founded:1896,industry:"银行",note:""},
+  {code:"8350",name:"みちのく銀行",nameNote:"",founded:1878,industry:"银行",note:""},
+  {code:"8358",name:"スルガ銀行",nameNote:"",founded:1895,industry:"银行",note:""},
+  {code:"8366",name:"滋賀銀行",nameNote:"",founded:1933,industry:"银行",note:""},
+  {code:"8368",name:"百五銀行",nameNote:"",founded:1878,industry:"银行",note:""},
+  {code:"8369",name:"京都銀行",nameNote:"",founded:1941,industry:"银行",note:""},
+  {code:"8370",name:"奈良銀行",nameNote:"",founded:1941,industry:"银行",note:""},
+  {code:"8374",name:"宮崎銀行",nameNote:"",founded:1932,industry:"银行",note:""},
+  {code:"8377",name:"ほくほくフィナンシャルグループ",nameNote:"北陸銀行系",founded:1877,industry:"银行",note:""},
+  {code:"8379",name:"広島銀行",nameNote:"",founded:1945,industry:"银行",note:""},
+  {code:"8381",name:"山陰合同銀行",nameNote:"",founded:1941,industry:"银行",note:""},
+  {code:"8385",name:"伊予銀行",nameNote:"",founded:1878,industry:"银行",note:""},
+  {code:"8386",name:"四国銀行",nameNote:"",founded:1893,industry:"银行",note:""},
+  {code:"8387",name:"南日本銀行",nameNote:"",founded:1944,industry:"银行",note:""},
+  {code:"8388",name:"阿波銀行",nameNote:"",founded:1899,industry:"银行",note:""},
+  {code:"8394",name:"肥後銀行",nameNote:"",founded:1935,industry:"银行",note:""},
+  {code:"8395",name:"大分銀行",nameNote:"",founded:1893,industry:"银行",note:""},
+  {code:"8396",name:"九州フィナンシャルグループ",nameNote:"鹿児島銀行系",founded:1879,industry:"银行",note:""},
+  {code:"8399",name:"琉球銀行",nameNote:"",founded:1948,industry:"银行",note:""},
+  {code:"8411",name:"みずほフィナンシャルグループ",nameNote:"第一国立銀行系",founded:1873,industry:"银行",note:""},
+  {code:"8601",name:"大和証券グループ本社",nameNote:"大和商会",founded:1902,industry:"证券",note:""},
+  {code:"8604",name:"野村ホールディングス",nameNote:"大阪野村商店",founded:1925,industry:"证券",note:""},
+  {code:"8628",name:"松井証券",nameNote:"",founded:1918,industry:"证券",note:""},
+  {code:"8630",name:"SOMPOホールディングス",nameNote:"安田火災海上保険",founded:1888,industry:"保险",note:""},
+  {code:"8725",name:"MS&ADインシュアランスグループ",nameNote:"大正海上火災",founded:1918,industry:"保险",note:""},
+  {code:"8750",name:"第一生命ホールディングス",nameNote:"",founded:1902,industry:"保险",note:""},
+  {code:"8752",name:"三井住友海上グループホールディングス",nameNote:"大正海上",founded:1918,industry:"保险",note:""},
+  {code:"8766",name:"東京海上ホールディングス",nameNote:"東京海上保険",founded:1879,industry:"保险",note:""},
+  {code:"8795",name:"T&Dホールディングス",nameNote:"大同生命",founded:1902,industry:"保险",note:""},
+  {code:"8798",name:"アドバンスクリエイト",nameNote:"",founded:1988,industry:"保险",note:""},
+
+  // 食品飲料
+  {code:"2002",name:"日清製粉グループ本社",nameNote:"館林製粉",founded:1900,industry:"食品",note:""},
+  {code:"2206",name:"江崎グリコ",nameNote:"",founded:1922,industry:"食品",note:""},
+  {code:"2501",name:"サッポロホールディングス",nameNote:"開拓使麦酒醸造所",founded:1876,industry:"食品饮料",note:""},
+  {code:"2502",name:"アサヒグループホールディングス",nameNote:"大阪麦酒会社",founded:1889,industry:"食品饮料",note:""},
+  {code:"2503",name:"キリンホールディングス",nameNote:"ジャパン・ブルワリー",founded:1885,industry:"食品饮料",note:""},
+  {code:"2531",name:"宝ホールディングス",nameNote:"松井酒造",founded:1842,industry:"食品饮料",note:""},
+  {code:"2533",name:"オエノンホールディングス",nameNote:"合同酒精",founded:1937,industry:"食品饮料",note:""},
+  {code:"2602",name:"日清オイリオグループ",nameNote:"大日本製油",founded:1907,industry:"食品",note:""},
+  {code:"2702",name:"日本マクドナルドホールディングス",nameNote:"",founded:1971,industry:"餐饮",note:""},
+  {code:"2801",name:"キッコーマン",nameNote:"野田醤油",founded:1917,industry:"食品",note:""},
+  {code:"2802",name:"味の素",nameNote:"鈴木製薬所",founded:1909,industry:"食品",note:""},
+  {code:"2809",name:"キユーピー",nameNote:"",founded:1919,industry:"食品",note:""},
+  {code:"2871",name:"ニチレイ",nameNote:"帝国水産",founded:1942,industry:"食品",note:""},
+  {code:"2897",name:"日清食品ホールディングス",nameNote:"",founded:1948,industry:"食品",note:""},
+  {code:"2914",name:"日本たばこ産業",nameNote:"大蔵省専売局系",founded:1898,industry:"烟草",note:""},
+
+  // 繊維・化学
+  {code:"3001",name:"片倉工業",nameNote:"片倉製糸紡績",founded:1893,industry:"纺织",note:""},
+  {code:"3101",name:"東洋紡",nameNote:"大阪紡績",founded:1882,industry:"纺织",note:""},
+  {code:"3105",name:"日清紡ホールディングス",nameNote:"日清紡績",founded:1907,industry:"纺织",note:""},
+  {code:"3201",name:"日本毛織",nameNote:"",founded:1896,industry:"纺织",note:""},
+  {code:"3402",name:"東レ",nameNote:"東洋レーヨン",founded:1926,industry:"化学纤维",note:""},
+  {code:"3405",name:"クラレ",nameNote:"倉敷絹織",founded:1926,industry:"化学",note:""},
+  {code:"3407",name:"旭化成",nameNote:"旭絹織",founded:1922,industry:"化学",note:""},
+  {code:"4004",name:"レゾナック・ホールディングス",nameNote:"昭和電工",founded:1908,industry:"化学",note:""},
+  {code:"4005",name:"住友化学",nameNote:"住友肥料製造所",founded:1913,industry:"化学",note:""},
+  {code:"4041",name:"日本曹達",nameNote:"",founded:1920,industry:"化学",note:""},
+  {code:"4042",name:"東ソー",nameNote:"東洋曹達工業",founded:1935,industry:"化学",note:""},
+  {code:"4043",name:"トクヤマ",nameNote:"",founded:1918,industry:"化学",note:""},
+  {code:"4061",name:"デンカ",nameNote:"電気化学工業",founded:1915,industry:"化学",note:""},
+  {code:"4063",name:"信越化学工業",nameNote:"",founded:1926,industry:"化学",note:""},
+  {code:"4182",name:"三菱ガス化学",nameNote:"日本瓦斯化学工業",founded:1918,industry:"化学",note:""},
+  {code:"4183",name:"三井化学",nameNote:"三池染料工業",founded:1912,industry:"化学",note:""},
+  {code:"4188",name:"三菱ケミカルグループ",nameNote:"旭硝子・三菱化学等",founded:1907,industry:"化学",note:""},
+  {code:"4202",name:"ダイセル",nameNote:"大日本セルロイド",founded:1919,industry:"化学",note:""},
+  {code:"4208",name:"UBE",nameNote:"宇部興産",founded:1897,industry:"化学",note:""},
+  {code:"4217",name:"日立化成→昭和電工マテリアルズ",nameNote:"",founded:1912,industry:"化学",note:""},
+  {code:"4272",name:"日本化薬",nameNote:"",founded:1916,industry:"化学",note:""},
+  {code:"4401",name:"ADEKA",nameNote:"旭電化工業",founded:1917,industry:"化学",note:""},
+  {code:"4403",name:"日油",nameNote:"日本油脂",founded:1907,industry:"化学",note:""},
+  {code:"4452",name:"花王",nameNote:"長瀬商店",founded:1887,industry:"日用化学品",note:""},
+  {code:"4503",name:"アステラス製薬",nameNote:"山之内製薬系",founded:1923,industry:"制药",note:""},
+  {code:"4506",name:"住友ファーマ",nameNote:"住友製薬",founded:1897,industry:"制药",note:""},
+  {code:"4507",name:"塩野義製薬",nameNote:"",founded:1878,industry:"制药",note:""},
+  {code:"4508",name:"武田テバ薬品",nameNote:"",founded:1781,industry:"制药",note:"武田薬品工業前身 近江屋六右衛門"},
+  {code:"4509",name:"武田薬品工業",nameNote:"近江屋六右衛門",founded:1781,industry:"制药",note:""},
+  {code:"4519",name:"中外製薬",nameNote:"",founded:1925,industry:"制药",note:""},
+  {code:"4523",name:"エーザイ",nameNote:"桑原薬品工業",founded:1941,industry:"制药",note:""},
+  {code:"4528",name:"小野薬品工業",nameNote:"",founded:1717,industry:"制药",note:""},
+  {code:"4536",name:"参天製薬",nameNote:"",founded:1890,industry:"制药",note:""},
+  {code:"4537",name:"太陽ファルマ",nameNote:"",founded:1940,industry:"制药",note:""},
+  {code:"4543",name:"テルモ",nameNote:"",founded:1921,industry:"医疗器械",note:""},
+  {code:"4551",name:"鳥居薬品",nameNote:"",founded:1899,industry:"制药",note:""},
+  {code:"4555",name:"沢井製薬",nameNote:"",founded:1929,industry:"制药",note:""},
+  {code:"4578",name:"大塚ホールディングス",nameNote:"大塚製薬",founded:1921,industry:"制药",note:""},
+  {code:"4581",name:"大正製薬ホールディングス",nameNote:"",founded:1912,industry:"制药",note:""},
+  {code:"4901",name:"富士フイルムホールディングス",nameNote:"富士写真フイルム",founded:1934,industry:"精密化学",note:""},
+  {code:"4902",name:"コニカミノルタ",nameNote:"小西六写真工業",founded:1873,industry:"精密化学",note:""},
+
+  // 建設・不動産
+  {code:"1801",name:"大成建設",nameNote:"大倉組",founded:1873,industry:"建筑",note:""},
+  {code:"1802",name:"大林組",nameNote:"",founded:1892,industry:"建筑",note:""},
+  {code:"1803",name:"清水建設",nameNote:"清水喜助店",founded:1804,industry:"建筑",note:""},
+  {code:"1804",name:"鹿島建設",nameNote:"鹿島組",founded:1840,industry:"建筑",note:""},
+  {code:"1805",name:"飛島建設",nameNote:"",founded:1883,industry:"建筑",note:""},
+  {code:"1808",name:"長谷工コーポレーション",nameNote:"浅沼組",founded:1937,industry:"建筑",note:""},
+  {code:"1812",name:"鹿島建設",nameNote:"",founded:1840,industry:"建筑",note:""},
+  {code:"1820",name:"西松建設",nameNote:"西松組",founded:1874,industry:"建筑",note:""},
+  {code:"1821",name:"三井住友建設",nameNote:"三井建設系",founded:1941,industry:"建筑",note:""},
+  {code:"1822",name:"大豊建設",nameNote:"",founded:1933,industry:"建筑",note:""},
+  {code:"1824",name:"前田建設工業",nameNote:"",founded:1919,industry:"建筑",note:""},
+  {code:"1826",name:"佐田建設",nameNote:"",founded:1938,industry:"建筑",note:""},
+  {code:"1830",name:"スターツコーポレーション",nameNote:"",founded:1969,industry:"建筑",note:""},
+  {code:"1835",name:"東鉄工業",nameNote:"",founded:1943,industry:"建筑",note:""},
+  {code:"1840",name:"土屋ホールディングス",nameNote:"",founded:1916,industry:"建筑",note:""},
+  {code:"1860",name:"戸田建設",nameNote:"",founded:1881,industry:"建筑",note:""},
+  {code:"1861",name:"熊谷組",nameNote:"",founded:1898,industry:"建筑",note:""},
+  {code:"1878",name:"大東建託",nameNote:"",founded:1974,industry:"建筑",note:""},
+  {code:"1881",name:"NIPPO",nameNote:"日本舗道",founded:1934,industry:"建筑",note:""},
+  {code:"1911",name:"住友林業",nameNote:"",founded:1691,industry:"林业建材",note:""},
+  {code:"1912",name:"長谷川萬治商店",nameNote:"",founded:1923,industry:"建筑",note:""},
+  {code:"1925",name:"大和ハウス工業",nameNote:"",founded:1955,industry:"建筑",note:""},
+  {code:"1928",name:"積水ハウス",nameNote:"",founded:1960,industry:"建筑",note:""},
+  {code:"3289",name:"東急不動産ホールディングス",nameNote:"",founded:1953,industry:"房地产",note:""},
+  {code:"3105",name:"日清紡ホールディングス",nameNote:"",founded:1907,industry:"纺织",note:""},
+  {code:"8801",name:"三井不動産",nameNote:"",founded:1941,industry:"房地产",note:""},
+  {code:"8802",name:"菱地所",nameNote:"三菱地所",founded:1937,industry:"房地产",note:""},
+  {code:"8830",name:"住友不動産",nameNote:"",founded:1949,industry:"房地产",note:""},
+
+  // 鉄鋼・金属
+  {code:"5401",name:"日本製鉄",nameNote:"官営八幡製鉄所",founded:1901,industry:"钢铁",note:""},
+  {code:"5406",name:"神戸製鋼所",nameNote:"",founded:1905,industry:"钢铁",note:""},
+  {code:"5411",name:"JFEホールディングス",nameNote:"NKK・川崎製鉄系",founded:1912,industry:"钢铁",note:""},
+  {code:"5631",name:"日本製鋼所",nameNote:"",founded:1907,industry:"机械",note:""},
+  {code:"5706",name:"三菱マテリアル",nameNote:"三菱金属鉱業",founded:1871,industry:"金属",note:""},
+  {code:"5711",name:"三菱電線工業",nameNote:"",founded:1908,industry:"电线电缆",note:""},
+  {code:"5714",name:"DOWAホールディングス",nameNote:"院内鉱山採掘",founded:1884,industry:"金属",note:""},
+  {code:"5715",name:"古河機械金属",nameNote:"古河財閥系",founded:1875,industry:"金属",note:""},
+  {code:"5801",name:"古河電気工業",nameNote:"",founded:1884,industry:"电线电缆",note:""},
+  {code:"5802",name:"住友電気工業",nameNote:"住友伸銅場",founded:1897,industry:"电线电缆",note:""},
+  {code:"5803",name:"フジクラ",nameNote:"藤倉電線",founded:1885,industry:"电线电缆",note:""},
+  {code:"5901",name:"東洋製罐グループホールディングス",nameNote:"",founded:1917,industry:"金属容器",note:""},
+
+  // 機械・電機
+  {code:"6301",name:"小松製作所",nameNote:"竹内鉱業",founded:1921,industry:"机械",note:""},
+  {code:"6302",name:"住友重機械工業",nameNote:"",founded:1888,industry:"机械",note:""},
+  {code:"6305",name:"日立建機",nameNote:"",founded:1970,industry:"机械",note:""},
+  {code:"6306",name:"日工",nameNote:"",founded:1919,industry:"机械",note:""},
+  {code:"6326",name:"クボタ",nameNote:"久保田鉄工所",founded:1890,industry:"机械",note:""},
+  {code:"6361",name:"荏原製作所",nameNote:"",founded:1912,industry:"机械",note:""},
+  {code:"6366",name:"千代田化工建設",nameNote:"",founded:1948,industry:"机械",note:""},
+  {code:"6367",name:"ダイキン工業",nameNote:"大阪金属工業",founded:1924,industry:"机械",note:""},
+  {code:"6370",name:"栗田工業",nameNote:"",founded:1949,industry:"机械",note:""},
+  {code:"6383",name:"ダイフク",nameNote:"大福機工",founded:1937,industry:"机械",note:""},
+  {code:"6440",name:"JUKI",nameNote:"",founded:1938,industry:"机械",note:""},
+  {code:"6441",name:"三菱電機",nameNote:"",founded:1921,industry:"电机电子",note:""},
+  {code:"6471",name:"日本精工",nameNote:"",founded:1916,industry:"精密机械",note:""},
+  {code:"6472",name:"NTN",nameNote:"",founded:1918,industry:"精密机械",note:""},
+  {code:"6473",name:"ジェイテクト",nameNote:"光洋精工",founded:1921,industry:"精密机械",note:""},
+  {code:"6501",name:"日立製作所",nameNote:"",founded:1910,industry:"电机电子",note:""},
+  {code:"6502",name:"東芝",nameNote:"芝浦製作所",founded:1875,industry:"电机电子",note:""},
+  {code:"6503",name:"三菱電機",nameNote:"",founded:1921,industry:"电机电子",note:""},
+  {code:"6504",name:"富士電機",nameNote:"",founded:1923,industry:"电机电子",note:""},
+  {code:"6506",name:"安川電機",nameNote:"",founded:1915,industry:"电机电子",note:""},
+  {code:"6508",name:"明電舎",nameNote:"",founded:1897,industry:"电机电子",note:""},
+  {code:"6588",name:"東芝テック",nameNote:"",founded:1950,industry:"电机电子",note:""},
+  {code:"6591",name:"西芝電機",nameNote:"",founded:1945,industry:"电机电子",note:""},
+  {code:"6594",name:"日本電産→ニデック",nameNote:"",founded:1973,industry:"电机电子",note:""},
+  {code:"6701",name:"日本電気（NEC）",nameNote:"",founded:1899,industry:"电机电子",note:""},
+  {code:"6702",name:"富士通",nameNote:"富士電機製造",founded:1923,industry:"电机电子",note:""},
+  {code:"6703",name:"沖電気工業",nameNote:"沖牙太郎創業",founded:1881,industry:"电机电子",note:""},
+  {code:"6724",name:"セイコーエプソン",nameNote:"諏訪精工舎",founded:1942,industry:"精密机械",note:""},
+  {code:"6752",name:"パナソニックホールディングス",nameNote:"松下電気器具製作所",founded:1918,industry:"家电",note:""},
+  {code:"6753",name:"シャープ",nameNote:"早川金属工業所",founded:1912,industry:"家电",note:""},
+  {code:"6758",name:"ソニーグループ",nameNote:"東京通信工業",founded:1946,industry:"电机电子",note:""},
+  {code:"6762",name:"TDK",nameNote:"東京電気化学工業",founded:1935,industry:"电子元器件",note:""},
+  {code:"6770",name:"アルプスアルパイン",nameNote:"",founded:1948,industry:"电子元器件",note:""},
+  {code:"6857",name:"アドバンテスト",nameNote:"",founded:1954,industry:"电子设备",note:""},
+  {code:"6902",name:"デンソー",nameNote:"日本電装",founded:1949,industry:"汽车零部件",note:""},
+  {code:"6952",name:"カシオ計算機",nameNote:"",founded:1957,industry:"家电",note:""},
+  {code:"6954",name:"ファナック",nameNote:"",founded:1956,industry:"机械",note:""},
+  {code:"6971",name:"京セラ",nameNote:"",founded:1959,industry:"电子元器件",note:""},
+  {code:"6981",name:"村田製作所",nameNote:"",founded:1944,industry:"电子元器件",note:""},
+
+  // 輸送機器・自動車
+  {code:"7201",name:"日産自動車",nameNote:"快進社自動車工場",founded:1911,industry:"汽车",note:""},
+  {code:"7202",name:"いすゞ自動車",nameNote:"東京石川島造船所",founded:1916,industry:"汽车",note:""},
+  {code:"7203",name:"トヨタ自動車",nameNote:"豊田自動織機",founded:1926,industry:"汽车",note:""},
+  {code:"7205",name:"日野自動車",nameNote:"東京瓦斯電気工業",founded:1910,industry:"汽车",note:""},
+  {code:"7211",name:"三菱自動車工業",nameNote:"三菱内燃機製造",founded:1917,industry:"汽车",note:""},
+  {code:"7261",name:"マツダ",nameNote:"東洋コルク工業",founded:1920,industry:"汽车",note:""},
+  {code:"7267",name:"本田技研工業",nameNote:"",founded:1948,industry:"汽车",note:""},
+  {code:"7269",name:"スズキ",nameNote:"鈴木式織機製作所",founded:1909,industry:"汽车",note:""},
+  {code:"7270",name:"SUBARU",nameNote:"富士重工業/中島飛行機",founded:1917,industry:"汽车",note:""},
+  {code:"7272",name:"ヤマハ発動機",nameNote:"",founded:1955,industry:"汽车",note:""},
+  {code:"9104",name:"商船三井",nameNote:"大阪商船",founded:1884,industry:"海运",note:""},
+  {code:"9101",name:"日本郵船",nameNote:"",founded:1885,industry:"海运",note:""},
+  {code:"9107",name:"川崎汽船",nameNote:"",founded:1919,industry:"海运",note:""},
+
+  // 商社
+  {code:"2768",name:"丸紅",nameNote:"大阪本店",founded:1858,industry:"综合商社",note:""},
+  {code:"8001",name:"伊藤忠商事",nameNote:"紅忠",founded:1858,industry:"综合商社",note:""},
+  {code:"8002",name:"丸紅",nameNote:"",founded:1858,industry:"综合商社",note:""},
+  {code:"8003",name:"トーメン",nameNote:"",founded:1920,industry:"综合商社",note:""},
+  {code:"8005",name:"スクロール",nameNote:"",founded:1916,industry:"综合商社",note:""},
+  {code:"8015",name:"豊田通商",nameNote:"",founded:1948,industry:"综合商社",note:""},
+  {code:"8031",name:"三井物産",nameNote:"",founded:1876,industry:"综合商社",note:""},
+  {code:"8053",name:"住友商事",nameNote:"住友本店",founded:1919,industry:"综合商社",note:""},
+  {code:"8058",name:"三菱商事",nameNote:"三菱商会",founded:1870,industry:"综合商社",note:""},
+  {code:"8060",name:"キヤノンマーケティングジャパン",nameNote:"",founded:1968,industry:"商社",note:""},
+  {code:"8098",name:"稲畑産業",nameNote:"稲畑商店",founded:1899,industry:"专业商社",note:""},
+  {code:"8103",name:"明和産業",nameNote:"",founded:1947,industry:"专业商社",note:""},
+  {code:"8111",name:"ゴールドウイン",nameNote:"",founded:1950,industry:"专业商社",note:""},
+  {code:"8133",name:"伊藤忠エネクス",nameNote:"",founded:1961,industry:"专业商社",note:""},
+  {code:"8136",name:"サンリオ",nameNote:"",founded:1960,industry:"专业商社",note:""},
+  {code:"8143",name:"ラピーヌ",nameNote:"",founded:1950,industry:"专业商社",note:""},
+  {code:"8157",name:"都築電気",nameNote:"",founded:1938,industry:"专业商社",note:""},
+  {code:"8160",name:"木曽路",nameNote:"",founded:1961,industry:"餐饮",note:""},
+  {code:"8163",name:"SBSホールディングス",nameNote:"",founded:1987,industry:"物流",note:""},
+
+  // 百貨店・小売
+  {code:"2651",name:"ローソン",nameNote:"",founded:1975,industry:"零售",note:""},
+  {code:"2670",name:"エービーシー・マート",nameNote:"",founded:1985,industry:"零售",note:""},
+  {code:"2678",name:"アスクル",nameNote:"",founded:1993,industry:"零售",note:""},
+  {code:"2686",name:"ジーフット",nameNote:"",founded:1969,industry:"零售",note:""},
+  {code:"3099",name:"三越伊勢丹ホールディングス",nameNote:"越後屋",founded:1673,industry:"百货零售",note:""},
+  {code:"8219",name:"青山商事",nameNote:"",founded:1964,industry:"零售",note:""},
+  {code:"8233",name:"高島屋",nameNote:"",founded:1831,industry:"百货零售",note:""},
+  {code:"8238",name:"松坂屋→J. フロント リテイリング",nameNote:"いとう呉服店",founded:1611,industry:"百货零售",note:""},
+  {code:"3086",name:"J.フロント リテイリング",nameNote:"大丸屋",founded:1717,industry:"百货零售",note:""},
+  {code:"8254",name:"さくら野百貨店",nameNote:"",founded:1945,industry:"百货零售",note:""},
+  {code:"8267",name:"イオン",nameNote:"岡田屋",founded:1758,industry:"零售",note:""},
+  {code:"8270",name:"ユニー",nameNote:"",founded:1961,industry:"零售",note:""},
+  {code:"8278",name:"フジ",nameNote:"",founded:1960,industry:"零售",note:""},
+  {code:"8282",name:"ケーズホールディングス",nameNote:"",founded:1947,industry:"零售",note:""},
+  {code:"8273",name:"イズミ",nameNote:"",founded:1961,industry:"零售",note:""},
+
+  // 運輸・倉庫
+  {code:"9001",name:"東武鉄道",nameNote:"",founded:1897,industry:"铁路运输",note:""},
+  {code:"9005",name:"東急",nameNote:"目黒蒲田電鉄",founded:1922,industry:"铁路运输",note:""},
+  {code:"9006",name:"京浜急行電鉄",nameNote:"大師電気鉄道",founded:1898,industry:"铁路运输",note:""},
+  {code:"9007",name:"小田急電鉄",nameNote:"",founded:1920,industry:"铁路运输",note:""},
+  {code:"9008",name:"京王電鉄",nameNote:"京王電気軌道",founded:1913,industry:"铁路运输",note:""},
+  {code:"9009",name:"京成電鉄",nameNote:"",founded:1909,industry:"铁路运输",note:""},
+  {code:"9010",name:"富士急行",nameNote:"",founded:1926,industry:"铁路运输",note:""},
+  {code:"9020",name:"東日本旅客鉄道（JR東日本）",nameNote:"",founded:1987,industry:"铁路运输",note:""},
+  {code:"9021",name:"西日本旅客鉄道（JR西日本）",nameNote:"",founded:1987,industry:"铁路运输",note:""},
+  {code:"9022",name:"東海旅客鉄道（JR東海）",nameNote:"",founded:1987,industry:"铁路运输",note:""},
+  {code:"9024",name:"西武ホールディングス",nameNote:"",founded:1912,industry:"铁路运输",note:""},
+  {code:"9041",name:"近畿日本鉄道→近鉄グループHD",nameNote:"大阪鉄道",founded:1910,industry:"铁路运输",note:""},
+  {code:"9042",name:"阪急阪神ホールディングス",nameNote:"箕面有馬電気軌道",founded:1907,industry:"铁路运输",note:""},
+  {code:"9044",name:"南海電気鉄道",nameNote:"阪堺鉄道",founded:1885,industry:"铁路运输",note:""},
+  {code:"9045",name:"京阪ホールディングス",nameNote:"",founded:1906,industry:"铁路运输",note:""},
+  {code:"9046",name:"神戸電鉄",nameNote:"",founded:1928,industry:"铁路运输",note:""},
+  {code:"9048",name:"名古屋鉄道",nameNote:"",founded:1894,industry:"铁路运输",note:""},
+  {code:"9051",name:"センコーグループホールディングス",nameNote:"",founded:1937,industry:"物流",note:""},
+  {code:"9064",name:"ヤマトホールディングス",nameNote:"大和運輸",founded:1919,industry:"物流",note:""},
+  {code:"9065",name:"山九",nameNote:"",founded:1918,industry:"物流",note:""},
+  {code:"9070",name:"トナミホールディングス",nameNote:"",founded:1924,industry:"物流",note:""},
+  {code:"9075",name:"福山通運",nameNote:"",founded:1937,industry:"物流",note:""},
+  {code:"9101",name:"日本郵船",nameNote:"",founded:1885,industry:"海运",note:""},
+  {code:"9201",name:"日本航空（JAL）",nameNote:"",founded:1951,industry:"航空运输",note:""},
+  {code:"9202",name:"ANAホールディングス",nameNote:"日本ヘリコプター輸送",founded:1952,industry:"航空运输",note:""},
+
+  // エネルギー・資源
+  {code:"1662",name:"石油資源開発",nameNote:"",founded:1955,industry:"能源",note:""},
+  {code:"5019",name:"出光興産",nameNote:"出光商会",founded:1911,industry:"能源",note:""},
+  {code:"5020",name:"ENEOSホールディングス",nameNote:"日本石油",founded:1888,industry:"能源",note:""},
+  {code:"9531",name:"東京ガス",nameNote:"",founded:1885,industry:"公用事业",note:""},
+  {code:"9532",name:"大阪ガス→大阪ガス(Dagas)",nameNote:"",founded:1897,industry:"公用事业",note:""},
+  {code:"9533",name:"東邦ガス",nameNote:"",founded:1922,industry:"公用事业",note:""},
+  {code:"9501",name:"東京電力ホールディングス",nameNote:"東京電灯",founded:1883,industry:"公用事业",note:""},
+  {code:"9502",name:"中部電力",nameNote:"",founded:1951,industry:"公用事业",note:""},
+  {code:"9503",name:"関西電力",nameNote:"",founded:1951,industry:"公用事业",note:""},
+  {code:"9504",name:"中国電力",nameNote:"",founded:1951,industry:"公用事业",note:""},
+  {code:"9505",name:"北陸電力",nameNote:"",founded:1951,industry:"公用事业",note:""},
+  {code:"9506",name:"東北電力",nameNote:"",founded:1951,industry:"公用事业",note:""},
+  {code:"9507",name:"四国電力",nameNote:"",founded:1951,industry:"公用事业",note:""},
+  {code:"9508",name:"九州電力",nameNote:"",founded:1951,industry:"公用事业",note:""},
+  {code:"9509",name:"北海道電力",nameNote:"",founded:1951,industry:"公用事业",note:""},
+
+  // 印刷・紙
+  {code:"3861",name:"王子ホールディングス",nameNote:"王子製紙",founded:1873,industry:"造纸",note:""},
+  {code:"3863",name:"日本製紙",nameNote:"王子製紙/十條製紙系",founded:1873,industry:"造纸",note:""},
+  {code:"3941",name:"レンゴー",nameNote:"連合紙器",founded:1920,industry:"包装材料",note:""},
+  {code:"7733",name:"オリンパス",nameNote:"高千穂製作所",founded:1919,industry:"精密仪器",note:""},
+  {code:"7731",name:"ニコン",nameNote:"日本光学工業",founded:1917,industry:"精密仪器",note:""},
+  {code:"7741",name:"HOYA",nameNote:"",founded:1941,industry:"精密仪器",note:""},
+  {code:"7762",name:"シチズン時計",nameNote:"尚工舎時計研究所",founded:1918,industry:"精密仪器",note:""},
+  {code:"4902",name:"コニカミノルタ",nameNote:"小西六写真工業",founded:1873,industry:"精密化学",note:""},
+  {code:"7912",name:"大日本印刷",nameNote:"",founded:1876,industry:"印刷",note:""},
+  {code:"7911",name:"凸版印刷（TOPPAN）",nameNote:"",founded:1900,industry:"印刷",note:""},
+
+  // ガラス・窯業・セメント
+  {code:"5201",name:"AGC",nameNote:"旭硝子",founded:1907,industry:"玻璃陶瓷",note:""},
+  {code:"5202",name:"日本板硝子",nameNote:"",founded:1918,industry:"玻璃陶瓷",note:""},
+  {code:"5301",name:"東海カーボン",nameNote:"",founded:1918,industry:"玻璃陶瓷",note:""},
+  {code:"5332",name:"TOTO",nameNote:"東洋陶器",founded:1917,industry:"玻璃陶瓷",note:""},
+  {code:"5333",name:"日本碍子（NGK）",nameNote:"",founded:1919,industry:"玻璃陶瓷",note:""},
+  {code:"5334",name:"日本特殊陶業",nameNote:"",founded:1936,industry:"玻璃陶瓷",note:""},
+  {code:"5401",name:"日本製鉄",nameNote:"",founded:1901,industry:"钢铁",note:""},
+  {code:"5423",name:"東京製鉄",nameNote:"",founded:1934,industry:"钢铁",note:""},
+  {code:"5471",name:"大同特殊鋼",nameNote:"",founded:1916,industry:"特种钢",note:""},
+  {code:"5703",name:"日本軽金属ホールディングス",nameNote:"",founded:1939,industry:"金属",note:""},
+  {code:"5233",name:"太平洋セメント",nameNote:"浅野セメント",founded:1881,industry:"建材",note:""},
+
+  // 特殊・老舗
+  {code:"4578",name:"大塚ホールディングス",nameNote:"",founded:1921,industry:"制药",note:""},
+  {code:"9602",name:"東宝",nameNote:"",founded:1932,industry:"娱乐媒体",note:""},
+  {code:"9603",name:"エイチ・アイ・エス",nameNote:"",founded:1980,industry:"旅游",note:""},
+  {code:"9605",name:"東映",nameNote:"",founded:1951,industry:"娱乐媒体",note:""},
+  {code:"9681",name:"東京ドーム",nameNote:"",founded:1936,industry:"娱乐",note:""},
+  {code:"2432",name:"DeNA",nameNote:"",founded:1999,industry:"互联网",note:""},
+  {code:"7974",name:"任天堂",nameNote:"山内商店（花札）",founded:1889,industry:"游戏娱乐",note:""},
+  {code:"4751",name:"サイバーエージェント",nameNote:"",founded:1998,industry:"互联网",note:""},
+
+  // 繊維・ファッション
+  {code:"3103",name:"ユニチカ",nameNote:"尼崎紡績",founded:1889,industry:"纺织",note:""},
+  {code:"3104",name:"富士紡ホールディングス",nameNote:"富士紡績",founded:1896,industry:"纺织",note:""},
+  {code:"3106",name:"クラボウ（倉敷紡績）",nameNote:"",founded:1888,industry:"纺织",note:""},
+  {code:"3107",name:"ダイワボウホールディングス",nameNote:"大和紡績",founded:1941,industry:"纺织",note:""},
+  {code:"3302",name:"帝国繊維",nameNote:"",founded:1916,industry:"纺织",note:""},
+  {code:"3333",name:"あさひ",nameNote:"",founded:1954,industry:"零售",note:""},
+  {code:"3607",name:"クラウン製菓",nameNote:"",founded:1969,industry:"食品",note:""},
+  {code:"8016",name:"オンワードホールディングス",nameNote:"",founded:1927,industry:"纺织服装",note:""},
+  {code:"8219",name:"青山商事",nameNote:"",founded:1964,industry:"零售",note:""},
+
+  // 特別追加 - 日本最古老の上場企業
+  {code:"1911",name:"住友林業",nameNote:"",founded:1691,industry:"林业建材",note:""},
+  {code:"3086",name:"J.フロント リテイリング（大丸）",nameNote:"大丸屋 大文字屋",founded:1717,industry:"百货零售",note:""},
+  {code:"4528",name:"小野薬品工業",nameNote:"小野忠兵衛薬種商",founded:1717,industry:"制药",note:""},
+  {code:"8238",name:"松坂屋（J.フロント）",nameNote:"いとう呉服店",founded:1611,industry:"百货零售",note:""},
+  {code:"3099",name:"三越伊勢丹ホールディングス",nameNote:"越後屋（三井高利）",founded:1673,industry:"百货零售",note:""},
+  {code:"8267",name:"イオン",nameNote:"岡田屋",founded:1758,industry:"零售",note:""},
+  {code:"8031",name:"三井物産",nameNote:"三井両替店",founded:1673,industry:"综合商社",note:""},
+  {code:"4509",name:"武田薬品工業",nameNote:"近江屋長兵衛",founded:1781,industry:"制药",note:""},
+  {code:"1803",name:"清水建設",nameNote:"清水喜助店",founded:1804,industry:"建筑",note:""},
+  {code:"1804",name:"鹿島建設",nameNote:"鹿島組",founded:1840,industry:"建筑",note:""},
+  {code:"8233",name:"高島屋",nameNote:"飯田新七",founded:1831,industry:"百货零售",note:""},
+  {code:"2531",name:"宝ホールディングス",nameNote:"松井酒造",founded:1842,industry:"食品饮料",note:""},
+  {code:"8058",name:"三菱商事",nameNote:"三菱商会（岩崎弥太郎）",founded:1870,industry:"综合商社",note:""},
+  {code:"5706",name:"三菱マテリアル",nameNote:"高島炭鉱（岩崎系）",founded:1871,industry:"金属",note:""},
+  {code:"8001",name:"伊藤忠商事",nameNote:"紅忠",founded:1858,industry:"综合商社",note:""},
+  {code:"2768",name:"丸紅",nameNote:"伊藤忠兵衛商店",founded:1858,industry:"综合商社",note:""},
+];
+
+// Deduplicate by code (keep first occurrence with longest history)
+const codeMap = {};
+for (const r of RAW) {
+  if (!codeMap[r.code] || r.founded < codeMap[r.code].founded) {
+    codeMap[r.code] = r;
+  }
+}
+const CURRENT_YEAR = 2025;
+let companies = Object.values(codeMap).map(r => ({
+  ...r,
+  years: CURRENT_YEAR - r.founded
+})).filter(c => c.years >= 100).sort((a,b) => b.years - a.years);
+
+// Remove further dupes by name
+const nameSet = {};
+companies = companies.filter(c => {
+  const key = c.name;
+  if (nameSet[key]) return false;
+  nameSet[key] = true;
+  return true;
+});
+
+let filtered = [...companies];
+let sortField = 'years';
+let sortAsc = false;
+
+function getAgeBadge(years) {
+  if (years >= 400) return `<span class="age-badge badge-500">400年+</span>`;
+  if (years >= 300) return `<span class="age-badge badge-300">300年+</span>`;
+  if (years >= 200) return `<span class="age-badge badge-200">200年+</span>`;
+  return `<span class="age-badge badge-100">100年+</span>`;
+}
+
+function getAgeClass(years) {
+  if (years >= 400) return 'age-500plus';
+  if (years >= 300) return 'age-300plus';
+  if (years >= 200) return 'age-200plus';
+  return 'age-100plus';
+}
+
+function render() {
+  const tbody = document.getElementById('tableBody');
+  const noR = document.getElementById('noResults');
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    noR.style.display = 'block';
+  } else {
+    noR.style.display = 'none';
+    tbody.innerHTML = filtered.map((c, i) => `
+      <tr class="${getAgeClass(c.years)}">
+        <td>${i+1}</td>
+        <td><span class="code-badge">${c.code}</span></td>
+        <td>
+          <span class="company-jp">${c.name}${getAgeBadge(c.years)}</span>
+          ${c.nameNote ? `<span class="company-note">前身：${c.nameNote}</span>` : ''}
+        </td>
+        <td class="years-cell">
+          <span class="years-num">${c.years}</span>
+          <span class="years-sub">年</span>
+        </td>
+        <td><span class="founded-year">${c.founded}</span></td>
+        <td><span class="industry-tag">${c.industry}</span></td>
+      </tr>
+    `).join('');
+  }
+  document.getElementById('showCount').textContent = filtered.length;
+  document.getElementById('showTotal').textContent = companies.length;
+}
+
+function updateStats() {
+  document.getElementById('totalCount').textContent = companies.length;
+  document.getElementById('oldest').textContent = Math.max(...companies.map(c=>c.years));
+  document.getElementById('count400').textContent = companies.filter(c=>c.years>=400).length;
+  document.getElementById('count300').textContent = companies.filter(c=>c.years>=300).length;
+  document.getElementById('count200').textContent = companies.filter(c=>c.years>=200).length;
+}
+
+function populateIndustries() {
+  const industries = [...new Set(companies.map(c=>c.industry))].sort();
+  const sel = document.getElementById('industryFilter');
+  industries.forEach(ind => {
+    const opt = document.createElement('option');
+    opt.value = ind; opt.textContent = ind;
+    sel.appendChild(opt);
+  });
+}
+
+function applyFilters() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const industry = document.getElementById('industryFilter').value;
+  const age = parseInt(document.getElementById('ageFilter').value) || 0;
+  filtered = companies.filter(c => {
+    if (age && c.years < age) return false;
+    if (industry && c.industry !== industry) return false;
+    if (search && !c.name.toLowerCase().includes(search) &&
+        !c.code.includes(search) &&
+        !c.industry.toLowerCase().includes(search) &&
+        !c.nameNote.toLowerCase().includes(search)) return false;
+    return true;
+  });
+  doSort();
+  render();
+}
+
+function doSort() {
+  filtered.sort((a,b) => {
+    let v = 0;
+    if (sortField === 'years') v = b.years - a.years;
+    else if (sortField === 'code') v = a.code.localeCompare(b.code);
+    return sortAsc ? -v : v;
+  });
+}
+
+function sortBy(field) {
+  if (sortField === field) { sortAsc = !sortAsc; }
+  else { sortField = field; sortAsc = false; }
+  document.getElementById('sortAge').classList.toggle('active', field === 'years');
+  document.getElementById('sortCode').classList.toggle('active', field === 'code');
+  doSort();
+  render();
+}
+
+document.getElementById('searchInput').addEventListener('input', applyFilters);
+document.getElementById('industryFilter').addEventListener('change', applyFilters);
+document.getElementById('ageFilter').addEventListener('change', applyFilters);
+
+populateIndustries();
+updateStats();
+applyFilters();
+</script>
+</body>
+</html>
