@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日系 MLCC 三家供应商采购对比 — 村田 vs 京瓷 vs 太誘</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-base: #F2EBDB;
+  --bg-paper: #F8F2E2;
+  --bg-card: #FBF6E8;
+  --bg-deep: #EBE2CD;
+  --ink-primary: #221E18;
+  --ink-secondary: #524A3D;
+  --ink-tertiary: #7A6E5C;
+  --ink-muted: #A89C84;
+
+  --murata: #8B2E1F;
+  --murata-bg: #F4E5DF;
+  --kyocera: #1F4E5F;
+  --kyocera-bg: #DFEAEC;
+  --taiyo: #A87B2A;
+  --taiyo-bg: #F0E6CE;
+
+  --critical: #8B2E1F;
+  --warning: #A87B2A;
+  --safe: #4A7B5F;
+  --neutral: #7A6E5C;
+
+  --border: #D6C9AE;
+  --border-strong: #B8A582;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg-base);
+  color: var(--ink-primary);
+  font-family: 'Noto Sans JP', 'PingFang SC', sans-serif;
+  font-size: 14.5px;
+  line-height: 1.75;
+  font-feature-settings: "palt";
+  background-image:
+    radial-gradient(circle at 15% 8%, rgba(168, 123, 42, 0.05) 0%, transparent 35%),
+    radial-gradient(circle at 85% 75%, rgba(31, 78, 95, 0.04) 0%, transparent 40%);
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 56px 44px 72px;
+}
+
+/* === HEADER === */
+.report-header {
+  margin-bottom: 48px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border-strong);
+  position: relative;
+}
+
+.report-header::before {
+  content: "";
+  position: absolute;
+  top: -16px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: var(--murata);
+}
+
+.header-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--ink-tertiary);
+  text-transform: uppercase;
+}
+
+.classification {
+  background: var(--murata);
+  color: var(--bg-paper);
+  padding: 4px 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.report-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
+  color: var(--ink-primary);
+}
+
+.report-subtitle {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 17px;
+  color: var(--ink-secondary);
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* === SOURCING DECISION HEADLINE === */
+.sourcing-headline {
+  background: linear-gradient(135deg, var(--bg-paper) 0%, var(--bg-card) 100%);
+  border: 1px solid var(--border-strong);
+  border-left: 5px solid var(--murata);
+  padding: 28px 36px;
+  margin-bottom: 56px;
+}
+
+.sh-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--murata);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.sh-headline {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--ink-primary);
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+
+.sh-headline strong { color: var(--murata); font-weight: 700; }
+
+.sh-detail {
+  font-size: 13.5px;
+  color: var(--ink-secondary);
+  line-height: 1.75;
+}
+
+/* === SECTION === */
+.section-block { margin-bottom: 56px; }
+
+.section-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--ink-primary);
+}
+
+.section-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--murata);
+  letter-spacing: 0.12em;
+}
+
+.section-h {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  flex: 1;
+}
+
+.section-en {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--ink-tertiary);
+  text-transform: uppercase;
+  font-style: italic;
+}
+
+/* === SUPPLIER PROFILE CARDS === */
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.profile-card {
+  background: var(--bg-paper);
+  border: 1px solid var(--border);
+  border-top: 4px solid;
+  overflow: hidden;
+}
+
+.profile-card.murata { border-top-color: var(--murata); }
+.profile-card.kyocera { border-top-color: var(--kyocera); }
+.profile-card.taiyo { border-top-color: var(--taiyo); }
+
+.profile-header {
+  padding: 22px 24px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.profile-card.murata .profile-header { background: var(--murata-bg); }
+.profile-card.kyocera .profile-header { background: var(--kyocera-bg); }
+.profile-card.taiyo .profile-header { background: var(--taiyo-bg); }
+
+.profile-role {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.profile-card.murata .profile-role { color: var(--murata); }
+.profile-card.kyocera .profile-role { color: var(--kyocera); }
+.profile-card.taiyo .profile-role { color: var(--taiyo); }
+
+.profile-name {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  margin-bottom: 4px;
+}
+
+.profile-name .ticker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--ink-secondary);
+  margin-left: 8px;
+  font-weight: 500;
+}
+
+.profile-jp {
+  font-size: 12.5px;
+  color: var(--ink-tertiary);
+  font-family: 'Noto Serif JP', serif;
+}
+
+.profile-body { padding: 20px 24px; }
+
+.profile-tag {
+  display: inline-block;
+  padding: 5px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  background: var(--ink-primary);
+  color: var(--bg-paper);
+}
+
+.profile-tag.warn { background: var(--murata); }
+.profile-tag.caution { background: var(--warning); }
+.profile-tag.go { background: var(--safe); }
+
+.profile-summary {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-primary);
+  font-style: italic;
+  line-height: 1.6;
+  padding: 12px 14px;
+  background: var(--bg-card);
+  border-left: 3px solid;
+  margin-bottom: 16px;
+}
+
+.profile-card.murata .profile-summary { border-left-color: var(--murata); }
+.profile-card.kyocera .profile-summary { border-left-color: var(--kyocera); }
+.profile-card.taiyo .profile-summary { border-left-color: var(--taiyo); }
+
+.profile-key-fact {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px dotted var(--border);
+  font-size: 12.5px;
+}
+
+.profile-key-fact:last-child { border-bottom: none; }
+.profile-key-fact .k { color: var(--ink-tertiary); }
+.profile-key-fact .v {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  color: var(--ink-primary);
+}
+
+.profile-key-fact .v.bad { color: var(--critical); }
+.profile-key-fact .v.warn { color: var(--warning); }
+.profile-key-fact .v.good { color: var(--safe); }
+
+/* === TABLE === */
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-paper);
+  border: 1px solid var(--border-strong);
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+
+.compare-table thead th {
+  padding: 14px 16px;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  color: var(--bg-paper);
+  letter-spacing: 0.02em;
+  border-right: 1px solid rgba(255,255,255,0.15);
+}
+
+.compare-table thead th.dim { background: var(--ink-primary); width: 16%; }
+.compare-table thead th.murata { background: var(--murata); }
+.compare-table thead th.kyocera { background: var(--kyocera); }
+.compare-table thead th.taiyo { background: var(--taiyo); }
+.compare-table thead th:last-child { border-right: none; }
+
+.compare-table tbody td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--ink-secondary);
+  line-height: 1.6;
+}
+
+.compare-table tbody tr:last-child td { border-bottom: none; }
+.compare-table tbody tr:nth-child(even) td { background: var(--bg-deep); }
+
+.compare-table td.dim-label {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 600;
+  color: var(--ink-primary);
+  background: var(--bg-card) !important;
+  border-right: 2px solid var(--border-strong);
+}
+
+.compare-table td.dim-label .sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--ink-tertiary);
+  font-family: 'JetBrains Mono', monospace;
+  display: block;
+  margin-top: 3px;
+}
+
+.cell-rating {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  padding: 2px 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.cell-rating.tough { background: var(--critical); color: var(--bg-paper); }
+.cell-rating.medium { background: var(--warning); color: var(--bg-paper); }
+.cell-rating.easy { background: var(--safe); color: var(--bg-paper); }
+.cell-rating.neutral { background: var(--neutral); color: var(--bg-paper); }
+
+.cell-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  display: block;
+  margin: 4px 0;
+}
+
+.cell-context {
+  font-size: 12px;
+  color: var(--ink-tertiary);
+  line-height: 1.55;
+}
+
+/* === ALLOCATION VIZ === */
+.alloc-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 24px 26px;
+  margin: 18px 0 24px;
+}
+
+.alloc-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  margin-bottom: 4px;
+}
+
+.alloc-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--ink-tertiary);
+  margin-bottom: 18px;
+}
+
+.alloc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.alloc-scenario {
+  background: var(--bg-paper);
+  padding: 16px 18px;
+  border-top: 3px solid var(--neutral);
+}
+
+.alloc-scenario.consumer { border-top-color: var(--safe); }
+.alloc-scenario.midrange { border-top-color: var(--warning); }
+.alloc-scenario.flagship { border-top-color: var(--murata); }
+.alloc-scenario.special { border-top-color: var(--kyocera); }
+
+.alloc-scenario h4 {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  margin-bottom: 4px;
+}
+
+.alloc-scenario .desc {
+  font-size: 11px;
+  color: var(--ink-tertiary);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+.alloc-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+
+.alloc-bar .name {
+  width: 56px;
+  color: var(--ink-secondary);
+  font-weight: 600;
+}
+
+.alloc-bar .bar-track {
+  flex: 1;
+  height: 16px;
+  background: var(--bg-deep);
+  margin: 0 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.alloc-bar .bar-fill {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 6px;
+  color: var(--bg-paper);
+  font-weight: 700;
+  font-size: 10px;
+}
+
+.alloc-bar .bar-fill.murata { background: var(--murata); }
+.alloc-bar .bar-fill.kyocera { background: var(--kyocera); }
+.alloc-bar .bar-fill.taiyo { background: var(--taiyo); }
+.alloc-bar .bar-fill.others { background: var(--neutral); opacity: 0.6; }
+
+/* === NEGOTIATION GRID === */
+.nego-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.nego-card {
+  background: var(--bg-paper);
+  border: 1px solid var(--border);
+  padding: 22px 24px 24px;
+}
+
+.nego-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.nego-card.murata .nego-label { color: var(--murata); }
+.nego-card.kyocera .nego-label { color: var(--kyocera); }
+.nego-card.taiyo .nego-label { color: var(--taiyo); }
+
+.nego-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  line-height: 1.4;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.nego-section { margin-bottom: 14px; }
+
+.nego-section h5 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-tertiary);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.nego-section ul { list-style: none; padding: 0; margin: 0; }
+
+.nego-section li {
+  font-size: 12.5px;
+  color: var(--ink-secondary);
+  padding: 4px 0 4px 16px;
+  position: relative;
+  line-height: 1.65;
+}
+
+.nego-section li::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+.nego-card.murata .nego-section li::before { color: var(--murata); }
+.nego-card.kyocera .nego-section li::before { color: var(--kyocera); }
+.nego-card.taiyo .nego-section li::before { color: var(--taiyo); }
+
+.nego-section li strong { color: var(--ink-primary); }
+
+/* === ACTION CHECKLIST === */
+.checklist {
+  background: var(--bg-paper);
+  border: 1px solid var(--border-strong);
+  padding: 28px 32px;
+  margin: 24px 0;
+}
+
+.checklist h3 {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checklist h3::before {
+  content: "✓";
+  color: var(--murata);
+  font-weight: 700;
+}
+
+.checklist .sub {
+  font-size: 12px;
+  color: var(--ink-tertiary);
+  margin-bottom: 18px;
+  font-style: italic;
+}
+
+.check-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.check-table th {
+  text-align: left;
+  padding: 10px 12px;
+  background: var(--ink-primary);
+  color: var(--bg-paper);
+  font-family: 'Noto Serif JP', serif;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.check-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--ink-secondary);
+  vertical-align: top;
+  line-height: 1.55;
+}
+
+.check-table tr:last-child td { border-bottom: none; }
+.check-table tr:nth-child(even) td { background: var(--bg-deep); }
+
+.check-table .pri {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+}
+
+.pri-p1 { color: var(--critical); }
+.pri-p2 { color: var(--warning); }
+.pri-p3 { color: var(--neutral); }
+
+/* === RISK BANNER === */
+.risk-banner {
+  background: var(--bg-deep);
+  border: 1px dashed var(--border-strong);
+  padding: 24px 28px;
+  margin: 32px 0;
+}
+
+.risk-banner h4 {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.risk-banner h4::before {
+  content: "⚠";
+  color: var(--murata);
+  font-size: 18px;
+}
+
+.risk-banner ol {
+  padding-left: 22px;
+  font-size: 13px;
+  color: var(--ink-secondary);
+  line-height: 1.8;
+}
+
+.risk-banner ol li { margin-bottom: 6px; }
+.risk-banner ol strong { color: var(--ink-primary); }
+
+/* === FOOTER === */
+.footer {
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 2px solid var(--ink-primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-tertiary);
+  letter-spacing: 0.06em;
+}
+
+.footer .brand {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-primary);
+}
+
+.disclaimer {
+  margin-top: 24px;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border: 1px dashed var(--border);
+  font-size: 11px;
+  color: var(--ink-tertiary);
+  line-height: 1.7;
+  font-style: italic;
+}
+
+@media (max-width: 880px) {
+  .container { padding: 32px 18px; }
+  .report-title { font-size: 26px; }
+  .profile-grid, .nego-grid { grid-template-columns: 1fr; }
+  .alloc-grid { grid-template-columns: 1fr 1fr; }
+  .compare-table { font-size: 12px; }
+  .compare-table thead th, .compare-table tbody td { padding: 10px 12px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ============== HEADER ============== -->
+<header class="report-header">
+  <div class="header-meta">
+    <span>Internal Sourcing Memo · Procurement Division Japan</span>
+    <span class="classification">Confidential / 社外秘</span>
+  </div>
+  <h1 class="report-title">日系 MLCC 三家供应商采购对比</h1>
+  <p class="report-subtitle">村田 vs 京瓷 vs 太陽誘電 — Sourcing Decision Memo</p>
+</header>
+
+<!-- ============== HEADLINE ============== -->
+<section class="sourcing-headline">
+  <div class="sh-label">采购决策核心结论 · Bottom Line</div>
+  <p class="sh-headline">
+    在 AI 服务器虹吸效应下，<strong>不能再用同一家供应商策略覆盖全部机型</strong>。建议采用<strong>"村田保旗舰 + 太誘做主力 + 京瓷做特殊规格"</strong>的三层架构，配合台/中二供应商保供给量；2026 H2 起所有 MLCC 涨价压力将持续 12-18 个月。
+  </p>
+  <p class="sh-detail">
+    本季度三家日系厂商均已宣布或暗示涨价，<strong>村田 +15-35%（4/1）</strong>、<strong>太誘 +6-13%（5/1）</strong>、京瓷暂未公告但被动跟随。村田高端线产能利用率 90-95%、订单是产能 2 倍，意味着旗舰机用 100µF 高容量 MLCC<strong>不接受我方议价</strong>。本份采购决策备忘录覆盖：定位匹配、谈判筹码、供给保证策略、二供激活路径。
+  </p>
+</section>
+
+<!-- ============== §01 SUPPLIER ROLE PROFILES ============== -->
+<section class="section-block">
+  <div class="section-title-row">
+    <span class="section-num">§ 01</span>
+    <h2 class="section-h">三家供应商在我方采购中的定位</h2>
+    <span class="section-en">SUPPLIER ROLE PROFILES</span>
+  </div>
+
+  <div class="profile-grid">
+    <div class="profile-card murata">
+      <div class="profile-header">
+        <div class="profile-role">PRIMARY · 核心供应商</div>
+        <h3 class="profile-name">村田<span class="ticker">6981.T</span></h3>
+        <p class="profile-jp">Murata Manufacturing</p>
+      </div>
+      <div class="profile-body">
+        <span class="profile-tag warn">议价能力 = 卖方市场</span>
+        <p class="profile-summary">
+          技术与份额双壁垒，旗舰机型 SoC 周边 MLCC 几乎无替代。但议价空间为 0，2026 必须接受涨价换分配。
+        </p>
+        <div class="profile-key-fact">
+          <span class="k">高端 MLCC 利用率</span>
+          <span class="v bad">90-95%</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">高端订单 / 产能比</span>
+          <span class="v bad">2.0x</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">2026 涨价幅度</span>
+          <span class="v bad">+15-35%</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">最短交期 (高端)</span>
+          <span class="v bad">24-40 周</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">扩产周期</span>
+          <span class="v warn">24-30 个月</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">扩产策略</span>
+          <span class="v">优化现有线为主</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">新厂动态</span>
+          <span class="v good">Moriyama / 越南胡志明</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-card kyocera">
+      <div class="profile-header">
+        <div class="profile-role">SPECIALTY · 利基供应商</div>
+        <h3 class="profile-name">京瓷<span class="ticker">6971.T</span></h3>
+        <p class="profile-jp">Kyocera</p>
+      </div>
+      <div class="profile-body">
+        <span class="profile-tag caution">议价能力 = 中性</span>
+        <p class="profile-summary">
+          MLCC 在京瓷集团内不是优先业务，技术深度足够但量产规模有限。适合做特殊规格备选或可穿戴件 SKU。
+        </p>
+        <div class="profile-key-fact">
+          <span class="k">MLCC 占公司业务</span>
+          <span class="v warn">&lt;10%</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">利用率披露</span>
+          <span class="v">未单独公布</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">2026 涨价</span>
+          <span class="v warn">未明确公告</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">技术亮点</span>
+          <span class="v good">0402/47µF（业界首）</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">智能手机主力 SKU</span>
+          <span class="v">KGM03（0.6×0.3mm）</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">集团重组动态</span>
+          <span class="v warn">化学业务剥离</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">新 CEO</span>
+          <span class="v">Sakushima 接任</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-card taiyo">
+      <div class="profile-header">
+        <div class="profile-role">VOLUME · 主力供应商</div>
+        <h3 class="profile-name">太陽誘電<span class="ticker">6976.T</span></h3>
+        <p class="profile-jp">Taiyo Yuden</p>
+      </div>
+      <div class="profile-body">
+        <span class="profile-tag go">议价能力 = 偏卖方</span>
+        <p class="profile-summary">
+          MLCC 占其业务 64%，对消费类客户依赖度高，是中端机型批量采购的最佳合作对象。但近期主动涨价显示议价权上升。
+        </p>
+        <div class="profile-key-fact">
+          <span class="k">MLCC 利用率</span>
+          <span class="v warn">85-90%</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">BB Ratio</span>
+          <span class="v warn">&gt;1（持续）</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">2026/5 涨价</span>
+          <span class="v warn">+6-13%（中低端）</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">涨价主因</span>
+          <span class="v">银 / 钯等贵金属</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">FY26 产能扩张</span>
+          <span class="v warn">+5% YoY（保守）</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">销售方向转移</span>
+          <span class="v">智能手机 → AI 服务器</span>
+        </div>
+        <div class="profile-key-fact">
+          <span class="k">中国客户策略</span>
+          <span class="v warn">优先涨价测试市场</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== §02 SOURCING ALLOCATION RECOMMENDATION ============== -->
+<section class="section-block">
+  <div class="section-title-row">
+    <span class="section-num">§ 02</span>
+    <h2 class="section-h">分机型 / 分品类的采购分配建议</h2>
+    <span class="section-en">SOURCING ALLOCATION BY SKU</span>
+  </div>
+
+  <div class="alloc-box">
+    <div class="alloc-title">推荐分配比例 — 按机型分级</div>
+    <div class="alloc-sub">CURRENT STATE (LEFT) → RECOMMENDED 2026 H2 (RIGHT) · % OF MLCC PROCUREMENT</div>
+
+    <div class="alloc-grid">
+      <div class="alloc-scenario consumer">
+        <h4>低端机型</h4>
+        <div class="desc">入门 4G/5G，BOM 成本敏感型</div>
+        <div class="alloc-bar">
+          <span class="name">Yageo</span>
+          <div class="bar-track"><div class="bar-fill others" style="width:50%">50%</div></div>
+        </div>
+        <div class="alloc-bar">
+          <span class="name">国产</span>
+          <div class="bar-track"><div class="bar-fill others" style="width:30%; opacity:0.8;">30%</div></div>
+        </div>
+        <div class="alloc-bar">
+          <span class="name">太誘</span>
+          <div class="bar-track"><div class="bar-fill taiyo" style="width:20%">20%</div></div>
+        </div>
+      </div>
+
+      <div class="alloc-scenario midrange">
+        <h4>中端机型</h4>
+        <div class="desc">主流走量产品，性价比与质量平衡</div>
+        <div class="alloc-bar">
+          <span class="name">太誘</span>
+          <div class="bar-track"><div class="bar-fill taiyo" style="width:40%">40%</div></div>
+        </div>
+        <div class="alloc-bar">
+          <span class="name">村田</span>
+          <div class="bar-track"><div class="bar-fill murata" style="width:30%">30%</div></div>
+        </div>
+        <div class="alloc-bar">
+          <span class="name">三星 EM</span>
+          <div class="bar-track"><div class="bar-fill others" style="width:20%">20%</div></div>
+        </div>
+        <div class="alloc-bar">
+          <span class="name">Yageo</span>
+          <div class="bar-track"><div class="bar-fill others" style="width:10%; opacity:0.7;">10%</div></div>
+        </div>
+      </div>
+
+      <div class="alloc-scenario flagship">
+        <h4>旗舰机型</h4>
+        <div class="desc">高端 SoC 周边，质量与可靠性优先</div>
+        <div class="alloc-bar">
+          <span class="name">村田</span>
+          <div class="bar-track"><div class="bar-fill murata" style="width:65%">65%</div></div>
+        </div>
+        <div class="alloc-bar">
+          <span class="name">三星 EM</span>
+          <div class="bar-track"><div class="bar-fill others" style="width:20%">20%</div></div>
+        </div>
+        <div class="alloc-bar">
+          <span class="name">太誘</span>
+          <div class="bar-track"><div class="bar-fill taiyo" style="width:10%">10%</div></div>
+        </div>
+        <div class="alloc-bar">
+          <span class="name">京瓷</span>
+          <div class="bar-track"><div class="bar-fill kyocera" style="width:5%">5%</div></div>
+        </div>
+      </div>
+
+      <div class="alloc-scenario special">
+        <h4>特殊规格</h4>
+        <div class="desc">可穿戴 / 折叠屏 / 超薄场景</div>
+        <div class="alloc-bar">
+          <span class="name">京瓷</span>
+          <div class="bar-track"><div class="bar-fill kyocera" style="width:45%">45%</div></div>
+        </div>
+        <div class="alloc-bar">
+          <span class="name">村田</span>
+          <div class="bar-track"><div class="bar-fill murata" style="width:35%">35%</div></div>
+        </div>
+        <div class="alloc-bar">
+          <span class="name">三星 EM</span>
+          <div class="bar-track"><div class="bar-fill others" style="width:20%">20%</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="risk-banner">
+    <h4>分配逻辑解释</h4>
+    <ol>
+      <li><strong>旗舰机型村田占 65%</strong>：iPhone 类高端机型 SoC 周边 MLCC 几乎无替代品，村田 0402/100µF + 800层叠层只有它能稳定供货。其余 35% 用三星/太誘做风险分散。</li>
+      <li><strong>中端机型太誘做主力</strong>：太誘 5月涨价 +6-13% 已经吸收了部分成本压力，BOM 影响可控；与村田保持 30% 左右合作维持议价杠杆。</li>
+      <li><strong>低端机型村田归 0</strong>：村田自身将消费级低端 MLCC 退出（产能转给 AI 服务器），用 Yageo + 国产为主完全合理。</li>
+      <li><strong>京瓷做特殊规格突破点</strong>：2025/12 量产的 0402/47µF 是可穿戴/折叠屏的理想组件；京瓷因 MLCC 不是核心业务反而<strong>对小客户更友好、更愿意配合做定制</strong>。</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============== §03 PROCUREMENT DIMENSION TABLE ============== -->
+<section class="section-block">
+  <div class="section-title-row">
+    <span class="section-num">§ 03</span>
+    <h2 class="section-h">采购维度对比 — 八项指标</h2>
+    <span class="section-en">PROCUREMENT-LEVEL COMPARISON</span>
+  </div>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th class="dim">采购维度</th>
+        <th class="murata">村田 6981</th>
+        <th class="kyocera">京瓷 6971</th>
+        <th class="taiyo">太陽誘電 6976</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="dim-label">议价空间<span class="sub">price negotiation room</span></td>
+        <td>
+          <span class="cell-rating tough">极小</span>
+          <span class="cell-value">"接受涨价 = 拿到货"</span>
+          <span class="cell-context">高端订单是产能 2 倍，所有客户排队。<strong>建议接受涨价但争取量保证</strong>，不在价格上耗时间。</span>
+        </td>
+        <td>
+          <span class="cell-rating medium">中等</span>
+          <span class="cell-value">5-10% 议价空间</span>
+          <span class="cell-context">MLCC 不是公司战略重点，<strong>对中型客户议价空间相对宽松</strong>；可借用其他业务（陶瓷封装等）的合作关系。</span>
+        </td>
+        <td>
+          <span class="cell-rating medium">较小</span>
+          <span class="cell-value">已主动涨价 +6-13%</span>
+          <span class="cell-context">5月涨价已落地。可争取的是涨价幅度上限和分阶段执行（如分两次执行 6%+5%）。</span>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="dim-label">交期<span class="sub">lead time</span></td>
+        <td>
+          <span class="cell-rating tough">极长</span>
+          <span class="cell-value">高端: 24-40 周</span>
+          <span class="cell-context">行业从 8 周拉长到 24-40 周。中低端 16-20 周。<strong>2026 H2 出货量必须现在锁定</strong>。</span>
+        </td>
+        <td>
+          <span class="cell-rating medium">中等</span>
+          <span class="cell-value">12-18 周</span>
+          <span class="cell-context">无 AI 服务器订单挤压，交期相对稳定。<strong>但定制化 SKU 需提前 6-9 个月介入设计</strong>。</span>
+        </td>
+        <td>
+          <span class="cell-rating medium">中等偏长</span>
+          <span class="cell-value">16-24 周</span>
+          <span class="cell-context">BB Ratio &gt;1 持续中。中低端 16 周、AI 用大型件接近村田水平 24 周。</span>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="dim-label">最低订量 (MOQ)<span class="sub">minimum order quantity</span></td>
+        <td>
+          <span class="cell-rating tough">高</span>
+          <span class="cell-value">大客户优先</span>
+          <span class="cell-context">分配制度倾向 Apple / 三星 / 头部车企。<strong>中小订单可能被推到代理商渠道（成本+15-20%）</strong>。</span>
+        </td>
+        <td>
+          <span class="cell-rating easy">低</span>
+          <span class="cell-value">较灵活</span>
+          <span class="cell-context"><strong>对中小客户最友好</strong>，可作为非主流 SKU 的低 MOQ 解决方案。京瓷 AVX 美国子公司有不同的政策。</span>
+        </td>
+        <td>
+          <span class="cell-rating medium">中</span>
+          <span class="cell-value">标准化</span>
+          <span class="cell-context">介于村田和京瓷之间，对长期合作客户有一定弹性。</span>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="dim-label">供给保证机制<span class="sub">supply guarantee</span></td>
+        <td>
+          <span class="cell-rating tough">需 Min Allocation Letter</span>
+          <span class="cell-value">必须签长协</span>
+          <span class="cell-context">2026 H2 之后只有签了 LOA / Min Allocation Letter 的客户能保证供给。<strong>本季度内必须完成谈判</strong>。</span>
+        </td>
+        <td>
+          <span class="cell-rating easy">较容易</span>
+          <span class="cell-value">无需特别长协</span>
+          <span class="cell-context">京瓷 MLCC 产能未被完全占满，季度合约即可。<strong>更稳定的备份选项</strong>。</span>
+        </td>
+        <td>
+          <span class="cell-rating medium">建议长协</span>
+          <span class="cell-value">6-12 个月合约</span>
+          <span class="cell-context">建议签 6-12 个月用量合约锁定中端机型供给，避免 AI 服务器进一步抢占。</span>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="dim-label">技术支持响应<span class="sub">technical support</span></td>
+        <td>
+          <span class="cell-rating medium">大客户优先</span>
+          <span class="cell-value">头部 OEM 优先</span>
+          <span class="cell-context">FAE 资源向 Apple / NVIDIA / 头部车厂集中。<strong>中型 OEM 需通过代理商获得二级支持</strong>。</span>
+        </td>
+        <td>
+          <span class="cell-rating easy">高</span>
+          <span class="cell-value">配合度高</span>
+          <span class="cell-context">京瓷 AVX 在客户支持上历史口碑较好，<strong>愿意配合做定制化设计与早期测试</strong>。</span>
+        </td>
+        <td>
+          <span class="cell-rating easy">中等偏高</span>
+          <span class="cell-value">智能手机经验深</span>
+          <span class="cell-context">长期服务北美智能手机客户，<strong>对智能手机 BOM 优化经验丰富</strong>。</span>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="dim-label">品质 (PPM)<span class="sub">quality metrics</span></td>
+        <td>
+          <span class="cell-rating easy">业界标杆</span>
+          <span class="cell-value">&lt; 0.5 PPM</span>
+          <span class="cell-context">业界品质标准。<strong>故障率最低</strong>，售后成本最优。但同时品质门槛也成为涨价的支撑。</span>
+        </td>
+        <td>
+          <span class="cell-rating easy">高品质</span>
+          <span class="cell-value">&lt; 1 PPM</span>
+          <span class="cell-context">陶瓷材料起家的工艺优势，<strong>品质稳定性接近村田</strong>。AVX 收购后整合质量管理体系。</span>
+        </td>
+        <td>
+          <span class="cell-rating easy">高品质</span>
+          <span class="cell-value">&lt; 1 PPM</span>
+          <span class="cell-context">日系品质标准。中端机型批量出货下品质数据稳定。</span>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="dim-label">替代来源<span class="sub">substitutability</span></td>
+        <td>
+          <span class="cell-rating tough">几乎无</span>
+          <span class="cell-value">高端不可替代</span>
+          <span class="cell-context"><strong>800层 0402、0402/100µF 等高端 SKU 全球只有村田能稳定量产</strong>。中低端可被太誘 / 三星替代。</span>
+        </td>
+        <td>
+          <span class="cell-rating medium">部分可替代</span>
+          <span class="cell-value">利基 SKU 难替代</span>
+          <span class="cell-context">0402/47µF 可穿戴用件 2026 内仍是京瓷独家。其他规格基本可被村田 / 三星替代。</span>
+        </td>
+        <td>
+          <span class="cell-rating easy">高</span>
+          <span class="cell-value">可被三星 / 国产替代</span>
+          <span class="cell-context">中端 MLCC 与三星电机重叠度高，<strong>替代风险最低</strong>，相应议价杠杆也最弱。</span>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="dim-label">地缘风险敞口<span class="sub">geopolitical risk</span></td>
+        <td>
+          <span class="cell-rating medium">中</span>
+          <span class="cell-value">分散布局</span>
+          <span class="cell-context">日 + 中 + 越南 + 菲律宾 + 印度多基地分散。但<strong>钛酸钡介电粉末原料链仍依赖少数供应商</strong>。</span>
+        </td>
+        <td>
+          <span class="cell-rating medium">中</span>
+          <span class="cell-value">日 + 美 (AVX) 双重</span>
+          <span class="cell-context">AVX 收购带来美国本土产能。<strong>对美国关税敏感的客户友好</strong>。</span>
+        </td>
+        <td>
+          <span class="cell-rating medium">中</span>
+          <span class="cell-value">日 + 中 + 马来</span>
+          <span class="cell-context">在华产能比例较高，<strong>受中美贸易摩擦影响相对显著</strong>。</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============== §04 NEGOTIATION TACTICS ============== -->
+<section class="section-block">
+  <div class="section-title-row">
+    <span class="section-num">§ 04</span>
+    <h2 class="section-h">三家谈判策略 — 不同打法</h2>
+    <span class="section-en">NEGOTIATION TACTICS</span>
+  </div>
+
+  <div class="nego-grid">
+    <div class="nego-card murata">
+      <div class="nego-label">MURATA · 抢分配模式</div>
+      <h4 class="nego-title">放弃价格谈判，全力争取分配量</h4>
+
+      <div class="nego-section">
+        <h5>谈判筹码</h5>
+        <ul>
+          <li><strong>多年关系信誉</strong>：村田高度重视长期客户关系，过去合作记录是最大筹码</li>
+          <li><strong>多产品组合采购</strong>：除 MLCC 外承诺增加 RF 模组 / 电感 / 电池采购</li>
+          <li><strong>新机型早期参与</strong>：让村田 FAE 介入设计阶段，获得"设计绑定"</li>
+          <li><strong>非高端订单作为换筹码</strong>：用中端订单的"不需要村田"换高端订单的优先权</li>
+        </ul>
+      </div>
+
+      <div class="nego-section">
+        <h5>谈判禁忌</h5>
+        <ul>
+          <li>不要在价格上耗时间（高端涨价已是定局）</li>
+          <li>不要威胁切到三星电机（村田知道高端无替代）</li>
+          <li>不要试图绕过村田直销渠道（会被分配制度惩罚）</li>
+        </ul>
+      </div>
+
+      <div class="nego-section">
+        <h5>本季度行动</h5>
+        <ul>
+          <li>5/30 前完成 2026 H2 + 2027 H1 长协草签</li>
+          <li>申请 Min Allocation Letter 覆盖旗舰机型 80% MLCC 需求</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="nego-card kyocera">
+      <div class="nego-label">KYOCERA · 关系深化模式</div>
+      <h4 class="nego-title">借力非 MLCC 业务谈整体合作</h4>
+
+      <div class="nego-section">
+        <h5>谈判筹码</h5>
+        <ul>
+          <li><strong>京瓷集团多业务杠杆</strong>：陶瓷封装 / 振动元件 / KAVX / 半导体材料等多业务可以打包谈判</li>
+          <li><strong>新 CEO 转型期</strong>：Sakushima 接任后业绩压力上升，<strong>更愿意接受新订单</strong></li>
+          <li><strong>0402/47µF 独家</strong>：用其独家 SKU 作为切入点，绑定整体合作</li>
+          <li><strong>AVX 美国本土产能</strong>：对受关税影响的客户是稀缺价值</li>
+        </ul>
+      </div>
+
+      <div class="nego-section">
+        <h5>谈判禁忌</h5>
+        <ul>
+          <li>不要把京瓷当作单一 MLCC 供应商谈判（错过其他业务杠杆）</li>
+          <li>不要要求过度定制（京瓷的 MLCC 业务规模有限）</li>
+        </ul>
+      </div>
+
+      <div class="nego-section">
+        <h5>本季度行动</h5>
+        <ul>
+          <li>启动跨部门会议，将 MLCC 谈判与陶瓷封装 / KAVX 合作打包</li>
+          <li>对可穿戴 SKU 申请 0402/47µF 的样品送测</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="nego-card taiyo">
+      <div class="nego-label">TAIYO YUDEN · 量价博弈模式</div>
+      <h4 class="nego-title">用走量承诺压涨价幅度</h4>
+
+      <div class="nego-section">
+        <h5>谈判筹码</h5>
+        <ul>
+          <li><strong>太誘对消费级客户依赖度高</strong>：BB Ratio &gt;1 但中低端订单仍欢迎</li>
+          <li><strong>大订单量承诺</strong>：用未来 12 个月稳定走量承诺压涨价幅度（争取 6-8% 而非 13%）</li>
+          <li><strong>多 SKU 长期合作</strong>：MLCC + 电感 + RF + 电池打包采购</li>
+          <li><strong>可借助其向 AI 转型的焦虑</strong>：太誘急于在 AI 服务器市场扩大份额，可能对消费级订单做让步</li>
+        </ul>
+      </div>
+
+      <div class="nego-section">
+        <h5>谈判禁忌</h5>
+        <ul>
+          <li>不要立即接受 5月涨价幅度（有谈判空间）</li>
+          <li>不要让太誘以为我方完全无替代（要保持三星 EM 的二供姿态）</li>
+        </ul>
+      </div>
+
+      <div class="nego-section">
+        <h5>本季度行动</h5>
+        <ul>
+          <li>对 5月涨价提出反建议：分阶段执行 + 量保证</li>
+          <li>签订 6-12 个月长协锁定中端 MLCC 用量</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== §05 CHECKLIST ============== -->
+<section class="section-block">
+  <div class="section-title-row">
+    <span class="section-num">§ 05</span>
+    <h2 class="section-h">本季度采购行动清单</h2>
+    <span class="section-en">QUARTERLY ACTION CHECKLIST</span>
+  </div>
+
+  <div class="checklist">
+    <h3>2026 Q2 — Q3 采购行动事项</h3>
+    <p class="sub">按优先级排序，每项行动都标注负责人 / 期限 / 预期效果</p>
+
+    <table class="check-table">
+      <thead>
+        <tr>
+          <th style="width:8%;">优先级</th>
+          <th style="width:14%;">行动事项</th>
+          <th style="width:24%;">具体步骤</th>
+          <th style="width:14%;">期限 / 负责人</th>
+          <th>预期效果</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="pri pri-p1">P1 紧急</td>
+          <td>村田旗舰长协</td>
+          <td>与村田高层签订 2026 H2 + 2027 H1 旗舰机型 MLCC 最低分配保证书；接受 +15-35% 涨价；锁定 80% 旗舰需求</td>
+          <td>2026/5/30 前 · 战略采购组</td>
+          <td>避免旗舰机型 SoC 周边断供；接受涨价但获得分配优先权</td>
+        </tr>
+        <tr>
+          <td class="pri pri-p1">P1 紧急</td>
+          <td>太誘涨价反谈判</td>
+          <td>对 5月涨价提出反建议：分阶段（6%+5%）+ 12 个月量保证 + 中端机型独家品类捆绑</td>
+          <td>2026/5/15 前 · 受动元件组</td>
+          <td>将 +13% 压至 +6-9%；锁定中端机型供给</td>
+        </tr>
+        <tr>
+          <td class="pri pri-p1">P1 紧急</td>
+          <td>三星 EM 二供激活</td>
+          <td>启动 / 提速三星电机的二供认证，目标在中端 + 旗舰机型获得 20% 份额</td>
+          <td>2026/Q3 完成认证 · BOM 工程师</td>
+          <td>建立对村田 + 太誘的议价筹码；分散地缘风险</td>
+        </tr>
+        <tr>
+          <td class="pri pri-p2">P2 重要</td>
+          <td>京瓷集团合作</td>
+          <td>启动跨部门谈判，将 MLCC 与陶瓷封装 / KAVX / 振动元件等业务打包；申请 0402/47µF 样品</td>
+          <td>2026/Q3 内 · 战略采购+R&amp;D</td>
+          <td>建立京瓷作为可穿戴/折叠屏特殊规格供应商；获得集团折扣</td>
+        </tr>
+        <tr>
+          <td class="pri pri-p2">P2 重要</td>
+          <td>低端机型国产化</td>
+          <td>启动 Yageo（台湾）+ 风华高科 / 三环集团（中国）的认证；目标低端机型 80% 用国产/台湾件</td>
+          <td>2026/Q3 启动 · BOM 工程师</td>
+          <td>把村田从低端机型 BOM 中完全移除；释放村田配额给旗舰</td>
+        </tr>
+        <tr>
+          <td class="pri pri-p2">P2 重要</td>
+          <td>安全库存调整</td>
+          <td>旗舰用 MLCC 安全库存提升至 16 周（业界平均 8-12 周）；中端 12 周；低端 8 周</td>
+          <td>立即执行 · 仓储管理</td>
+          <td>缓冲 24-40 周交期带来的供给波动；接受 +30% 资金占用</td>
+        </tr>
+        <tr>
+          <td class="pri pri-p2">P2 重要</td>
+          <td>原材料风险跟踪</td>
+          <td>跟踪银 / 钯 / 钛酸钡价格走势；建立预警机制（涨幅 &gt;15% 触发涨价审查）</td>
+          <td>持续 · 战略采购</td>
+          <td>预判下一波涨价时点；伊朗局势带来贵金属波动需早期识别</td>
+        </tr>
+        <tr>
+          <td class="pri pri-p3">P3 监控</td>
+          <td>BB Ratio 跟踪</td>
+          <td>每月跟踪村田 / 太誘 / 三星电机 BB Ratio；BB&gt;1.1 触发提前下单</td>
+          <td>持续 · 战略采购</td>
+          <td>识别供给紧张早期信号</td>
+        </tr>
+        <tr>
+          <td class="pri pri-p3">P3 监控</td>
+          <td>NVIDIA Rubin 出货</td>
+          <td>跟踪 NVIDIA Rubin VR200 出货节奏（每台 60万颗 MLCC，会进一步抽走村田产能）</td>
+          <td>持续 · 战略部</td>
+          <td>预判 2027 H1 是否会出现新一波 MLCC 紧张</td>
+        </tr>
+        <tr>
+          <td class="pri pri-p3">P3 监控</td>
+          <td>中国国产替代进展</td>
+          <td>跟踪风华高科 / 三环集团 / 国巨在 0402 / 高容量 MLCC 的技术突破</td>
+          <td>持续 · BOM 工程师</td>
+          <td>识别 2027 后中端机型进一步国产化的机会</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============== §06 RISK SCENARIOS ============== -->
+<section class="section-block">
+  <div class="section-title-row">
+    <span class="section-num">§ 06</span>
+    <h2 class="section-h">三个&ldquo;假如&rdquo;情境的应对预案</h2>
+    <span class="section-en">CONTINGENCY SCENARIOS</span>
+  </div>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th class="dim">风险情境</th>
+        <th class="murata" style="background:var(--critical);">触发信号</th>
+        <th class="kyocera" style="background:var(--warning);">预案</th>
+        <th class="taiyo" style="background:var(--safe);">机会面</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="dim-label">情境 A：村田断供旗舰<span class="sub">高端 MLCC 分配削减</span></td>
+        <td>
+          <span class="cell-context">村田 Q3 业绩会公告 AI 客户优先；高端 MLCC 利用率 &gt;95%；交期延至 50 周以上</span>
+        </td>
+        <td>
+          <span class="cell-context"><strong>立即触发</strong>：（1）旗舰机型上市延后 1-2 个月；（2）三星电机紧急补位至 50% 份额；（3）BOM 重构降低高端 MLCC 用量 10-15%</span>
+        </td>
+        <td>
+          <span class="cell-context">逼迫公司加速对三星电机的认证投入；长期减少对单一供应商依赖</span>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="dim-label">情境 B：太誘加倍涨价<span class="sub">从 +13% 提至 +25%</span></td>
+        <td>
+          <span class="cell-context">FY26 H2 业绩会指引涨价预期；中国客户实际成交价 +20%；银 / 钯继续上涨</span>
+        </td>
+        <td>
+          <span class="cell-context"><strong>三阶段应对</strong>：（1）激活 Yageo / 风华高科作为太誘的中端替代（已认证 SKU）；（2）将 30% 太誘订单转出；（3）剩余 70% 接受涨价但要求量保证</span>
+        </td>
+        <td>
+          <span class="cell-context">推动我方建立中国/台湾二供生态；2027 起对中端机型成本结构有更多控制力</span>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="dim-label">情境 C：京瓷分拆电子组件<span class="sub">独立或被收购</span></td>
+        <td>
+          <span class="cell-context">京瓷宣布电子组件业务剥离 / 出售 / IPO；新 CEO Sakushima 释放重组信号</span>
+        </td>
+        <td>
+          <span class="cell-context"><strong>积极应对</strong>：（1）借机重新谈判长期合作条款；（2）若被中国 / 韩国收购则评估技术风险；（3）若独立上市则评估其专注度提升带来的服务质量改善</span>
+        </td>
+        <td>
+          <span class="cell-context">独立后的京瓷电子组件可能更有进取心，对中型 OEM 友好度上升；可能成为村田的有效竞争者</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<footer class="footer">
+  <span class="brand">DongTao 日股研究室 · Procurement Intelligence</span>
+  <span>2026 Q2 · MLCC SOURCING MEMO</span>
+  <span>下次更新：FY26 H1 业绩季</span>
+</footer>
+
+<div class="disclaimer">
+  ※ 本备忘录为采购视角的供应商决策参考，基于公开信息（TrendForce / 各公司 IR 资料 / Nikkei / Digitimes）和行业经验判断，截至 2026年5月9日。具体采购决策需结合最新合约条款、客户机种规划及法务合规要求综合判断。本文不构成对任何上述公司股票的投资建议。
+</div>
+
+</div>
+</body>
+</html>
