@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日股無人機三銘柄深度比較 | 6986 vs 278A vs 6232 | DongTao 日股研究室</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+<style>
+  :root {
+    --washi-bg: #F2EBD8;
+    --washi-bg-deep: #EAE0C5;
+    --washi-paper: #F8F2E0;
+    --ink-black: #2A211A;
+    --ink-gray: #4F443A;
+    --ink-soft: #756657;
+    --akane: #B73225;
+    --akane-deep: #8C2418;
+    --indigo: #2E4156;
+    --moss: #5A6E3F;
+    --gold: #B08840;
+    --line: #C9BC9F;
+    --line-soft: #D8CDB3;
+    --warn: #C77B40;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans JP', 'Noto Sans SC', sans-serif;
+    background: var(--washi-bg);
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(184, 154, 100, 0.06) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(133, 90, 60, 0.05) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.25 0 0 0 0 0.18 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+    color: var(--ink-black);
+    line-height: 1.8;
+    font-size: 15px;
+    min-height: 100vh;
+  }
+
+  .display-font {
+    font-family: 'Shippori Mincho', serif;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  /* Layout */
+  .container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 56px 32px 80px;
+  }
+
+  /* Header */
+  .header {
+    border-top: 4px double var(--akane);
+    border-bottom: 1px solid var(--line);
+    padding: 28px 0 32px;
+    margin-bottom: 56px;
+    position: relative;
+  }
+  .header::before {
+    content: '日股研究室';
+    position: absolute;
+    top: 12px;
+    right: 0;
+    font-family: 'Shippori Mincho', serif;
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: 0.4em;
+  }
+  .header-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .header-meta .akane-mark {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--akane);
+    margin-right: 10px;
+    transform: translateY(-1px);
+  }
+  h1.title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 38px;
+    line-height: 1.3;
+    font-weight: 700;
+    color: var(--ink-black);
+    margin-bottom: 14px;
+  }
+  h1.title .akane { color: var(--akane); }
+  .subtitle {
+    font-size: 14px;
+    color: var(--ink-gray);
+    line-height: 1.7;
+    max-width: 780px;
+  }
+  .meta-row {
+    display: flex;
+    gap: 28px;
+    margin-top: 22px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .meta-row span strong {
+    color: var(--ink-black);
+    font-weight: 600;
+    margin-right: 6px;
+  }
+
+  /* Section heading */
+  .section { margin-bottom: 60px; }
+  .section-num {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 13px;
+    color: var(--akane);
+    letter-spacing: 0.3em;
+    margin-bottom: 6px;
+  }
+  h2.section-title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--ink-black);
+    margin-bottom: 8px;
+    border-left: 4px solid var(--akane);
+    padding-left: 14px;
+  }
+  .section-lead {
+    font-size: 14px;
+    color: var(--ink-gray);
+    margin-bottom: 28px;
+    line-height: 1.85;
+    padding-left: 18px;
+  }
+  h3.sub-title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--ink-black);
+    margin: 32px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--line);
+  }
+
+  /* KPI Bar */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+  .kpi-card {
+    background: var(--washi-paper);
+    border: 1px solid var(--line);
+    padding: 22px 20px;
+    position: relative;
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 36px; height: 3px;
+  }
+  .kpi-card.c-6986::before { background: var(--indigo); }
+  .kpi-card.c-6232::before { background: var(--akane); }
+  .kpi-card.c-278a::before { background: var(--moss); }
+  .kpi-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: 0.2em;
+    margin-bottom: 4px;
+  }
+  .kpi-name {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink-black);
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .kpi-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 13px;
+  }
+  .kpi-row .l { color: var(--ink-soft); }
+  .kpi-row .v {
+    color: var(--ink-black);
+    font-weight: 500;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+  }
+  .kpi-row .v.pos { color: var(--moss); }
+  .kpi-row .v.neg { color: var(--akane); }
+
+  /* Three verdict */
+  .verdict-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 22px 0;
+  }
+  .verdict {
+    background: var(--washi-paper);
+    border: 1px solid var(--line);
+    padding: 20px 18px;
+    position: relative;
+  }
+  .verdict-tag {
+    display: inline-block;
+    font-family: 'Shippori Mincho', serif;
+    font-size: 11px;
+    background: var(--ink-black);
+    color: var(--washi-bg);
+    padding: 3px 10px;
+    letter-spacing: 0.15em;
+    margin-bottom: 12px;
+  }
+  .verdict-tag.akane { background: var(--akane); }
+  .verdict-tag.indigo { background: var(--indigo); }
+  .verdict-tag.moss { background: var(--moss); }
+  .verdict h4 {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 16px;
+    color: var(--ink-black);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .verdict p {
+    font-size: 13px;
+    color: var(--ink-gray);
+    line-height: 1.7;
+  }
+  .verdict .score {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    margin-top: 10px;
+    letter-spacing: 0.1em;
+  }
+
+  /* Tables */
+  .table-wrap {
+    background: var(--washi-paper);
+    border: 1px solid var(--line);
+    overflow-x: auto;
+    margin: 18px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th, td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  th {
+    background: rgba(184, 154, 100, 0.08);
+    font-weight: 600;
+    color: var(--ink-black);
+    font-family: 'Shippori Mincho', serif;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+  }
+  th:first-child { width: 22%; }
+  td:first-child {
+    font-weight: 500;
+    color: var(--ink-black);
+    background: rgba(184, 154, 100, 0.04);
+  }
+  td.num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+  }
+  td .pos { color: var(--moss); }
+  td .neg { color: var(--akane); }
+  td .warn { color: var(--warn); }
+  tr:last-child td { border-bottom: none; }
+
+  /* Star ratings */
+  .stars { letter-spacing: 1px; font-family: serif; }
+  .stars .on { color: var(--akane); }
+  .stars .off { color: var(--line); }
+
+  /* Chart wrap */
+  .chart-section {
+    background: var(--washi-paper);
+    border: 1px solid var(--line);
+    padding: 28px;
+    margin: 18px 0;
+    position: relative;
+  }
+  .chart-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .chart-title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .chart-sub {
+    font-size: 11px;
+    color: var(--ink-soft);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+  .chart-toggle {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--ink-black);
+  }
+  .chart-toggle button {
+    background: transparent;
+    border: none;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-family: 'Shippori Mincho', serif;
+    font-size: 12px;
+    color: var(--ink-black);
+    border-right: 1px solid var(--ink-black);
+    transition: all 0.15s;
+  }
+  .chart-toggle button:last-child { border-right: none; }
+  .chart-toggle button.active {
+    background: var(--ink-black);
+    color: var(--washi-bg);
+  }
+  .chart-container {
+    position: relative;
+    height: 420px;
+  }
+  .chart-note {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--line);
+    font-size: 11px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+
+  /* Product comparison cards */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin: 22px 0;
+  }
+  .product-card {
+    background: var(--washi-paper);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .product-card .img-wrap {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #E8DFC6 0%, #D8CDB3 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    border-bottom: 1px solid var(--line);
+  }
+  .product-card .img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  .product-card .img-fallback {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-align: center;
+    padding: 20px;
+    line-height: 1.5;
+  }
+  .product-card .img-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(42, 33, 26, 0.85);
+    color: var(--washi-bg);
+    padding: 4px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+  }
+  .product-card .product-body {
+    padding: 18px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .product-card .product-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 0.2em;
+    margin-bottom: 4px;
+  }
+  .product-card .product-name {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--ink-black);
+    margin-bottom: 4px;
+  }
+  .product-card .product-tagline {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 12px;
+    color: var(--akane);
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--line);
+    font-style: italic;
+  }
+  .product-card .spec-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 14px;
+  }
+  .product-card .spec-list li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 4px 0;
+    border-bottom: 1px dotted var(--line-soft);
+  }
+  .product-card .spec-list li .label {
+    color: var(--ink-soft);
+  }
+  .product-card .spec-list li .val {
+    color: var(--ink-black);
+    font-weight: 500;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+  }
+  .product-card .product-desc {
+    font-size: 12.5px;
+    color: var(--ink-gray);
+    line-height: 1.7;
+    margin-top: auto;
+  }
+  .product-card .badge-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .product-card .badge {
+    display: inline-block;
+    font-family: 'Shippori Mincho', serif;
+    font-size: 10px;
+    padding: 3px 8px;
+    background: rgba(184, 154, 100, 0.15);
+    color: var(--ink-black);
+    letter-spacing: 0.05em;
+  }
+  .product-card .badge.akane { background: rgba(183, 50, 37, 0.15); color: var(--akane); }
+  .product-card .badge.moss { background: rgba(90, 110, 63, 0.15); color: var(--moss); }
+  .product-card .badge.indigo { background: rgba(46, 65, 86, 0.15); color: var(--indigo); }
+
+  /* Event timeline */
+  .event-timeline {
+    background: var(--washi-paper);
+    border: 1px solid var(--line);
+    padding: 20px 24px;
+    margin-top: 16px;
+  }
+  .event-timeline-title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .event-row {
+    display: grid;
+    grid-template-columns: 90px 110px 1fr;
+    gap: 14px;
+    padding: 8px 0;
+    font-size: 12.5px;
+    align-items: center;
+    border-bottom: 1px dotted var(--line-soft);
+  }
+  .event-row:last-child { border-bottom: none; }
+  .event-row .ev-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+  .event-row .ev-tag {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 10px;
+    color: white;
+    padding: 3px 0;
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+  .event-row .ev-tag.c-6986 { background: var(--indigo); }
+  .event-row .ev-tag.c-6232 { background: var(--akane); }
+  .event-row .ev-tag.c-278a { background: var(--moss); }
+  .event-row .ev-text {
+    color: var(--ink-gray);
+    line-height: 1.6;
+  }
+  .event-row .ev-text strong { color: var(--ink-black); }
+
+
+  .highlight {
+    background: rgba(183, 50, 37, 0.06);
+    border-left: 3px solid var(--akane);
+    padding: 18px 20px;
+    margin: 18px 0;
+    font-size: 13.5px;
+    color: var(--ink-black);
+    line-height: 1.8;
+  }
+  .highlight strong { color: var(--akane); }
+
+  .quote-box {
+    background: var(--washi-paper);
+    border: 1px dashed var(--line);
+    padding: 18px 22px;
+    margin: 18px 0;
+    font-family: 'Shippori Mincho', serif;
+    font-size: 14px;
+    color: var(--ink-gray);
+    line-height: 1.85;
+    position: relative;
+  }
+  .quote-box::before {
+    content: '「';
+    position: absolute;
+    top: -2px;
+    left: 6px;
+    font-size: 26px;
+    color: var(--akane);
+  }
+
+  /* Two col */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin: 18px 0;
+  }
+  .col-card {
+    background: var(--washi-paper);
+    border: 1px solid var(--line);
+    padding: 18px 20px;
+  }
+  .col-card h5 {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 14px;
+    color: var(--ink-black);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .col-card.catalyst h5 { color: var(--moss); border-bottom-color: var(--moss); }
+  .col-card.risk h5 { color: var(--akane); border-bottom-color: var(--akane); }
+  .col-card ul { list-style: none; padding: 0; }
+  .col-card li {
+    font-size: 13px;
+    color: var(--ink-gray);
+    padding: 6px 0 6px 16px;
+    position: relative;
+    line-height: 1.7;
+  }
+  .col-card li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    font-size: 8px;
+    color: var(--gold);
+  }
+  .col-card.catalyst li::before { color: var(--moss); }
+  .col-card.risk li::before { color: var(--akane); }
+
+  /* Profile match */
+  .profile-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 18px 0;
+  }
+  .profile-card {
+    background: var(--washi-paper);
+    border: 1px solid var(--line);
+    padding: 20px 18px;
+    position: relative;
+  }
+  .profile-card .who {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 13px;
+    color: var(--ink-soft);
+    letter-spacing: 0.2em;
+    margin-bottom: 6px;
+  }
+  .profile-card .pick {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--akane);
+  }
+  .profile-card .pick small {
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-weight: 400;
+    margin-left: 6px;
+  }
+  .profile-card .why {
+    font-size: 13px;
+    color: var(--ink-gray);
+    line-height: 1.75;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-size: 11px;
+    color: var(--ink-soft);
+    line-height: 1.8;
+  }
+  .footer-disclaimer {
+    background: rgba(199, 123, 64, 0.08);
+    border-left: 3px solid var(--warn);
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    font-size: 12px;
+    color: var(--ink-gray);
+  }
+  .footer-meta {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  /* Para */
+  p.para {
+    font-size: 14px;
+    color: var(--ink-gray);
+    line-height: 1.85;
+    margin: 12px 0;
+  }
+  ul.body-list {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0;
+  }
+  ul.body-list li {
+    font-size: 14px;
+    color: var(--ink-gray);
+    line-height: 1.85;
+    padding: 4px 0 4px 18px;
+    position: relative;
+  }
+  ul.body-list li::before {
+    content: '・';
+    position: absolute;
+    left: 4px;
+    color: var(--akane);
+    font-weight: 700;
+  }
+
+  /* Responsive */
+  @media (max-width: 820px) {
+    .container { padding: 36px 18px; }
+    h1.title { font-size: 28px; }
+    .kpi-grid, .verdict-grid, .profile-grid, .product-grid { grid-template-columns: 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    .meta-row { flex-direction: column; gap: 8px; }
+    .header::before { display: none; }
+    .chart-container { height: 320px; }
+    .event-row { grid-template-columns: 1fr; gap: 4px; }
+    .event-row .ev-tag { width: fit-content; padding: 3px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-meta">
+      <span class="akane-mark"></span>DEEP DIVE / DRONE-RELATED EQUITIES / JAPAN
+    </div>
+    <h1 class="title">無人機テーマの三銘柄、<br>その<span class="akane">本質的な違い</span>を読み解く</h1>
+    <div class="subtitle">
+      6986 双葉電子工業 / 278A テラドローン / 6232 ACSL — 三家公司同被市场归类为"无人机概念股",但商业模式、财务结构、估值逻辑、风险敞口截然不同。本报告以双葉電子工業(6986)的最新中期経営計画与2026年3月期Q3決算资料为出发点,与另外两家纯正无人机企业进行多维度比较,并提供过去一年股价走势的可视化对比。
+    </div>
+    <div class="meta-row">
+      <span><strong>作成日:</strong>2026年5月10日(価格データは5月8日終値ベース)</span>
+      <span><strong>セクター:</strong>电子机器 / 精密機器 / 機械</span>
+      <span><strong>市場:</strong>Prime / Growth</span>
+      <span><strong>レポート種別:</strong>三銘柄比較</span>
+    </div>
+  </header>
+
+  <!-- Section 1: 总览 KPI -->
+  <section class="section">
+    <div class="section-num">01 / OVERVIEW</div>
+    <h2 class="section-title">三家公司核心指标速览</h2>
+    <p class="section-lead">数据截至2026年5月8日(三家公司同日均创年初来新高,共振走高)。財務数値は2026年3月期Q3 / 2025年12月期通期(ACSL)/直近(テラドローン)。</p>
+
+    <div class="kpi-grid">
+
+      <div class="kpi-card c-6986">
+        <div class="kpi-code">6986 / 東証プライム</div>
+        <div class="kpi-name">双葉電子工業</div>
+        <div class="kpi-row"><span class="l">5/8 終値</span><span class="v pos">¥804(年初来高値)</span></div>
+        <div class="kpi-row"><span class="l">時価総額</span><span class="v">340.7億円</span></div>
+        <div class="kpi-row"><span class="l">PBR(実績)</span><span class="v pos">0.41倍</span></div>
+        <div class="kpi-row"><span class="l">自己資本比率</span><span class="v pos">76.2%</span></div>
+        <div class="kpi-row"><span class="l">通期売上予想</span><span class="v">428億円</span></div>
+        <div class="kpi-row"><span class="l">通期営業利益</span><span class="v neg">△16億円</span></div>
+        <div class="kpi-row"><span class="l">通期純利益</span><span class="v pos">19億円(資産売却)</span></div>
+        <div class="kpi-row"><span class="l">配当(予)</span><span class="v">10円</span></div>
+        <div class="kpi-row"><span class="l">無人機純度</span><span class="v">★★☆☆☆</span></div>
+      </div>
+
+      <div class="kpi-card c-278a">
+        <div class="kpi-code">278A / 東証グロース</div>
+        <div class="kpi-name">テラドローン</div>
+        <div class="kpi-row"><span class="l">5/8 終値</span><span class="v pos">¥13,400(年初来高値)</span></div>
+        <div class="kpi-row"><span class="l">時価総額</span><span class="v">約1,304億円</span></div>
+        <div class="kpi-row"><span class="l">PBR</span><span class="v neg">19.5倍 前後</span></div>
+        <div class="kpi-row"><span class="l">自己資本比率</span><span class="v pos">75.4%</span></div>
+        <div class="kpi-row"><span class="l">直近売上</span><span class="v">約44億円</span></div>
+        <div class="kpi-row"><span class="l">営業損益</span><span class="v neg">△6.7億円</span></div>
+        <div class="kpi-row"><span class="l">純損益</span><span class="v neg">赤字継続</span></div>
+        <div class="kpi-row"><span class="l">配当(予)</span><span class="v">なし</span></div>
+        <div class="kpi-row"><span class="l">無人機純度</span><span class="v">★★★★★</span></div>
+      </div>
+
+      <div class="kpi-card c-6232">
+        <div class="kpi-code">6232 / 東証グロース</div>
+        <div class="kpi-name">ACSL</div>
+        <div class="kpi-row"><span class="l">5/8 終値</span><span class="v pos">¥2,927(年初来高値+20.6%)</span></div>
+        <div class="kpi-row"><span class="l">時価総額</span><span class="v">559.8億円</span></div>
+        <div class="kpi-row"><span class="l">PBR(実績)</span><span class="v neg">33.99倍</span></div>
+        <div class="kpi-row"><span class="l">自己資本比率</span><span class="v warn">29.1%</span></div>
+        <div class="kpi-row"><span class="l">2025年売上</span><span class="v">26億円</span></div>
+        <div class="kpi-row"><span class="l">営業損益</span><span class="v neg">△18.4億円</span></div>
+        <div class="kpi-row"><span class="l">2026年予想売上</span><span class="v pos">40億円(+54%)</span></div>
+        <div class="kpi-row"><span class="l">配当(予)</span><span class="v">なし</span></div>
+        <div class="kpi-row"><span class="l">無人機純度</span><span class="v">★★★★★</span></div>
+      </div>
+
+    </div>
+
+    <!-- Drone Business Model Intro -->
+    <h3 class="sub-title">三家公司的事业概要 — 在无人机价值链上的位置</h3>
+    <p class="para">同样被市场归为"无人机概念股",三家公司在无人机产业价值链上占据完全不同的位置:6986是"<strong>核心部品+机体老铺</strong>"、6232是"<strong>机体专业メーカー</strong>"、278A是"<strong>SaaS空域インフラ+防衛ハード</strong>"。看清这个分工,就能理解为什么三家的估值、波动率、增长曲线各不相同。</p>
+
+    <div class="verdict-grid">
+
+      <!-- 6986 业务介绍 -->
+      <div class="verdict">
+        <span class="verdict-tag indigo">6986 / 老铺型</span>
+        <h4>双葉電子工業 — "通信制御+機体"の縦割り供给</h4>
+        <p style="margin-bottom:10px;">1948年创立的电子部品老铺(東証プライム/プライム)。主营三大事業:<strong>システムソリューション</strong>(産業ラジコン+複合モジュール)、<strong>ロボティクスソリューション</strong>(无人机+サーボ+ホビーラジコン)、<strong>精機</strong>(金型用器材+成形機器)。整体年商428亿円。</p>
+        <p style="margin-bottom:10px;"><strong>无人机商业模式:</strong></p>
+        <p style="font-size:12.5px;line-height:1.7;">
+        ① <strong>機体販売(SkyBuddyブランド)</strong>:FMC-01(20kg積載)/FMC-02H/Q,B2B定制为主<br>
+        ② <strong>核心部品供给</strong>:ホビーラジコンプロポ世界トップシェアの送受信機/サーボ/ジャイロ → 北米UAV関連の産業用サーボが好調(Q3決算明记)<br>
+        ③ <strong>カスタマイズ&受託</strong>:出光興産・ソフトバンク・クオリティソフト等とのアライアンス受託(灾害对应用アナウンサードローン等)<br>
+        ④ <strong>ドローンスクール</strong>:操縦者育成事業<br>
+        ⑤ <strong>米国MIL規格(軍規格)適格性クリア</strong>済 → 输出のオプション
+        </p>
+        <span class="score">看点:无人机营收占比5-10%但绝对额30-50亿円,与ACSL整体相当</span>
+      </div>
+
+      <!-- 278A 业务介绍 -->
+      <div class="verdict">
+        <span class="verdict-tag moss">278A / プラットフォーマー型</span>
+        <h4>テラドローン — "サービス+UTM+防衛"の三本柱</h4>
+        <p style="margin-bottom:10px;">2016年创立、2024年11月IPO的"低空域経済圏のグローバルプラットフォーマー"志向。Drone Industry Insights世界1位(2024年)。事業展開14カ国、年商約44億円。</p>
+        <p style="margin-bottom:10px;"><strong>无人机商业模式:</strong></p>
+        <p style="font-size:12.5px;line-height:1.7;">
+        ① <strong>ドローンソリューション事業</strong>:測量・点検・農業・産業復旧の Hard+Soft+Service 一体提供。サウジ拠点が2024年単体黒字化<br>
+        ② <strong>運航管理(UTM)事業</strong>:子会社Unifly NV(ベルギー欧州トップ)+Aloft(米国持分法)で<u>各国航空管制機関(ANSP)へのSaaS+従量課金</u>。ドイツ・スペイン・カナダ・ベルギー等7カ国に実装、累計30+プロジェクト<br>
+        ③ <strong>防衛装備品事業(2026年3月参入)</strong>:米国子会社Terra Defense設立予定。Amazing Drones+WinnyLab(両者乌克兰)に出資 → Terra A1迎撃ドローン発売・実戦投入<br>
+        ④ <strong>防衛装備庁初受注</strong>:5/8発表のモジュール型UAV(教育用)300機・1.15億円
+        </p>
+        <span class="score">看点:UTM SaaSの自動更新収益+防衛ハードの量産可能性</span>
+      </div>
+
+      <!-- 6232 业务介绍 -->
+      <div class="verdict">
+        <span class="verdict-tag akane">6232 / ピュアプレイヤー型</span>
+        <h4>ACSL — "SLAM自律技術"を核とする国産机体専業</h4>
+        <p style="margin-bottom:10px;">2013年に千葉大学発ベンチャーとして設立された<strong>国内唯一のドローン専業上場企業</strong>。NEDO公募事業出身、JUAV認定第一号。年商26億円(2025年実績)、2026年予想40億円(+54%)。</p>
+        <p style="margin-bottom:10px;"><strong>无人机商业模式:</strong></p>
+        <p style="font-size:12.5px;line-height:1.7;">
+        ① <strong>用途特化型機体販売</strong>:SOTEN(蒼天/小型空撮)、PF4(長距離物流)、PF1-LAB(点検)、各機種フラッグシップ。2025年は用途特化型機体が大幅増収、売上の主力化<br>
+        ② <strong>独自技術ライセンス</strong>:Visual SLAM(GPS非依存自律飛行)はトンネル・橋梁下点検で他社追随を許さない<br>
+        ③ <strong>政府/防衛省調達</strong>:防衛省累計14.2億円受注(SOTEN系列)、SBIR政府助成研发<br>
+        ④ <strong>米国市場展開</strong>:子会社ACSL Inc.(2023年設立)経由で8代理店販売、Draganfly Inc.と独占マスター契約<br>
+        ⑤ <strong>共同開発</strong>:日本郵便とPF4量産化、NTTドコモ・ヤマハ発動機との戦略連携
+        </p>
+        <span class="score">看点:防衛省国産化政策の最直接的恩恵を受ける唯一のピュアプレイ</span>
+      </div>
+
+    </div>
+
+    <div class="highlight">
+      <strong>瞬間概観:</strong>三家市值在<strong>340〜1,304亿円</strong>区间,但成色截然不同。テラドローン以约44亿円营收承担1,304亿日元市值,PBR约19.5倍,完全是"未来梦想"定价;ACSL以26亿円营收挂出560亿市值,5/8单日+20.6%涨停,PBR近34倍,期待值同样高;双葉電子工業营收规模(428亿円)远超另外两家之和,却仅以PBR 0.41倍交易,5/8也创年初来高值804円但市值仍只有340亿,价值再发现仍处于初期。
+    </div>
+  </section>
+
+  <!-- Section 2: 6986 深度分析 -->
+  <section class="section">
+    <div class="section-num">02 / DEEP DIVE</div>
+    <h2 class="section-title">6986 双葉電子工業 — 「第二の創業期」の本質</h2>
+    <p class="section-lead">双葉電子工業正处于2024-2026年中期経営計画(コードネーム"持続的な利益創出と成長軌道への変革")的关键执行阶段。这是一家拥有近80年历史的电子器件老铺,正在通过结构改革和组织重构,试图把无人机/机器人/IoT解决方案打造成第二增长曲线。</p>
+
+    <h3 class="sub-title">2-1. 中期経営計画の核心構造</h3>
+    <p class="para">公司在中期計画中提出"事業ビジョン:ハードを核にソフト・サービスを融合したソリューション事業領域へ",并设定了2026年度的具体目标:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>指标</th><th>2023年度実績</th><th>2024年度目標</th><th>2025年度目標</th><th>2026年度目標</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>連結売上高</td><td class="num">564億円</td><td class="num">510億円</td><td class="num">540億円</td><td class="num pos">575億円</td></tr>
+          <tr><td>営業利益</td><td class="num neg">△11億円</td><td class="num neg">△4億円</td><td class="num pos">+3億円</td><td class="num pos">+15億円</td></tr>
+          <tr><td>電子機器売上</td><td class="num">248億円</td><td class="num">190億円</td><td class="num">207億円</td><td class="num">231億円</td></tr>
+          <tr><td>生産器材売上</td><td class="num">315億円</td><td class="num">320億円</td><td class="num">333億円</td><td class="num">344億円</td></tr>
+          <tr><td>長期目標</td><td colspan="4" class="num">ROE 8% / PBR 1倍以上 / 配当性向30%以上</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="para">公司将2024年4月起进行了重大组织重构,把ホビーラジコン、産業ラジコン、ロボティクス(无人机+伺服)、有机EL等业务整合为<strong>システムソリューション事業センター</strong>和<strong>ロボティクスソリューション事業センター</strong>两大新事业中心 — 这是公司战略上向"无人机/机器人解决方案"倾斜的最明确信号。</p>
+
+    <h3 class="sub-title">2-2. ロボティクスソリューション事業 — 双葉的无人机版图</h3>
+
+    <ul class="body-list">
+      <li><strong>機体:</strong>"SkyBuddy"系列产业用无人机(安全性优先,适用于长时间监视、搜索救援、医疗物资搬运)</li>
+      <li><strong>核心部品:</strong>サーボ、プロポ、ジャイロ、レンジエクステンダー(机载发电机)</li>
+      <li><strong>パートナー網:</strong>ソフトバンク(2020年〜,5G+AI+精密測位ichimill)、出光興産(2023年〜,SS网络+灾害对应)、テラドローン(2019年戦略出資)</li>
+      <li><strong>实战实绩:</strong>2026年初,夷隅郡市広域市町村圏事務組合消防本部に災害対応ドローンを納入(株探報道)</li>
+      <li><strong>北米UAV関連:</strong>Q3決算明确提及"産業用サーボは北米UAV関連等が好調",显示美国军用/民用无人机厂商对其伺服需求正在拉动</li>
+      <li><strong>人事シグナル:</strong>2026年4月,旧韩国子公司代表理事 申承湜が"ロボティクスソリューション事業センター 次長"に着任 — 公司明确把人才向无人机部门集中</li>
+    </ul>
+
+    <div class="quote-box">
+      ロボティクス(ドローン、サーボ):産業/ホビーのリソース統合にて収益性改善 — 中期経営計画 2024-2026
+    </div>
+
+    <h3 class="sub-title">2-3. 财务现状的"两面性"</h3>
+    <p class="para">2026年3月期Q3累计(2025年4月~12月)的数据非常说明问题:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>項目</th><th>前Q3累計</th><th>当Q3累計</th><th>増減率</th><th>解读</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>売上高</td><td class="num">361.9億円</td><td class="num">316.6億円</td><td class="num neg">△12.5%</td><td>韩国市场大幅下滑,本业仍在收缩</td></tr>
+          <tr><td>営業損失</td><td class="num neg">△5.6億円</td><td class="num neg">△15.3億円</td><td class="num warn">悪化</td><td>有机EL转型期+蛍光表示管終息双重打击</td></tr>
+          <tr><td>経常損益</td><td class="num pos">+6.0億円</td><td class="num neg">△5.0億円</td><td class="num warn">悪化</td><td>受取利息+受取配当金合计8.4億円仍未填平本业亏损</td></tr>
+          <tr><td>固定資産売却益</td><td class="num">+18.5億円</td><td class="num">+16.7億円</td><td class="num">継続</td><td>台湾A棟+昆山工場の売却益(+11.4+15億円見込)</td></tr>
+          <tr><td>関係会社清算益</td><td class="num">なし</td><td class="num">+5.5億円</td><td class="num pos">新規</td><td>シンガポール子会社清算結了</td></tr>
+          <tr><td>親会社株主純利益</td><td class="num">+8.1億円</td><td class="num pos">+10.7億円</td><td class="num pos">+32.4%</td><td><strong>純利益は資産売却が支えている</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight">
+      <strong>关键判读:</strong>双葉電子工業当下的纯利润几乎全部来自非经常性的资产出售和子公司清算 — 台湾高雄A棟工場(+11.4亿円)、昆山工場(+15亿円见込)、新加坡子公司清算(+5.5亿円)。这是"边收缩边重组"的典型再生路径。本业(营业层面)仍在扩大亏损,黑字化预计要到2025年度下期才能实现。
+    </div>
+
+    <h3 class="sub-title">2-4. 资产负债表的"隐藏价值"</h3>
+    <ul class="body-list">
+      <li>現金及び預金 <strong>348.7億円</strong>(2025年12月末)+ 投資有価証券 163.3億円 → 现金等价资产合计约500億円</li>
+      <li>純資産 937.3億円, 自己資本 819.5億円</li>
+      <li>有利子负债极少(短期借入金为0,コミットメントライン50億円も未使用)</li>
+      <li>株价×发行股数 ≈ 290億円, 但单是現金+投資有価証券就已超过总市值,加上不動産(土地簿価95.4億円)、退休金资产 → 净资产隐含价值远高于股价</li>
+      <li>PBR 0.34倍 → 即使将所有无形资产清零,清算价值也明显高于市值</li>
+    </ul>
+
+    <h3 class="sub-title">2-5. 三層判定フレーム</h3>
+
+    <div class="verdict-grid">
+      <div class="verdict">
+        <span class="verdict-tag indigo">估值</span>
+        <h4>极度低估的资产价值股</h4>
+        <p>PBR 0.34倍,2025年期初〜現在のPBRレンジは0.23〜1.02倍(過去15年)。現金等価額が時価総額を上回る希少状態。下行风险有限,但需要催化剂才能解封。</p>
+        <span class="score">SCORE 8.5 / 10</span>
+      </div>
+      <div class="verdict">
+        <span class="verdict-tag akane">基本面变化</span>
+        <h4>构造改革后期,黑字化在望</h4>
+        <p>2026年度上期に構造改革完遂、下期から黒字化を会社計画。電子機器セグメント内の"システム"+"ロボティクス"の二本柱体制が機能し始めれば、ROE 8%が見えてくる。</p>
+        <span class="score">SCORE 6.5 / 10</span>
+      </div>
+      <div class="verdict">
+        <span class="verdict-tag moss">触媒</span>
+        <h4>无人机概念+资产释放双引擎</h4>
+        <p>テラドローンとの戦略关系强化、出光SS+ソフトバンク5G協業の本格化、防衛/災害対応用途のドローン納入実績拡大、加上不動産売却益の継続計上 — 多重catalyst正在形成。</p>
+        <span class="score">SCORE 7.0 / 10</span>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Section 3: Stock Chart -->
+  <section class="section">
+    <div class="section-num">03 / PRICE COMPARISON</div>
+    <h2 class="section-title">過去一年の株価推移 — 三家股价差异之大令人侧目</h2>
+    <p class="section-lead">同じ"無人機テーマ"とされながら、三家公司股价表现差异极大。下图通过基础正規化(2025年5月起点=100)进行可比较呈现,可切换查看绝对价格视图,图表上的标注线对应下方时间轴中的关键事件。</p>
+
+    <div class="chart-section">
+      <div class="chart-meta">
+        <div>
+          <div class="chart-title">2025年5月 〜 2026年5月 三銘柄株価比較</div>
+          <div class="chart-sub">MONTHLY CLOSE / APPROXIMATE / FOR ILLUSTRATION</div>
+        </div>
+        <div class="chart-toggle">
+          <button id="btn-norm" class="active">正規化(=100)</button>
+          <button id="btn-abs">絶対価格</button>
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="priceChart"></canvas>
+      </div>
+      <div class="chart-note">
+        <strong>※ 注記:</strong>本图为基于公开数据(Yahoo!ファイナンス、株探、TradingView等)的月次接近值估算,以呈现整体趋势走向为目的,具体数值请以官方数据为准。图中的纵向标注线对应三家公司的关键事件(详见下方"关键事件时间轴")。
+      </div>
+    </div>
+
+    <div class="event-timeline">
+      <div class="event-timeline-title">📍 關鍵事件時間軸 — 三家公司过去一年的核心节点</div>
+
+      <div class="event-row">
+        <span class="ev-date">2025/03/21</span>
+        <span class="ev-tag c-278a">278A</span>
+        <span class="ev-text"><strong>テラドローン上場後高値10,740円</strong>:IPO初値2,162円から短期間で約5倍。新興市场对无人机テーマの最初の覚醒。</span>
+      </div>
+      <div class="event-row">
+        <span class="ev-date">2025/06/13</span>
+        <span class="ev-tag c-6986">6986</span>
+        <span class="ev-text"><strong>双葉電子年初来高値771円</strong>:2025年4月安値426円からの戻り高値。中期計画2年目への期待が一定程度反映。</span>
+      </div>
+      <div class="event-row">
+        <span class="ev-date">2025/07/02</span>
+        <span class="ev-tag c-6232">6232</span>
+        <span class="ev-text"><strong>ACSL急落-20%(1,487→1,187円)</strong>:新株予約権の大量発行に伴う希薄化懸念で大幅下落。グロース市場全体の弱含みも重なる。</span>
+      </div>
+      <div class="event-row">
+        <span class="ev-date">2025/12/17</span>
+        <span class="ev-tag c-278a">278A</span>
+        <span class="ev-text"><strong>テラドローン年初来安値2,000円</strong>:高値10,740円から81%下落。テーマ熱の冷却+業績進捗への失望。</span>
+      </div>
+      <div class="event-row">
+        <span class="ev-date">2026/01/05</span>
+        <span class="ev-tag c-6232">6232</span>
+        <span class="ev-text"><strong>ACSL年初来安値898円</strong>:2025年中の高値から約4割下落、業績の通期下方修正(売上計画-14.3%)が直撃。</span>
+      </div>
+      <div class="event-row">
+        <span class="ev-date">2026/01下旬</span>
+        <span class="ev-tag c-6986">6986</span>
+        <span class="ev-text"><strong>双葉電子、夷隅消防本部に災害対応ドローン納入</strong>:小規模ながら防災用途での実装実績、ロボティクスソリューション戦略の具現化シグナル。</span>
+      </div>
+      <div class="event-row">
+        <span class="ev-date">2026/02/13</span>
+        <span class="ev-tag c-6232">6232</span>
+        <span class="ev-text"><strong>ACSL通期決算+2026年売上40億円(+54%)ガイダンス発表</strong>:用途特化型機体販売が大幅増。期待回復の起点に。</span>
+      </div>
+      <div class="event-row">
+        <span class="ev-date">2026/02/13</span>
+        <span class="ev-tag c-6986">6986</span>
+        <span class="ev-text"><strong>双葉電子Q3決算、純利益+32%</strong>:本業赤字も、台湾・昆山・新加坡の資産売却+子会社清算で純利益確保。BS再構築進行中。</span>
+      </div>
+      <div class="event-row">
+        <span class="ev-date">2026/03/23</span>
+        <span class="ev-tag c-278a">278A</span>
+        <span class="ev-text"><strong>テラドローン防衛装備品市場参入を発表</strong>+米国子会社Terra Defense設立計画。同日からACSLも+ウクライナAmazing Drones出資+Terra A1発売。事業の戦略的シフト。</span>
+      </div>
+      <div class="event-row">
+        <span class="ev-date">2026/03/23</span>
+        <span class="ev-tag c-6232">6232</span>
+        <span class="ev-text"><strong>ACSL防衛省10億円受注を発表</strong>:小型空撮機体SOTENの大型案件、国産化政策の最大の追い風として株価が反転上昇開始。</span>
+      </div>
+      <div class="event-row">
+        <span class="ev-date">2026/04/17</span>
+        <span class="ev-tag c-278a">278A</span>
+        <span class="ev-text"><strong>Terra A1ウクライナで実運用開始</strong>:迎撃ドローンが現地軍部隊に投入。Combat-proven取得への重要ステップ。</span>
+      </div>
+      <div class="event-row">
+        <span class="ev-date">2026/04/24</span>
+        <span class="ev-tag c-6232">6232</span>
+        <span class="ev-text"><strong>ACSL年初来高値2,747円</strong>:防衛省受注の連続発表(累計14.2億円)+政府ドローン大量調達方針報道で+13.43%急伸。</span>
+      </div>
+      <div class="event-row">
+        <span class="ev-date">2026/05/08</span>
+        <span class="ev-tag c-278a">278A</span>
+        <span class="ev-text"><strong>テラドローン防衛装備庁初受注1.15億円</strong>:モジュール型UAV(教育用)300機。年初来高値13,400円(+4.28%)。年初来安値2,055円からの上昇率6.5倍。</span>
+      </div>
+      <div class="event-row">
+        <span class="ev-date">2026/05/08</span>
+        <span class="ev-tag c-6232">6232</span>
+        <span class="ev-text"><strong>ACSL +20.60% ストップ高水準で2,927円(年初来高値)</strong>:政府ドローン大量調達方針報道+純国産化政策の追い風で大幅上昇、安値898円から3.3倍。</span>
+      </div>
+      <div class="event-row">
+        <span class="ev-date">2026/05/08</span>
+        <span class="ev-tag c-6986">6986</span>
+        <span class="ev-text"><strong>双葉電子年初来高値804円</strong>:ドローン関連株への循環買い+米国MIL規格適格性+テラドローン戦略パートナー期待。安値582円からの上昇率38%、PBR 0.41倍に再評価初動。</span>
+      </div>
+      <div class="event-row" style="background:rgba(183,50,37,0.06);border-bottom:none;padding:10px 12px;border:1px dashed var(--akane);margin-top:6px;">
+        <span class="ev-date" style="color:var(--akane);font-weight:600;">5/8 共振</span>
+        <span class="ev-tag" style="background:var(--akane);">三銘柄揃い</span>
+        <span class="ev-text"><strong style="color:var(--akane);">三家无人机概念股5月8日同日創年初来高値</strong> — テーマの同期化が極致に達した1日。今後の決算(6986: 5/12, 6232: 5/14, 278A決算済)で持続性が試される。</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: 多维对比 -->
+  <section class="section">
+    <div class="section-num">04 / MATRIX COMPARISON</div>
+    <h2 class="section-title">多维度对比矩阵</h2>
+    <p class="section-lead">从商业模式、财务韧性、估值、催化剂、风险五个维度系统对比三家公司,识别投资逻辑差异。</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>對比維度</th>
+            <th>6986 双葉電子</th>
+            <th>278A テラドローン</th>
+            <th>6232 ACSL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>事業の本質</td>
+            <td>電子器件老铺 + 无人机新规事业</td>
+            <td>无人机ITサービス + UTM空域インフラ + 防衛ハード</td>
+            <td>国産无人机机体専業メーカー</td>
+          </tr>
+          <tr>
+            <td>無人機の売上比重</td>
+            <td class="num">推定 5〜10%</td>
+            <td class="num pos">100%</td>
+            <td class="num pos">100%</td>
+          </tr>
+          <tr>
+            <td>核心差別化</td>
+            <td>无线リモコン世界トップ + 高信頼ハード</td>
+            <td>Unifly(欧UTMトップ) + Terra A1(乌克兰実戦)</td>
+            <td>Visual SLAM自律飛行 + SOTEN国産ブランド</td>
+          </tr>
+          <tr>
+            <td>政策恩恵の直接度</td>
+            <td>間接 (協業先経由)</td>
+            <td class="pos">直接 (防衛装備庁初受注済)</td>
+            <td class="pos">直接 (防衛省累計14.2億円受注)</td>
+          </tr>
+          <tr>
+            <td>財務体力</td>
+            <td class="num pos">自己資本76.2% / 現金350億</td>
+            <td class="num pos">自己資本75.4% / IPO後資金</td>
+            <td class="num warn">自己資本29.1%</td>
+          </tr>
+          <tr>
+            <td>営業黑字化のタイミング</td>
+            <td>2025年度下期予定</td>
+            <td>不明確 (UTM普及次第)</td>
+            <td>2026年度予想は赤字縮小のみ</td>
+          </tr>
+          <tr>
+            <td>PBR</td>
+            <td class="num pos">0.34倍</td>
+            <td class="num neg">19.5倍</td>
+            <td class="num neg">28.7倍</td>
+          </tr>
+          <tr>
+            <td>株価ボラティリティ</td>
+            <td>低 (年内 426〜771)</td>
+            <td class="warn">超高 (年内 2,000〜13,400)</td>
+            <td class="warn">高 (年内 898〜2,747)</td>
+          </tr>
+          <tr>
+            <td>配当</td>
+            <td class="pos">10円(配当性向30%以上目標)</td>
+            <td>なし</td>
+            <td>なし</td>
+          </tr>
+          <tr>
+            <td>業績依存度</td>
+            <td>韓国市場(縮小中)+ 北米UAV(伸長)</td>
+            <td>欧州UTM + 中東測量 + 防衛ハード(新)</td>
+            <td>防衛省 + 物流(日本郵便)+ インフラ点検</td>
+          </tr>
+          <tr>
+            <td>テーマ感応度</td>
+            <td>低〜中</td>
+            <td class="pos">超高 (テーマ覚醒で8倍)</td>
+            <td class="pos">高 (政策催化最強)</td>
+          </tr>
+          <tr>
+            <td>適性投資家</td>
+            <td>バリュー / 低リスク選好</td>
+            <td>テーマ / 高リスク高リターン</td>
+            <td>政策/防衛 / グロース志向</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="sub-title">无人机暴露强度的真相</h3>
+    <p class="para">市场往往把6986、278A、6232归为同一"概念股"群,但真正的<strong>无人机营收暴露</strong>差异巨大。如果把2026年的预想营收和无人机相关业务比例做粗略匡算:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>公司</th><th>2026E 売上高</th><th>無人機関連 推定</th><th>純度</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>278A テラドローン</td><td class="num">~50億円</td><td class="num pos">~50億円</td><td class="pos">~100%</td></tr>
+          <tr><td>6232 ACSL</td><td class="num">40億円</td><td class="num pos">40億円</td><td class="pos">100%</td></tr>
+          <tr><td>6986 双葉電子工業</td><td class="num">428億円</td><td class="num">推定 30〜50億円</td><td>7〜12%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight">
+      <strong>视角逆转:</strong>从绝对的无人机相关营收金额来看,双葉電子工業的无人机+伺服+无线リモコン业务规模(推定30〜50亿円),实际上可能与ACSL的整体规模相当。但市场对这部分业务的估值几乎为零 — 这就是双葉電子作为"隐性无人机标的"的核心吸引力,也是为什么它的PBR只有0.34倍。
+    </div>
+  </section>
+
+  <!-- Section 4.5: 代表的プロダクト比較 -->
+  <section class="section">
+    <div class="section-num">04.5 / PRODUCT SHOWCASE</div>
+    <h2 class="section-title">三家代表性无人机产品 — 形态决定战场</h2>
+    <p class="section-lead">三家公司各自的旗舰产品,直接体现其商业策略与目标市场:双葉電子的SkyBuddy瞄准国内産業現場(物流/巡检/捜索),ACSL的SOTEN(蒼天)是国产化政策旗手,テラドローン的Terra A1则是面向战场的迎撃型武装ドローン。看产品就能看出三家的"战场认知"完全不同。</p>
+
+    <div class="product-grid">
+
+      <!-- 6986 SkyBuddy -->
+      <div class="product-card">
+        <div class="img-wrap">
+          <span class="img-tag">6986 / FUTABA</span>
+          <img src="https://skybuddy.futaba.co.jp/wp-content/themes/skybuddy/images/top/img_top_drone.jpg" alt="SkyBuddy FMC-02" onerror="this.parentElement.innerHTML='<div class=&quot;img-fallback&quot;>SkyBuddy FMC-02 シリーズ<br><small>(産業用マルチロータードローン)</small></div><span class=&quot;img-tag&quot;>6986 / FUTABA</span>'">
+        </div>
+        <div class="product-body">
+          <div class="product-code">SKY BUDDY / FMC-02H</div>
+          <div class="product-name">FMC-02H ヘキサ</div>
+          <div class="product-tagline">"信頼性で勝負する国産産業ドローン"</div>
+          <div class="badge-row">
+            <span class="badge indigo">産業用</span>
+            <span class="badge">物流・点検</span>
+            <span class="badge">災害対応</span>
+            <span class="badge">国内一貫生産</span>
+          </div>
+          <ul class="spec-list">
+            <li><span class="label">タイプ</span><span class="val">ヘキサコプター(6軸)</span></li>
+            <li><span class="label">最大離陸重量</span><span class="val">13kg</span></li>
+            <li><span class="label">最大ペイロード</span><span class="val">5kg</span></li>
+            <li><span class="label">飛行時間</span><span class="val">最大40分</span></li>
+            <li><span class="label">耐風性能</span><span class="val">15m/s</span></li>
+            <li><span class="label">防塵防水</span><span class="val">IPX3相当</span></li>
+            <li><span class="label">自動航行</span><span class="val">対応</span></li>
+            <li><span class="label">姉妹機</span><span class="val">FMC-01(20kg積載)</span></li>
+          </ul>
+          <div class="product-desc">
+            ラジコン世界トップシェアの双葉が"安全性"を最優先に設計した産業用機体。点検・捜索・物流・災害対応(アナウンサードローン版あり)に幅広く対応。<strong>機体・送受信機・サーボすべて国内一貫生産</strong>で、出光興産・ソフトバンクとのパートナーシップで現場展開を進める。
+          </div>
+        </div>
+      </div>
+
+      <!-- 6232 SOTEN -->
+      <div class="product-card">
+        <div class="img-wrap">
+          <span class="img-tag">6232 / ACSL</span>
+          <img src="https://www.acsl.co.jp/drone-soten/img/main_visual.jpg" alt="ACSL SOTEN 蒼天" onerror="this.parentElement.innerHTML='<div class=&quot;img-fallback&quot;>SOTEN(蒼天)<br><small>(国産小型空撮ドローン)</small></div><span class=&quot;img-tag&quot;>6232 / ACSL</span>'">
+        </div>
+        <div class="product-body">
+          <div class="product-code">SOTEN / ACSL FLAGSHIP</div>
+          <div class="product-name">SOTEN(蒼天)</div>
+          <div class="product-tagline">"国産化政策の旗手、セキュア小型機"</div>
+          <div class="badge-row">
+            <span class="badge akane">小型空撮</span>
+            <span class="badge">防衛省採用</span>
+            <span class="badge">ISO15408</span>
+            <span class="badge">NEDO発</span>
+          </div>
+          <ul class="spec-list">
+            <li><span class="label">タイプ</span><span class="val">クワッドコプター</span></li>
+            <li><span class="label">重量</span><span class="val">1.7kg</span></li>
+            <li><span class="label">サイズ</span><span class="val">637×560mm(展開時)</span></li>
+            <li><span class="label">飛行時間</span><span class="val">最大29分</span></li>
+            <li><span class="label">最大対気速度</span><span class="val">15m/s</span></li>
+            <li><span class="label">伝送距離</span><span class="val">4km</span></li>
+            <li><span class="label">カメラ</span><span class="val">4K / 2,000万画素 / 換装可</span></li>
+            <li><span class="label">価格(参考)</span><span class="val">約154万円〜</span></li>
+          </ul>
+          <div class="product-desc">
+            NEDO公募事業で開発された<strong>純国産・セキュア小型ドローン</strong>。ISO15408準拠で機体乗っ取り耐性を実装、Visual SLAM技術によりGPS非依存で自律飛行可能。LTE通信でレベル3飛行に対応し、累計約650台販売、防衛省累計14.2億円受注の主力機種。米国でも8代理店で販売中。
+          </div>
+        </div>
+      </div>
+
+      <!-- 278A Terra A1 -->
+      <div class="product-card">
+        <div class="img-wrap">
+          <span class="img-tag">278A / TERRA</span>
+          <img src="https://terra-defense.com/wp-content/uploads/2025/03/terra-a1-hero.jpg" alt="Terra A1 迎撃ドローン" onerror="this.parentElement.innerHTML='<div class=&quot;img-fallback&quot;>Terra A1<br><small>(VTOL型迎撃ドローン)</small></div><span class=&quot;img-tag&quot;>278A / TERRA</span>'">
+        </div>
+        <div class="product-body">
+          <div class="product-code">TERRA A1 / DEFENSE LINEUP</div>
+          <div class="product-name">Terra A1</div>
+          <div class="product-tagline">"实战投入の迎撃ドローン、コスト×即応性"</div>
+          <div class="badge-row">
+            <span class="badge moss">迎撃用</span>
+            <span class="badge">VTOL</span>
+            <span class="badge">Combat-proven</span>
+            <span class="badge">防衛装備庁初受注</span>
+          </div>
+          <ul class="spec-list">
+            <li><span class="label">タイプ</span><span class="val">垂直離着陸(VTOL)</span></li>
+            <li><span class="label">最高速度</span><span class="val">302km/h</span></li>
+            <li><span class="label">加速性能</span><span class="val">10秒で200km/h</span></li>
+            <li><span class="label">航続距離</span><span class="val">32km</span></li>
+            <li><span class="label">飛行時間</span><span class="val">15分</span></li>
+            <li><span class="label">ペイロード</span><span class="val">500-650g</span></li>
+            <li><span class="label">機能</span><span class="val">自動目標追尾</span></li>
+            <li><span class="label">単価(原型)</span><span class="val">約30〜100万円</span></li>
+          </ul>
+          <div class="product-desc">
+            ウクライナ Amazing Drones との合弁開発、<strong>シャヘド型自爆ドローン迎撃を主目的</strong>とする世界初の日本企業製迎撃ドローン。電動推進で低騒音・低熱源、ロシア軍シャヘド(200km/h)を上回る速度で迎撃。2026年4月にウクライナ実戦投入、5月に防衛装備庁から教育用UAV300機(別機種)を初受注。
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Product comparison matrix -->
+    <h3 class="sub-title">プロダクト級の本質的差異</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>比較軸</th>
+            <th>SkyBuddy FMC-02H<br><small style="font-weight:400;color:var(--ink-soft);">(双葉電子)</small></th>
+            <th>SOTEN(蒼天)<br><small style="font-weight:400;color:var(--ink-soft);">(ACSL)</small></th>
+            <th>Terra A1<br><small style="font-weight:400;color:var(--ink-soft);">(テラドローン)</small></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>戦場の想定</td>
+            <td>農地・建設現場・災害地</td>
+            <td>インフラ・自治体・防衛現場</td>
+            <td class="warn">実際の戦場(対自爆ドローン)</td>
+          </tr>
+          <tr>
+            <td>カテゴリー</td>
+            <td>大型産業用マルチロータ</td>
+            <td>小型空撮ドローン</td>
+            <td>VTOL迎撃ドローン</td>
+          </tr>
+          <tr>
+            <td>商業性質</td>
+            <td>B2B 民生</td>
+            <td>B2B 民生 + B2G 防衛</td>
+            <td class="pos">B2G 防衛特化</td>
+          </tr>
+          <tr>
+            <td>サイズ・重量</td>
+            <td class="num">最大離陸13kg / ペイロード5kg</td>
+            <td class="num">1.7kg / ペイロード軽量</td>
+            <td class="num">小型 / ペイロード500-650g</td>
+          </tr>
+          <tr>
+            <td>速度性能</td>
+            <td class="num">耐風15m/s中心</td>
+            <td class="num">最大対気速度15m/s</td>
+            <td class="num pos">最高302km/h(高速)</td>
+          </tr>
+          <tr>
+            <td>飛行時間</td>
+            <td class="num pos">40分</td>
+            <td class="num pos">29分</td>
+            <td class="num">15分(短時間決戦型)</td>
+          </tr>
+          <tr>
+            <td>差別化要素</td>
+            <td>ラジコン技術60年の信頼性</td>
+            <td>セキュリティ(ISO15408)+SLAM</td>
+            <td>Combat-proven実績</td>
+          </tr>
+          <tr>
+            <td>主要パートナー</td>
+            <td>出光興産・ソフトバンク</td>
+            <td>NEDO・NTTドコモ・ヤマハ発動機</td>
+            <td>Amazing Drones(ウクライナ)</td>
+          </tr>
+          <tr>
+            <td>価格レンジ</td>
+            <td>カスタムオーダー</td>
+            <td class="num">154万円〜265万円</td>
+            <td class="num">~50万円(原型機)</td>
+          </tr>
+          <tr>
+            <td>政府実績</td>
+            <td>消防本部・自治体級</td>
+            <td class="pos">防衛省累計14.2億円</td>
+            <td class="pos">防衛装備庁1.15億円(教育用)</td>
+          </tr>
+          <tr>
+            <td>市場規模(現時点)</td>
+            <td>小(国内ニッチ)</td>
+            <td>中(国産化政策恩恵)</td>
+            <td class="warn">巨大潜在(防衛&輸出)</td>
+          </tr>
+          <tr>
+            <td>ROI明確度</td>
+            <td>明確だが規模小</td>
+            <td>政府調達拡大次第</td>
+            <td>ウクライナ→日本→グローバル展開次第</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight">
+      <strong>重要な視点:</strong>三家公司的代表性产品揭示了截然不同的战略意图。<br><br>
+      <strong>① 双葉電子(SkyBuddy)</strong>是<u>"老铺式の漸進策略"</u> — 利用60年的ラジコン技术积累,在国内産業市場稳扎稳打,以"信頼性+カスタマイズ"为核心,不追求最高规格但追求"客户敢用"。<br>
+      <strong>② ACSL(SOTEN)</strong>是<u>"政策ドリブン国産化策略"</u> — 抓住"中国DJI排除"政策窗口,用ISO15408合规性切入防衛省/重要インフラ市場,产品规格中等但"安全可靠"为最大卖点。<br>
+      <strong>③ テラドローン(Terra A1)</strong>是<u>"破壊的飛び道具策略"</u> — 跳过国内民生市场,直接以乌克兰实战为切入口,产品就是"武器",用Combat-proven认证打开国际防衛市場。<br><br>
+      从产品看公司,三家面对的<u>市场天花板和监管难度也完全不同</u>:6986最稳但最慢,6232中速中风险,278A爆发力最强但监管不确定性最高。
+    </div>
+
+  </section>
+  <section class="section">
+    <div class="section-num">05 / CATALYSTS &amp; RISKS</div>
+    <h2 class="section-title">风险与催化剂全景</h2>
+    <p class="section-lead">三家公司面临的催化剂和风险结构差异极大,投资思路必须分别匹配。</p>
+
+    <h3 class="sub-title">6986 双葉電子工業</h3>
+    <div class="two-col">
+      <div class="col-card catalyst">
+        <h5>主要催化剂</h5>
+        <ul>
+          <li>2025年度下期からの黒字化(中期計画通り達成なら、PERが付き始める)</li>
+          <li>固定資産売却益の継続計上(昆山工場15億円分は2026年3月期に計上見込)</li>
+          <li>テラドローンとの戦略関係強化(機体供給の量産化期待)</li>
+          <li>防衛・災害対応用途の機体納入実績の継続的積み上がり</li>
+          <li>北米UAV関連サーボの伸長(産業用サーボ売上が前年同期超え)</li>
+          <li>ROE 8% / PBR 1倍長期目標達成への意識的な株主還元(配当性向30%以上)</li>
+        </ul>
+      </div>
+      <div class="col-card risk">
+        <h5>主要风险</h5>
+        <ul>
+          <li>韓国市場の構造的低迷(韓国子会社2社の解散決議済)</li>
+          <li>有機ELディスプレイ事業スキーム変更の操業度悪化が継続</li>
+          <li>蛍光表示管・アウトセルタッチセンサー事業終息の最終影響</li>
+          <li>米国関税政策による景気下振れリスク(注:中期計画にも記載)</li>
+          <li>ロボティクス事業の独立収益化が進まないリスク(現在は親会社の赤字に埋もれている)</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="sub-title">278A テラドローン</h3>
+    <div class="two-col">
+      <div class="col-card catalyst">
+        <h5>主要催化剂</h5>
+        <ul>
+          <li>UTM(空域管制)が各国で義務化されればUniflyの従量課金モデルが爆発的に伸びる</li>
+          <li>Terra A1(迎撃ドローン)のウクライナ実戦実績、防衛装備庁の追加発注</li>
+          <li>Terra A2(固定翼)発表、防衛ハード3本柱体制の構築</li>
+          <li>サウジ拠点の単体黒字化、中東展開の加速</li>
+          <li>ドローンサービス企業 世界ランキング2024 1位の継続的アピール</li>
+        </ul>
+      </div>
+      <div class="col-card risk">
+        <h5>主要风险</h5>
+        <ul>
+          <li>PBR 19.5倍に黒字化シナリオが完全に織り込まれており、進捗遅延で急落リスク</li>
+          <li>防衛ハード参入は本業(UTM/サービス)からの大きな路線変更</li>
+          <li>株価ボラティリティ極端(年内6.7倍の振幅)、需給要因の影響大</li>
+          <li>競合(中国DJI、米国Skydioなど)のグローバルでの圧迫</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="sub-title">6232 ACSL</h3>
+    <div class="two-col">
+      <div class="col-card catalyst">
+        <h5>主要催化剂</h5>
+        <ul>
+          <li>防衛省累計14.2億円受注の追加発注継続性</li>
+          <li>2026年12月期 売上40億円(+54%) ガイダンス達成への期待</li>
+          <li>SOTEN(蒼天)のセキュア国産ドローンとしての政府調達拡大</li>
+          <li>"中国DJIからの脱却" 政策が国内全体のドローン国産化を後押し</li>
+          <li>Visual SLAM技術によるトンネル・橋梁下点検案件の拡大</li>
+        </ul>
+      </div>
+      <div class="col-card risk">
+        <h5>主要风险</h5>
+        <ul>
+          <li>自己資本比率29.1%と低い、新株予約権の継続的な発行(希薄化)</li>
+          <li>研究開発費8.7億円の継続投入 → キャッシュアウトの先行</li>
+          <li>PBR 28.7倍はテラドローンより高く、織り込み度極限</li>
+          <li>2026年予想売上40億円の達成可否が試金石(下方修正リスク)</li>
+          <li>防衛省受注の納期遅延・規模調整は決算インパクト大</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: 投资者画像匹配 -->
+  <section class="section">
+    <div class="section-num">06 / INVESTOR PROFILE MATCH</div>
+    <h2 class="section-title">どの投資家にどの銘柄が合うか</h2>
+    <p class="section-lead">投资标的的选择应该匹配自身的风险承受度、投资期限和投资逻辑。</p>
+
+    <div class="profile-grid">
+      <div class="profile-card">
+        <div class="who">VALUE / バリュー型</div>
+        <div class="pick">6986 <small>双葉電子</small></div>
+        <div class="why">
+          PBR 0.34倍、現金等価資産が時価総額超え、配当アリ、東証プライム上場、自己資本76% — 古典的な"安全網付きの隠れ無人機株"。下行リスクが極めて限定的で、無人機テーマが本格化すれば再評価の余地が大きい。
+          <br><br><strong>キーワード:</strong>低リスク / 中長期 / インカム+キャピタル
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <div class="who">POLICY / 政策依存型</div>
+        <div class="pick">6232 <small>ACSL</small></div>
+        <div class="why">
+          国産化政策の最前線銘柄。防衛省受注が直接的に業績に流れる構造で、政策catalystの感応度は最も高い。ただしPBR 28.7倍と織り込み度高く、ガイダンス未達なら大きく調整するハイリスク・ハイリターン型。
+          <br><br><strong>キーワード:</strong>政策 / 防衛 / グロース
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <div class="who">THEMATIC / テーマ追随型</div>
+        <div class="pick">278A <small>テラドローン</small></div>
+        <div class="why">
+          UTMという空域インフラの潜在的独占者+防衛参入の二段ロケット。中長期で最大のアップサイドを持つ可能性があるが、ボラティリティ極端で、ポートフォリオの一部としての保有が原則。
+          <br><br><strong>キーワード:</strong>高ボラ / テーマ / 中長期
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Section 7: 三层判定 总结 -->
+  <section class="section">
+    <div class="section-num">07 / FINAL VERDICT</div>
+    <h2 class="section-title">三層判定 — 最终结论</h2>
+    <p class="section-lead">我们使用一致的三層判定フレーム(估值/基本面变化/触媒)对三家公司进行最终评分。</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>判定軸</th>
+            <th>6986 双葉電子</th>
+            <th>278A テラドローン</th>
+            <th>6232 ACSL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>① 估值<br><span style="font-size:11px;color:var(--ink-soft);">バリュエーション</span></td>
+            <td><span class="stars"><span class="on">★★★★★</span></span><br><small>PBR 0.34, 現金>時価</small></td>
+            <td><span class="stars"><span class="on">★</span><span class="off">★★★★</span></span><br><small>PBR 19.5, 完全織込み</small></td>
+            <td><span class="stars"><span class="on">★</span><span class="off">★★★★</span></span><br><small>PBR 28.7, 期待先行</small></td>
+          </tr>
+          <tr>
+            <td>② 基本面変化<br><span style="font-size:11px;color:var(--ink-soft);">ファンダメンタル</span></td>
+            <td><span class="stars"><span class="on">★★★</span><span class="off">★★</span></span><br><small>構造改革後期, 黒字化視野</small></td>
+            <td><span class="stars"><span class="on">★★★</span><span class="off">★★</span></span><br><small>UTM普及+防衛参入</small></td>
+            <td><span class="stars"><span class="on">★★★</span><span class="off">★★</span></span><br><small>防衛受注で売上+54%予想</small></td>
+          </tr>
+          <tr>
+            <td>③ 触媒<br><span style="font-size:11px;color:var(--ink-soft);">カタリスト</span></td>
+            <td><span class="stars"><span class="on">★★★</span><span class="off">★★</span></span><br><small>多重だが強度は中</small></td>
+            <td><span class="stars"><span class="on">★★★★★</span></span><br><small>防衛装備庁初受注で覚醒中</small></td>
+            <td><span class="stars"><span class="on">★★★★</span><span class="off">★</span></span><br><small>政策直撃で連発</small></td>
+          </tr>
+          <tr>
+            <td>④ 下行リスク<br><span style="font-size:11px;color:var(--ink-soft);">ダウンサイド</span></td>
+            <td><span class="stars"><span class="on">★★★★★</span></span><br><small>資産下支え強</small></td>
+            <td><span class="stars"><span class="on">★</span><span class="off">★★★★</span></span><br><small>急落リスク高</small></td>
+            <td><span class="stars"><span class="on">★★</span><span class="off">★★★</span></span><br><small>希薄化+期待外</small></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="quote-box">
+      無人機テーマで「最も無人機らしい」のはACSLと テラドローンであり、純度を求めるならこの二社のいずれか。<br>
+      しかし、「無人機テーマでもあり得る」かつ「下方が硬い」のは間違いなく双葉電子工業である。<br>
+      三社をポートフォリオで補完的に持つなら、6986をコア(50%)、6232をサテライト(30%)、278Aをスパイス(20%)という配分が、リスク調整後リターンの観点では最もバランスが良い。
+    </div>
+
+    <div class="highlight">
+      <strong>2026年5月8日の同時年初来高値が示す重要なサイン:</strong>三銘柄が同日にそろって年初来高値を更新したことは、無人機テーマが特定銘柄の局地戦から「セクター全体の循環買い」フェーズに入ったことを示唆する。次の試金石は<strong>5月12日 双葉電子の通期決算 / 5月14日 ACSLの第1四半期決算</strong>。両者で防衛・無人機関連の受注実績や将来見通しが具体化されれば、テーマの持続性が確認される。一方、決算が市場期待に届かない場合、特にPBR 34倍のACSLには大きな調整圧力が生じうる。
+    </div>
+
+    <div class="highlight">
+      <strong>最後に一言:</strong>当下日本无人机テーマの最大の死角は、市場が"純粋プレイ"にだけ注目し、"非純粋プレイで深く関わっている老铺"を見過ごしていることである。双葉電子工業は、まさにその死角に最も典型的に位置する銘柄であり、ポートフォリオに組み込む価値は十分にある。ただし、本業の構造改革が予定通り進まない場合の機会コストは認識しておく必要がある。
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-disclaimer">
+      <strong>免責事項:</strong>本レポートは公開情報(各社決算短信、適時開示資料、Yahoo!ファイナンス、株探、TradingViewなど)に基づく個人的な分析であり、特定銘柄への投資勧誘・推奨を目的とするものではありません。実際の投資判断は最新情報の確認とご自身の責任において行ってください。株価チャートは月次概算値であり、正確性を保証するものではありません。記載財務数値は各社開示時点のものです。
+    </div>
+    <div class="footer-meta">
+      <span>© DongTao 日股研究室</span>
+      <span>VERSION 1.0 / 2026.05.10</span>
+      <span>三銘柄比較 / 6986 + 278A + 6232</span>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  // Stock price data (approximate monthly close, May 2025 - May 2026)
+  // Final point reflects 2026/5/8 actual closing prices
+  const labels = ['25/05', '25/06', '25/07', '25/08', '25/09', '25/10', '25/11', '25/12', '26/01', '26/02', '26/03', '26/04', '26/05/08'];
+
+  // Absolute prices — May 8, 2026 closing values are confirmed:
+  // 6986: ¥804 (年初来高値), 6232: ¥2,927 (+20.6% ストップ高水準), 278A: ¥13,400 (+4.28%)
+  const abs6986 = [600, 720, 592, 580, 545, 510, 485, 498, 620, 720, 760, 730, 804];
+  const abs278A = [7000, 5500, 4500, 4000, 3500, 3000, 2500, 2200, 2800, 3500, 5000, 9270, 13400];
+  const abs6232 = [1500, 1700, 1187, 1139, 1080, 1020, 980, 940, 950, 1180, 1500, 2647, 2927];
+
+  // Normalize to 100 = May 2025
+  const norm = (arr) => arr.map(v => +(v / arr[0] * 100).toFixed(1));
+  const n6986 = norm(abs6986);
+  const n278A = norm(abs278A);
+  const n6232 = norm(abs6232);
+
+  const ctx = document.getElementById('priceChart').getContext('2d');
+
+  // Annotations: x-axis labels in chart correspond to position
+  const buildAnnotations = (isNorm) => ({
+    // 278A 2025/12 安値
+    a1: {
+      type: 'line',
+      xMin: '25/12',
+      xMax: '25/12',
+      borderColor: 'rgba(90, 110, 63, 0.55)',
+      borderWidth: 1.2,
+      borderDash: [4, 4],
+      label: {
+        display: true,
+        content: ['278A', '安値2,000円'],
+        position: 'start',
+        backgroundColor: 'rgba(90, 110, 63, 0.92)',
+        color: '#F2EBD8',
+        font: { family: "'Shippori Mincho', serif", size: 9, weight: '600' },
+        padding: 4,
+        cornerRadius: 0,
+        yAdjust: 8
+      }
+    },
+    // 6232 2025/07 急落
+    a2: {
+      type: 'line',
+      xMin: '25/07',
+      xMax: '25/07',
+      borderColor: 'rgba(183, 50, 37, 0.55)',
+      borderWidth: 1.2,
+      borderDash: [4, 4],
+      label: {
+        display: true,
+        content: ['6232', '希薄化-20%'],
+        position: 'end',
+        backgroundColor: 'rgba(183, 50, 37, 0.92)',
+        color: '#F2EBD8',
+        font: { family: "'Shippori Mincho', serif", size: 9, weight: '600' },
+        padding: 4,
+        cornerRadius: 0,
+        yAdjust: -10
+      }
+    },
+    // 6232 2026/01 安値
+    a3: {
+      type: 'line',
+      xMin: '26/01',
+      xMax: '26/01',
+      borderColor: 'rgba(183, 50, 37, 0.55)',
+      borderWidth: 1.2,
+      borderDash: [4, 4],
+      label: {
+        display: true,
+        content: ['6232', '安値898円'],
+        position: 'start',
+        backgroundColor: 'rgba(183, 50, 37, 0.92)',
+        color: '#F2EBD8',
+        font: { family: "'Shippori Mincho', serif", size: 9, weight: '600' },
+        padding: 4,
+        cornerRadius: 0,
+        yAdjust: 18
+      }
+    },
+    // 2026/03 防衛参入連発(共同事件)
+    a4: {
+      type: 'line',
+      xMin: '26/03',
+      xMax: '26/03',
+      borderColor: 'rgba(76, 53, 30, 0.7)',
+      borderWidth: 1.5,
+      borderDash: [2, 3],
+      label: {
+        display: true,
+        content: ['防衛省受注', '+Terra参入'],
+        position: 'center',
+        backgroundColor: 'rgba(76, 53, 30, 0.95)',
+        color: '#F2EBD8',
+        font: { family: "'Shippori Mincho', serif", size: 9, weight: '600' },
+        padding: 4,
+        cornerRadius: 0,
+        yAdjust: -50
+      }
+    },
+    // 6986 2025/06 高値
+    a5: {
+      type: 'point',
+      xValue: '25/06',
+      yValue: isNorm ? n6986[1] : abs6986[1],
+      backgroundColor: 'rgba(46, 65, 86, 0.95)',
+      borderColor: '#F2EBD8',
+      borderWidth: 2,
+      radius: 7
+    },
+    a5_label: {
+      type: 'label',
+      xValue: '25/06',
+      yValue: isNorm ? n6986[1] : abs6986[1],
+      backgroundColor: 'rgba(46, 65, 86, 0.92)',
+      color: '#F2EBD8',
+      content: ['6986', '高値771円'],
+      font: { family: "'Shippori Mincho', serif", size: 9, weight: '600' },
+      padding: 4,
+      borderRadius: 0,
+      xAdjust: 35,
+      yAdjust: -18
+    },
+    // 6232 2026/04 高値2,747円
+    a6: {
+      type: 'point',
+      xValue: '26/04',
+      yValue: isNorm ? n6232[11] : abs6232[11],
+      backgroundColor: 'rgba(183, 50, 37, 0.95)',
+      borderColor: '#F2EBD8',
+      borderWidth: 2,
+      radius: 7
+    },
+    a6_label: {
+      type: 'label',
+      xValue: '26/04',
+      yValue: isNorm ? n6232[11] : abs6232[11],
+      backgroundColor: 'rgba(183, 50, 37, 0.92)',
+      color: '#F2EBD8',
+      content: ['6232 4/24', '2,747円'],
+      font: { family: "'Shippori Mincho', serif", size: 9, weight: '600' },
+      padding: 4,
+      borderRadius: 0,
+      xAdjust: -40,
+      yAdjust: -28
+    },
+    // 5/8 三銘柄共振(年初来高値)
+    a7_278a_pt: {
+      type: 'point',
+      xValue: '26/05/08',
+      yValue: isNorm ? n278A[12] : abs278A[12],
+      backgroundColor: 'rgba(90, 110, 63, 1)',
+      borderColor: '#F2EBD8',
+      borderWidth: 2,
+      radius: 8
+    },
+    a7_278a_label: {
+      type: 'label',
+      xValue: '26/05/08',
+      yValue: isNorm ? n278A[12] : abs278A[12],
+      backgroundColor: 'rgba(90, 110, 63, 0.95)',
+      color: '#F2EBD8',
+      content: ['278A 5/8', '13,400円'],
+      font: { family: "'Shippori Mincho', serif", size: 9, weight: '700' },
+      padding: 4,
+      borderRadius: 0,
+      xAdjust: -55,
+      yAdjust: -22
+    },
+    a7_6232_pt: {
+      type: 'point',
+      xValue: '26/05/08',
+      yValue: isNorm ? n6232[12] : abs6232[12],
+      backgroundColor: 'rgba(183, 50, 37, 1)',
+      borderColor: '#F2EBD8',
+      borderWidth: 2,
+      radius: 8
+    },
+    a7_6232_label: {
+      type: 'label',
+      xValue: '26/05/08',
+      yValue: isNorm ? n6232[12] : abs6232[12],
+      backgroundColor: 'rgba(183, 50, 37, 0.95)',
+      color: '#F2EBD8',
+      content: ['6232 5/8', '2,927円(+20.6%)'],
+      font: { family: "'Shippori Mincho', serif", size: 9, weight: '700' },
+      padding: 4,
+      borderRadius: 0,
+      xAdjust: -65,
+      yAdjust: 22
+    },
+    a7_6986_pt: {
+      type: 'point',
+      xValue: '26/05/08',
+      yValue: isNorm ? n6986[12] : abs6986[12],
+      backgroundColor: 'rgba(46, 65, 86, 1)',
+      borderColor: '#F2EBD8',
+      borderWidth: 2,
+      radius: 8
+    },
+    a7_6986_label: {
+      type: 'label',
+      xValue: '26/05/08',
+      yValue: isNorm ? n6986[12] : abs6986[12],
+      backgroundColor: 'rgba(46, 65, 86, 0.95)',
+      color: '#F2EBD8',
+      content: ['6986 5/8', '804円'],
+      font: { family: "'Shippori Mincho', serif", size: 9, weight: '700' },
+      padding: 4,
+      borderRadius: 0,
+      xAdjust: -45,
+      yAdjust: -18
+    }
+  });
+
+  const baseConfig = (data6986, data278A, data6232, isNorm) => ({
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: '6986 双葉電子工業',
+          data: data6986,
+          borderColor: '#2E4156',
+          backgroundColor: 'rgba(46, 65, 86, 0.08)',
+          borderWidth: 2.5,
+          tension: 0.35,
+          pointRadius: 3,
+          pointBackgroundColor: '#2E4156',
+          pointBorderColor: '#F8F2E0',
+          pointBorderWidth: 1.5,
+          pointHoverRadius: 6,
+          fill: false
+        },
+        {
+          label: '278A テラドローン',
+          data: data278A,
+          borderColor: '#5A6E3F',
+          backgroundColor: 'rgba(90, 110, 63, 0.08)',
+          borderWidth: 2.5,
+          tension: 0.35,
+          pointRadius: 3,
+          pointBackgroundColor: '#5A6E3F',
+          pointBorderColor: '#F8F2E0',
+          pointBorderWidth: 1.5,
+          pointHoverRadius: 6,
+          fill: false
+        },
+        {
+          label: '6232 ACSL',
+          data: data6232,
+          borderColor: '#B73225',
+          backgroundColor: 'rgba(183, 50, 37, 0.08)',
+          borderWidth: 2.5,
+          tension: 0.35,
+          pointRadius: 3,
+          pointBackgroundColor: '#B73225',
+          pointBorderColor: '#F8F2E0',
+          pointBorderWidth: 1.5,
+          pointHoverRadius: 6,
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
+      plugins: {
+        legend: {
+          position: 'top',
+          align: 'end',
+          labels: {
+            usePointStyle: true,
+            pointStyle: 'circle',
+            padding: 18,
+            font: {
+              family: "'Shippori Mincho', serif",
+              size: 13,
+              weight: '600'
+            },
+            color: '#2A211A'
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(42, 33, 26, 0.95)',
+          titleColor: '#F2EBD8',
+          bodyColor: '#F2EBD8',
+          padding: 12,
+          borderColor: '#B08840',
+          borderWidth: 1,
+          titleFont: { family: "'Shippori Mincho', serif", size: 12 },
+          bodyFont: { family: "'JetBrains Mono', monospace", size: 12 },
+          callbacks: {
+            label: function(ctx) {
+              const v = ctx.parsed.y;
+              if (isNorm) {
+                return ctx.dataset.label + ': ' + v.toFixed(1) + ' (' + (v >= 100 ? '+' : '') + (v - 100).toFixed(1) + '%)';
+              } else {
+                return ctx.dataset.label + ': ¥' + v.toLocaleString();
+              }
+            }
+          }
+        },
+        annotation: {
+          annotations: buildAnnotations(isNorm)
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            color: 'rgba(201, 188, 159, 0.4)',
+            drawBorder: false
+          },
+          ticks: {
+            font: { family: "'JetBrains Mono', monospace", size: 11 },
+            color: '#756657'
+          }
+        },
+        y: {
+          grid: {
+            color: 'rgba(201, 188, 159, 0.4)',
+            drawBorder: false
+          },
+          ticks: {
+            font: { family: "'JetBrains Mono', monospace", size: 11 },
+            color: '#756657',
+            callback: function(v) {
+              return isNorm ? v : '¥' + v.toLocaleString();
+            }
+          },
+          title: {
+            display: true,
+            text: isNorm ? '正規化指数 (2025年5月=100)' : '株価 (円)',
+            font: { family: "'Shippori Mincho', serif", size: 12 },
+            color: '#4F443A'
+          }
+        }
+      }
+    }
+  });
+
+  let chart = new Chart(ctx, baseConfig(n6986, n278A, n6232, true));
+
+  document.getElementById('btn-norm').addEventListener('click', function() {
+    document.getElementById('btn-norm').classList.add('active');
+    document.getElementById('btn-abs').classList.remove('active');
+    chart.destroy();
+    chart = new Chart(ctx, baseConfig(n6986, n278A, n6232, true));
+  });
+
+  document.getElementById('btn-abs').addEventListener('click', function() {
+    document.getElementById('btn-abs').classList.add('active');
+    document.getElementById('btn-norm').classList.remove('active');
+    chart.destroy();
+    chart = new Chart(ctx, baseConfig(abs6986, abs278A, abs6232, false));
+  });
+</script>
+
+</body>
+</html>
