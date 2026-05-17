@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>骨太方針2026 综合分析 ｜ 东韬日股研究室</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;700;900&family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600;700&family=Shippori+Mincho:wght@400;600;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg-primary: #F5EFE0;
+    --bg-secondary: #EBE3D0;
+    --bg-card: #FBF8F0;
+    --bg-accent: #E8DFC9;
+    --ink-primary: #2B2620;
+    --ink-secondary: #54493C;
+    --ink-muted: #8A7E6C;
+    --accent-red: #A8323F;
+    --accent-deep-red: #7A1E2A;
+    --accent-gold: #B08D3F;
+    --accent-indigo: #2C3E5E;
+    --accent-moss: #4F6B4C;
+    --line: #C9BDA3;
+    --line-soft: #DCD2BA;
+    --tier-s: #7A1E2A;
+    --tier-a: #B08D3F;
+    --tier-b: #2C3E5E;
+    --tier-c: #8A7E6C;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg-primary);
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(168, 50, 63, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(44, 62, 94, 0.03) 0%, transparent 50%),
+      repeating-linear-gradient(45deg, transparent 0, transparent 2px, rgba(139, 119, 84, 0.015) 2px, rgba(139, 119, 84, 0.015) 4px);
+    color: var(--ink-primary);
+    font-family: 'Noto Sans SC', 'Noto Sans JP', sans-serif;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+  .container { max-width: 1280px; margin: 0 auto; padding: 32px 32px 48px; }
+
+  /* ===== Top Bar (Return Button) ===== */
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0 22px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 10px 18px;
+    color: var(--ink-primary);
+    text-decoration: none;
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .back-button:hover {
+    background: var(--accent-deep-red);
+    color: #fff;
+    border-color: var(--accent-deep-red);
+  }
+  .back-button .arrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+  }
+  .top-bar-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* ===== Header ===== */
+  .masthead {
+    border-top: 6px double var(--accent-deep-red);
+    border-bottom: 1px solid var(--line);
+    padding: 32px 0 28px;
+    margin-bottom: 32px;
+  }
+  .masthead-brand {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 14px;
+    letter-spacing: 0.4em;
+    color: var(--accent-deep-red);
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .masthead h1 {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: clamp(28px, 4.5vw, 44px);
+    font-weight: 800;
+    line-height: 1.3;
+    color: var(--ink-primary);
+    margin-bottom: 14px;
+  }
+  .masthead h1 .accent { color: var(--accent-deep-red); }
+  .masthead .subtitle {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 17px;
+    color: var(--ink-secondary);
+    margin-bottom: 24px;
+    font-weight: 400;
+  }
+  .masthead-meta {
+    display: flex;
+    gap: 24px;
+    font-size: 13px;
+    color: var(--ink-muted);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .masthead-meta span::before { content: "│ "; color: var(--line); margin-right: 4px; }
+  .masthead-meta span:first-child::before { display: none; margin-right: 0; }
+
+  /* ===== Tab Navigation ===== */
+  .tab-nav {
+    display: flex;
+    gap: 0;
+    margin-bottom: 36px;
+    border-bottom: 2px solid var(--line);
+    overflow-x: auto;
+  }
+  .tab-button {
+    background: none;
+    border: none;
+    padding: 16px 28px;
+    cursor: pointer;
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    border-bottom: 4px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+  }
+  .tab-button:hover { color: var(--accent-deep-red); }
+  .tab-button.active {
+    color: var(--accent-deep-red);
+    border-bottom-color: var(--accent-deep-red);
+  }
+  .tab-button .tab-icon {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-gold);
+    margin-right: 6px;
+  }
+
+  /* ===== Tab Content ===== */
+  .tab-content { display: none; animation: fadeIn 0.3s ease; }
+  .tab-content.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== Section ===== */
+  section { margin-bottom: 56px; }
+  .section-label {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent-deep-red);
+    padding: 4px 12px;
+    border: 1px solid var(--accent-deep-red);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+  h2 {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: clamp(24px, 3vw, 30px);
+    font-weight: 700;
+    color: var(--ink-primary);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  h2::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: var(--accent-deep-red);
+    margin-top: 12px;
+  }
+  .section-intro {
+    font-size: 15px;
+    color: var(--ink-secondary);
+    margin: 16px 0 28px;
+    max-width: 900px;
+  }
+  h3 {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink-primary);
+    margin-bottom: 12px;
+  }
+  p { color: var(--ink-secondary); font-size: 14.5px; }
+
+  /* ===== Japanese term inline ===== */
+  .jp {
+    font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+    color: var(--accent-deep-red);
+    font-weight: 600;
+  }
+  .hl {
+    background: linear-gradient(180deg, transparent 60%, rgba(176, 141, 63, 0.3) 60%);
+    font-weight: 600;
+  }
+
+  /* ===== Verdict Cards ===== */
+  .verdict-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .verdict-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--accent-deep-red);
+    padding: 20px 22px;
+  }
+  .verdict-card .vc-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--ink-muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .verdict-card .vc-headline {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink-primary);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .verdict-card .vc-body { font-size: 13px; color: var(--ink-secondary); line-height: 1.65; }
+  .verdict-card.high { border-left-color: var(--accent-deep-red); }
+  .verdict-card.medium { border-left-color: var(--accent-gold); }
+  .verdict-card.info { border-left-color: var(--accent-indigo); }
+  .verdict-card.positive { border-left-color: var(--accent-moss); }
+
+  /* ===== Timeline ===== */
+  .timeline {
+    position: relative;
+    padding-left: 32px;
+    margin-top: 24px;
+  }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--accent-deep-red);
+  }
+  .tl-item {
+    position: relative;
+    margin-bottom: 28px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 18px 22px;
+  }
+  .tl-item::before {
+    content: "";
+    position: absolute;
+    left: -32px;
+    top: 22px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent-deep-red);
+    border: 3px solid var(--bg-primary);
+  }
+  .tl-item.current::before { background: var(--accent-gold); width: 20px; height: 20px; left: -34px; top: 20px; }
+  .tl-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent-deep-red);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .tl-title {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink-primary);
+    margin-bottom: 10px;
+  }
+  .tl-keywords {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin: 10px 0;
+  }
+  .tl-tag {
+    font-size: 11px;
+    background: var(--bg-accent);
+    padding: 3px 10px;
+    color: var(--ink-secondary);
+    border: 1px solid var(--line-soft);
+  }
+  .tl-tag.hot { background: var(--accent-deep-red); color: #fff; border-color: var(--accent-deep-red); }
+  .tl-detail { font-size: 13.5px; color: var(--ink-secondary); margin-top: 8px; }
+
+  /* ===== Framework Diagram ===== */
+  .framework {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 32px;
+    margin: 24px 0;
+  }
+  .framework-title {
+    text-align: center;
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: var(--accent-deep-red);
+  }
+  .pillar-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .pillar {
+    background: var(--bg-primary);
+    border: 1px solid var(--line);
+    padding: 20px;
+  }
+  .pillar h4 {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 18px;
+    color: var(--accent-deep-red);
+    margin-bottom: 6px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .pillar .pillar-sub {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-bottom: 10px;
+  }
+  .pillar ul { list-style: none; padding-left: 0; }
+  .pillar li {
+    font-size: 13px;
+    color: var(--ink-secondary);
+    padding: 4px 0 4px 16px;
+    position: relative;
+  }
+  .pillar li::before {
+    content: "◇";
+    position: absolute;
+    left: 0;
+    color: var(--accent-gold);
+  }
+  .arrow-down {
+    text-align: center;
+    color: var(--accent-deep-red);
+    font-size: 20px;
+    margin: 8px 0;
+  }
+  .outcome {
+    background: var(--accent-deep-red);
+    color: #fff;
+    padding: 16px 20px;
+    text-align: center;
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+  .outcome strong { font-size: 18px; }
+
+  /* ===== Fields Grid ===== */
+  .fields-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
+    margin: 20px 0;
+  }
+  .field {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 14px 12px;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  .field:hover { transform: translateY(-2px); border-color: var(--accent-deep-red); }
+  .field-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-deep-red);
+    font-weight: 600;
+  }
+  .field-name {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-primary);
+    margin: 4px 0;
+    line-height: 1.3;
+  }
+  .field-priority {
+    font-size: 10px;
+    color: var(--ink-muted);
+    margin-top: 4px;
+  }
+  .field.priority {
+    background: linear-gradient(180deg, var(--bg-card) 0%, #F0E4CE 100%);
+    border-color: var(--accent-gold);
+  }
+  .field.priority .field-priority { color: var(--accent-deep-red); font-weight: 600; }
+
+  /* ===== Charts ===== */
+  .chart-wrapper {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 24px;
+    margin: 20px 0;
+  }
+  .chart-title {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--ink-primary);
+  }
+  .chart-box { position: relative; height: 320px; }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 20px 0;
+  }
+  @media (max-width: 768px) {
+    .two-col, .pillar-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ===== Principles ===== */
+  .principles { counter-reset: principle; margin: 24px 0; }
+  .principle-item {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 18px 22px 18px 60px;
+    margin-bottom: 12px;
+    position: relative;
+    counter-increment: principle;
+  }
+  .principle-item::before {
+    content: "原则 " counter(principle);
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 50px;
+    background: var(--accent-deep-red);
+    color: #fff;
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 11px;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+  .principle-headline {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink-primary);
+    margin-bottom: 6px;
+  }
+  .principle-body { font-size: 13.5px; color: var(--ink-secondary); }
+
+  /* ===== Tables ===== */
+  .invest-table {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    overflow-x: auto;
+    margin: 20px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    background: var(--accent-deep-red);
+    color: #fff;
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+  }
+  td {
+    padding: 12px;
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--ink-secondary);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: rgba(232, 223, 201, 0.3); }
+  td.theme {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-weight: 600;
+    color: var(--ink-primary);
+  }
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    margin-right: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    color: #fff;
+  }
+  .badge.h { background: var(--accent-deep-red); }
+  .badge.m { background: var(--accent-gold); }
+  .badge.l { background: var(--accent-indigo); }
+
+  /* ===== Risk Cards ===== */
+  .risk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+  }
+  .risk-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 18px;
+    border-top: 3px solid var(--accent-deep-red);
+  }
+  .risk-card h4 {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 15px;
+    color: var(--ink-primary);
+    margin-bottom: 8px;
+  }
+  .risk-card p { font-size: 13px; }
+  .risk-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-muted);
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--line);
+  }
+
+  /* ===== Bottom Verdict ===== */
+  .bottom-verdict {
+    background: var(--ink-primary);
+    color: var(--bg-primary);
+    padding: 36px 32px;
+    margin: 48px 0 24px;
+    position: relative;
+  }
+  .bottom-verdict::before {
+    content: "结论";
+    position: absolute;
+    top: -16px;
+    left: 24px;
+    background: var(--accent-deep-red);
+    color: #fff;
+    padding: 6px 18px;
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+  }
+  .bottom-verdict h3 {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    color: #fff;
+    font-size: 22px;
+    margin-bottom: 16px;
+    margin-top: 8px;
+  }
+  .bottom-verdict p { color: #D5C9B0; font-size: 14px; margin-bottom: 12px; }
+  .bottom-verdict ul, .bottom-verdict ol { padding-left: 20px; }
+  .bottom-verdict li { color: #D5C9B0; font-size: 14px; margin-bottom: 8px; }
+  .bottom-verdict li strong { color: #fff; }
+
+  /* ===== Methodology Box ===== */
+  .methodology {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--accent-indigo);
+    padding: 24px 28px;
+    margin-bottom: 36px;
+  }
+  .methodology h3 {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 18px;
+    color: var(--accent-indigo);
+    margin-bottom: 12px;
+  }
+  .methodology p { font-size: 14px; color: var(--ink-secondary); margin-bottom: 10px; }
+  .tier-legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--line);
+  }
+  .tier-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .tier-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 22px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .tier-badge.s { background: var(--tier-s); }
+  .tier-badge.a { background: var(--tier-a); }
+  .tier-badge.b { background: var(--tier-b); }
+  .tier-badge.c { background: var(--tier-c); }
+
+  /* ===== Stats Row ===== */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 24px 0;
+  }
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 16px 18px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent-deep-red);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--ink-muted);
+    margin-top: 6px;
+    letter-spacing: 0.05em;
+  }
+  @media (max-width: 600px) { .stat-row { grid-template-columns: 1fr; } }
+
+  /* ===== Field Block (Watchlist) ===== */
+  .field-block {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+  .field-header {
+    background: linear-gradient(135deg, var(--accent-deep-red) 0%, #5C1620 100%);
+    color: #fff;
+    padding: 20px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .field-header-left h3 {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #fff;
+  }
+  .field-header-left .subtitle {
+    font-size: 12px;
+    opacity: 0.85;
+    letter-spacing: 0.05em;
+  }
+  .field-header-right {
+    background: rgba(255,255,255,0.15);
+    padding: 6px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+  .field-body { padding: 24px 28px; }
+  .item-block {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed var(--line-soft);
+  }
+  .item-block:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  .item-title {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent-deep-red);
+    margin-bottom: 4px;
+  }
+  .item-desc {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-bottom: 14px;
+  }
+  .item-desc .gov {
+    color: var(--accent-indigo);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+
+  /* ===== Stock Table ===== */
+  .stock-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: var(--bg-primary);
+  }
+  .stock-table th {
+    background: var(--bg-accent);
+    color: var(--ink-primary);
+    padding: 10px 12px;
+    text-align: left;
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-weight: 600;
+    font-size: 12px;
+    border-bottom: 2px solid var(--line);
+    letter-spacing: 0;
+  }
+  .stock-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+  .stock-table tr:nth-child(even) td { background: rgba(232, 223, 201, 0.3); }
+  .stock-table tr:hover td { background: rgba(176, 141, 63, 0.1); }
+  .stock-ticker {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: var(--accent-deep-red);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .stock-name {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-weight: 600;
+    color: var(--ink-primary);
+  }
+  .col-tier { width: 60px; }
+  .col-ticker { width: 78px; }
+  .col-name { width: 140px; }
+
+  /* ===== Action Plan ===== */
+  .action-plan {
+    background: var(--ink-primary);
+    color: var(--bg-primary);
+    padding: 36px 32px;
+    margin: 48px 0 24px;
+    position: relative;
+  }
+  .action-plan::before {
+    content: "下一步行动";
+    position: absolute;
+    top: -16px;
+    left: 24px;
+    background: var(--accent-deep-red);
+    color: #fff;
+    padding: 6px 18px;
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+  }
+  .action-plan h3 {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    color: #fff;
+    font-size: 20px;
+    margin-bottom: 16px;
+    margin-top: 8px;
+  }
+  .action-plan ol { padding-left: 24px; }
+  .action-plan li { color: #D5C9B0; font-size: 14px; margin-bottom: 10px; }
+  .action-plan li strong { color: #fff; }
+
+  /* ===== Footer ===== */
+  footer {
+    border-top: 2px solid var(--line);
+    padding-top: 24px;
+    margin-top: 48px;
+    font-size: 12px;
+    color: var(--ink-muted);
+    line-height: 1.7;
+  }
+  footer .brand {
+    font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+    color: var(--accent-deep-red);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+  }
+  .disclaimer {
+    background: var(--bg-accent);
+    border-left: 3px solid var(--ink-muted);
+    padding: 12px 16px;
+    margin-top: 16px;
+    font-size: 11.5px;
+  }
+  .field-code {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    padding: 2px 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #fff;
+    margin-right: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ===== TOP BAR ===== -->
+  <div class="top-bar">
+    <a href="https://dongtao2026.github.io/research-lab/" class="back-button">
+      <span class="arrow">←</span>
+      <span>返回 东韬日股研究室</span>
+    </a>
+    <div class="top-bar-meta">DOC ID: HONEBUTO-2026-COMB / 2026.05.17</div>
+  </div>
+
+  <!-- ===== MASTHEAD ===== -->
+  <header class="masthead">
+    <div class="masthead-brand">东韬日股研究室 ｜ 政策综合分析</div>
+    <h1><span class="accent">骨太方針2026</span> 方向分析 × 27先行品目个股清单</h1>
+    <p class="subtitle">基于近3年骨太方針演变、高市政権1年经济政策与成长战略会议公开资料的综合判断</p>
+    <div class="masthead-meta">
+      <span>发布：2026年5月17日</span>
+      <span>覆盖：2023〜2026骨太方針</span>
+      <span>预测对象：6月中下旬閣議決定</span>
+      <span>个股层级：4段Tier分类</span>
+    </div>
+  </header>
+
+  <!-- ===== TAB NAVIGATION ===== -->
+  <nav class="tab-nav">
+    <button class="tab-button active" data-tab="analysis">
+      <span class="tab-icon">01</span>政策方向分析
+    </button>
+    <button class="tab-button" data-tab="watchlist">
+      <span class="tab-icon">02</span>27先行品目个股清单
+    </button>
+  </nav>
+
+  <!-- ============================================ -->
+  <!-- ===== TAB 1: ANALYSIS ===== -->
+  <!-- ============================================ -->
+  <div class="tab-content active" id="tab-analysis">
+
+    <!-- EXECUTIVE SUMMARY -->
+    <section>
+      <span class="section-label">EXECUTIVE SUMMARY</span>
+      <h2>四个核心判断</h2>
+      <p class="section-intro">骨太方針2026是高市政権首份骨太方针，将成为"<span class="jp">サナエノミクス</span>（早苗经济学）2.0"的政策宣言书。相比石破政権延续性的骨太，2026版本将出现近10年来最大的政策范式转换。</p>
+
+      <div class="verdict-grid">
+        <div class="verdict-card high">
+          <div class="vc-label">判断 01 ｜ 财政范式</div>
+          <div class="vc-headline">PB目标退场<br>债务残高/GDP比上位</div>
+          <div class="vc-body">单年度<span class="jp">プライマリーバランス（基础财政收支）</span>黑字化目标作为"中核"地位下降，<span class="jp">債務残高対GDP比</span>稳定下降成为新的中核目标。这是"<span class="jp">責任ある積極財政</span>（负责任的积极财政）"的制度化关键。</div>
+        </div>
+        <div class="verdict-card medium">
+          <div class="vc-label">判断 02 ｜ 资金分配</div>
+          <div class="vc-headline">战略17分野<br>+61优先品目锁定</div>
+          <div class="vc-body">骨太方针将明确把2027年度预算导向17分野61品目（其中27品目先行），AI半导体、防卫、造船、海洋、重要鉱物形成最强受益梯队。</div>
+        </div>
+        <div class="verdict-card info">
+          <div class="vc-label">判断 03 ｜ 预算结构</div>
+          <div class="vc-headline">新设"投资枠"<br>独立于常规岁出</div>
+          <div class="vc-body">通过<span class="jp">別枠管理</span>把经济安保和战略投资从既有岁出改革中剥离，配合<span class="jp">つなぎ国債</span>（过渡国债）工具，为跨年度复合预算开路。</div>
+        </div>
+        <div class="verdict-card positive">
+          <div class="vc-label">判断 04 ｜ 政治支撑</div>
+          <div class="vc-headline">高支持率+衆院过半<br>政策执行力10年最强</div>
+          <div class="vc-body">内阁支持率76%、自民+维新衆议院过半（2月衆議院选大胜），让2026骨太方针具备真正落地的政治资本，市场不应低估执行强度。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TIMELINE -->
+    <section>
+      <span class="section-label">PART 1 ｜ 历史脉络</span>
+      <h2>三年骨太方針关键词演变</h2>
+      <p class="section-intro">从岸田到石破再到高市，骨太方针的副标题、PB目标、政策重心都在变化。理解2026版需要先看清这条演变曲线。</p>
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-year">2023年6月16日 内阁会议决定 ｜ 岸田政権</div>
+          <div class="tl-title">加速する新しい資本主義（加速新资本主义）〜未来投资扩大与结构性涨薪的实现〜</div>
+          <div class="tl-keywords">
+            <span class="tl-tag">新しい資本主義</span>
+            <span class="tl-tag">结构性涨薪</span>
+            <span class="tl-tag">GX・DX投资</span>
+            <span class="tl-tag">PB 2025年度黑字化</span>
+            <span class="tl-tag">こども未来戦略</span>
+          </div>
+          <div class="tl-detail">岸田"新资本主义"的扩张期。明确PB 2025年度黑字化目标，强调涨薪+投资双引擎，半导体国内回归（熊本TSMC期）。</div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-year">2024年6月21日 内阁会议决定 ｜ 岸田政権</div>
+          <div class="tl-title">涨薪和投资牵引的成长型经济实现</div>
+          <div class="tl-keywords">
+            <span class="tl-tag">成长型经济</span>
+            <span class="tl-tag">最低工资1500日元目标</span>
+            <span class="tl-tag">省力化投资</span>
+            <span class="tl-tag">PB目标坚持</span>
+            <span class="tl-tag">防卫力强化继续</span>
+          </div>
+          <div class="tl-detail">在政治资金问题中坚持PB目标，党内积极财政派vs财政健全化派分歧浮现。维持GX、DX、半导体三大投资方向。这是日本退出通缩、薪资正循环的关键宣言。</div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-year">2025年6月13日 内阁会议决定 ｜ 石破政権</div>
+          <div class="tl-title">"<span class="jp">今日より明日はよくなる</span>"（明日会比今天更好）能切身感受到的社会</div>
+          <div class="tl-keywords">
+            <span class="tl-tag">减税不如涨薪</span>
+            <span class="tl-tag hot">PB目标柔軟化</span>
+            <span class="tl-tag">地方创生2.0</span>
+            <span class="tl-tag">物价联动型公共制度</span>
+            <span class="tl-tag">全世代型社会保障</span>
+          </div>
+          <div class="tl-detail">关键转折：PB目标从"2025年度黑字化"修正为"<span class="hl">2025〜26年度通过尽早实现PB黑字化</span>"（理由是美国关税不确定性）。物价上升对应的公共制度阈值点检（<span class="jp">年収壁</span>等）写入。但大框架依然延续岸田"新资本主义"。</div>
+        </div>
+
+        <div class="tl-item current">
+          <div class="tl-year">2026年6月中下旬 内阁会议决定预定 ｜ 高市政権【预测】</div>
+          <div class="tl-title">負責任的积极财政 〜サナエノミクスの本格启动〜（仮称）</div>
+          <div class="tl-keywords">
+            <span class="tl-tag hot">負責任的积极财政</span>
+            <span class="tl-tag hot">战略17分野</span>
+            <span class="tl-tag hot">危机管理投资</span>
+            <span class="tl-tag hot">成长投资</span>
+            <span class="tl-tag">PB中核地位下降</span>
+            <span class="tl-tag">债务残高/GDP比</span>
+            <span class="tl-tag">投资枠別管理</span>
+            <span class="tl-tag">サナエノミクス</span>
+          </div>
+          <div class="tl-detail"><strong style="color:var(--accent-deep-red);">范式转换：</strong>抑制个别施策的罗列，转向以政権关键词为轴的"真正骨太"风格。以4月13日<span class="jp">経済財政諮問会議</span>提示的5个基本原则为中心，宣告产业政策范式转换的文书。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SANAENOMICS Framework -->
+    <section>
+      <span class="section-label">PART 2 ｜ 政策框架</span>
+      <h2>サナエノミクス 2.0 核心架构</h2>
+      <p class="section-intro">高市政権的经济政策可以解构为"两轴投资 + 一个目标 + 一个手段"的清晰架构。2月20日施政方針演说和4月13日諮問会议资料已经把骨太2026的骨架基本定下。</p>
+
+      <div class="framework">
+        <div class="framework-title">「負責任的积极财政」的结构</div>
+
+        <div class="pillar-grid">
+          <div class="pillar">
+            <h4>① 危机管理投资</h4>
+            <div class="pillar-sub">最小化各种风险</div>
+            <ul>
+              <li>经济安全保障</li>
+              <li>食品安全保障</li>
+              <li>能源・资源安全保障</li>
+              <li>健康医疗安全保障</li>
+              <li>国土强韧化对策</li>
+              <li>网络安全</li>
+            </ul>
+          </div>
+          <div class="pillar">
+            <h4>② 成长投资</h4>
+            <div class="pillar-sub">让先进技术开花结果</div>
+            <ul>
+              <li>AI・半导体（<span class="jp">フィジカルAI</span>，物理AI）</li>
+              <li>造船（下一代船舶）</li>
+              <li>量子・核融合</li>
+              <li>生物・创药</li>
+              <li>航空・宇宙</li>
+              <li>重要鉱物・稀土</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="arrow-down">▼</div>
+
+        <div class="outcome">
+          就业与收入增加 → 消费意愿改善 → 企业收益提升<br>
+          → <strong>"不上调税率也能让税收自然增长的『强大经济』"</strong>
+        </div>
+      </div>
+
+      <div class="two-col" style="margin-top:32px;">
+        <div class="chart-wrapper">
+          <div class="chart-title">21.3万亿日元综合经济对策的构成（2025年11月内阁会议决定）</div>
+          <div class="chart-box">
+            <canvas id="econPackageChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <div class="chart-title">PB黑字化目标的后移轨迹</div>
+          <div class="chart-box">
+            <canvas id="pbTargetChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 17 FIELDS -->
+    <section>
+      <span class="section-label">PART 3 ｜ 投资聚焦</span>
+      <h2>战略17分野 × 61优先品目</h2>
+      <p class="section-intro">2025年11月10日日本成長戦略会議选定17分野，2026年3月10日公布61品目（其中27个为先行检讨品目）。骨太方針2026将把这个框架作为政府文书正式承认，并反映到2027年度预算中。带◆为先行重点品目。</p>
+
+      <div class="fields-grid">
+        <div class="field priority"><div class="field-num">01</div><div class="field-name">AI・半导体</div><div class="field-priority">◆ 物理AI</div></div>
+        <div class="field priority"><div class="field-num">02</div><div class="field-name">造船</div><div class="field-priority">◆ 下一代船舶</div></div>
+        <div class="field priority"><div class="field-num">03</div><div class="field-name">量子</div><div class="field-priority">◆ 先行检讨</div></div>
+        <div class="field priority"><div class="field-num">04</div><div class="field-name">生物</div><div class="field-priority">◆ 合成生物学</div></div>
+        <div class="field priority"><div class="field-num">05</div><div class="field-name">航空・宇宙</div><div class="field-priority">◆ 先行检讨</div></div>
+        <div class="field"><div class="field-num">06</div><div class="field-name">数字・信息安全</div><div class="field-priority">网络防御</div></div>
+        <div class="field"><div class="field-num">07</div><div class="field-name">内容产业</div><div class="field-priority">IP输出</div></div>
+        <div class="field"><div class="field-num">08</div><div class="field-name">食品科技</div><div class="field-priority">食品安保</div></div>
+        <div class="field priority"><div class="field-num">09</div><div class="field-name">资源能源GX</div><div class="field-priority">◆ 先行检讨</div></div>
+        <div class="field"><div class="field-num">10</div><div class="field-name">防灾国土强韧化</div><div class="field-priority">公共事业继续</div></div>
+        <div class="field priority"><div class="field-num">11</div><div class="field-name">创药・先端医疗</div><div class="field-priority">◆ 先行检讨</div></div>
+        <div class="field"><div class="field-num">12</div><div class="field-name">核融合</div><div class="field-priority">长期研发</div></div>
+        <div class="field priority"><div class="field-num">13</div><div class="field-name">重要鉱物</div><div class="field-priority">◆ 稀土</div></div>
+        <div class="field priority"><div class="field-num">14</div><div class="field-name">港湾物流</div><div class="field-priority">◆ 先行检讨</div></div>
+        <div class="field priority"><div class="field-num">15</div><div class="field-name">防卫</div><div class="field-priority">◆ 小型无人机・舰艇</div></div>
+        <div class="field priority"><div class="field-num">16</div><div class="field-name">信息通信</div><div class="field-priority">◆ 全光网络</div></div>
+        <div class="field priority"><div class="field-num">17</div><div class="field-name">海洋</div><div class="field-priority">◆ 先行检讨</div></div>
+      </div>
+
+      <div class="chart-wrapper" style="margin-top:24px;">
+        <div class="chart-title">17分野的性质分类：实物投资 vs 研发投资</div>
+        <div class="chart-box">
+          <canvas id="fieldsTypeChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 PRINCIPLES -->
+    <section>
+      <span class="section-label">PART 4 ｜ 财政改革</span>
+      <h2>预算编制改革的5个基本原则</h2>
+      <p class="section-intro">2026年4月13日経済財政諮問会議上，筒井・永滨・南场・若田部4位民间议员提出了"预算编制的根本性重新审视"5原则。这5原则将构成骨太2026最重要的技术性条款，是判断政策方向最准确的指针。</p>
+
+      <div class="principles">
+        <div class="principle-item">
+          <div class="principle-headline">中核目标转换 ｜ 单年度PB → 债务残高/GDP比</div>
+          <div class="principle-body">从单年度PB（基础财政收支）的"机械式"管理，转向<span class="hl">"债务残高对GDP比稳定下降"</span>为中核目标。这是高市自总裁选以来的核心主张。注意：PB并未被废弃，而是降级为"复数指标"之一。</div>
+        </div>
+        <div class="principle-item">
+          <div class="principle-headline">应对名义规模扩大 ｜ 摆脱通缩时代的预算上限制</div>
+          <div class="principle-body">让物价・薪资上涨准确反映到预算中，转向与名义经济规模扩大相匹配的预算编制。提升岁入估算精度，重新审视形式上的限额管理。这意味着事实上放松岁出上限。</div>
+        </div>
+        <div class="principle-item">
+          <div class="principle-headline">新设"投资枠" ｜ 与常规岁出分离的别枠管理</div>
+          <div class="principle-body">对经济安全保障・战略17分野的投资在常规岁出改革框架之外管理。活用<span class="jp">つなぎ国債</span>（过渡国债）的资金筹措机制，跨年度路线图预算化。投资期间根据政策性质灵活设定（不一律5年）。</div>
+        </div>
+        <div class="principle-item">
+          <div class="principle-headline">摆脱补正预算依赖 ｜ 恒常性施策纳入当初预算</div>
+          <div class="principle-body">重新审视每年秋季用大规模补正预算填补的惯例，把恒常性施策纳入当初预算。但同时也有2025年度21.3万亿日元补正规模感成为新基准的风险，市场的警戒心仍在。</div>
+        </div>
+        <div class="principle-item">
+          <div class="principle-headline">第三方验证 + 与市场的透明对话</div>
+          <div class="principle-body">引入SDSA（概率性债务可持续性分析）等手法，从多角度评估财政不确定性。强化对市场（国债市场）的发信，整备避免"<span class="jp">日本売り</span>"（卖出日本）的沟通体制。也提议整备面向海外投资者的英语版资料。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INVESTMENT THEMES -->
+    <section>
+      <span class="section-label">PART 5 ｜ 选股视角</span>
+      <h2>骨太方針2026 受益主题与映射</h2>
+      <p class="section-intro">基于骨太方针方向性和已公布的61优先品目，关注度排序如下。<span class="badge h">H</span>=高确信度 <span class="badge m">M</span>=中确信度 <span class="badge l">L</span>=待催化剂</p>
+
+      <div class="invest-table">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:18%;">主题</th>
+              <th style="width:8%;">确信度</th>
+              <th style="width:40%;">骨太2026 关注要点</th>
+              <th style="width:34%;">相关行业・主题</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="theme">防卫・两用技术</td>
+              <td><span class="badge h">H</span></td>
+              <td>防卫费年11万亿日元目标从2027年度提前到2025年度（提前2年）。骨太2026明示小型无人机、舰艇、两用技术的官民投资路线图。与2026年4月新"战略3文书"修订提言联动。</td>
+              <td>防卫装备、舰艇、无人机、网络、宇宙・卫星、官民两用素材・电子零件</td>
+            </tr>
+            <tr>
+              <td class="theme">AI・半导体（物理AI）</td>
+              <td><span class="badge h">H</span></td>
+              <td>战略17分野之首。"先行官需"方式（灾害对应・防卫・基础设施保养）由政府主导制造需求。2040年60万亿日元市场中目标拿下20万亿日元份额。3月底AI机器人战略制定。</td>
+              <td>工业机器人、服务机器人、AI半导体、HBM、数据中心电源、制造装置</td>
+            </tr>
+            <tr>
+              <td class="theme">造船</td>
+              <td><span class="badge h">H</span></td>
+              <td>经济对策中设立10年期造船基金。下一代船舶・船舶修缮为先行品目。与海洋・港湾分野联动。日美5500亿美元战略投资中也包含造船・港湾枠。</td>
+              <td>造船重工、船用机器、港湾运营、海事保险、特殊钢</td>
+            </tr>
+            <tr>
+              <td class="theme">海洋・港湾物流</td>
+              <td><span class="badge h">H</span></td>
+              <td>"太平洋港湾机能强化"预计纳入战略3文书修订。海洋・港湾是2-5月路线图素案制定的先行分野之一。</td>
+              <td>港湾运营、海运、海洋工程、海底通信电缆</td>
+            </tr>
+            <tr>
+              <td class="theme">重要鉱物・稀土</td>
+              <td><span class="badge h">H</span></td>
+              <td>经济安全保障的中核。日美共同情况说明也明示重要鉱物。供应链国内化补贴在骨太2026中强化预期。地缘政治视角下降低中国依赖再加速。</td>
+              <td>有色金属精炼、再生利用、稀土加工、磁石材料</td>
+            </tr>
+            <tr>
+              <td class="theme">信息通信（全光网络）</td>
+              <td><span class="badge h">H</span></td>
+              <td>低耗电・低延迟・大容量的下一代信息通信基础被选为先行品目。是AI普及带来的数据中心电力消费问题的解决方案。地方数据中心建设也兼顾地方创生。</td>
+              <td>光通信设备、光元件、数据中心、IOWN相关</td>
+            </tr>
+            <tr>
+              <td class="theme">创药・先端医疗</td>
+              <td><span class="badge m">M</span></td>
+              <td>选入先行检讨品目。健康医疗安全保障的语境。日美共同情况说明也提及医疗分野。但具体投资额・时期仍处于未定阶段。</td>
+              <td>再生医疗、创药创业公司、CDMO、医疗设备、数字健康</td>
+            </tr>
+            <tr>
+              <td class="theme">资源能源GX</td>
+              <td><span class="badge m">M</span></td>
+              <td>属先行检讨品目，但高市政権对再生能源消极姿态存在担忧。可能转向核电重启・下一代堆・氢・蓄电池。骨太2026的措辞需要观察。</td>
+              <td>核能相关、氢、蓄电池、输电网、太阳能（风险要因）</td>
+            </tr>
+            <tr>
+              <td class="theme">国土强韧化（防灾）</td>
+              <td><span class="badge m">M</span></td>
+              <td>从骨太2025延续。南海海槽对策的防灾庁在2026年内设立。传统公共事业色彩强但长期预算确保。</td>
+              <td>建设、土木、水泥、防灾基础设施</td>
+            </tr>
+            <tr>
+              <td class="theme">核融合・量子・宇宙</td>
+              <td><span class="badge l">L</span></td>
+              <td>长期研发色彩强，对股价的直接影响小。但相关初创・大学派VC会受到资金流入的顺风。骨太2026中描述强化是确定的。</td>
+              <td>核融合初创、量子计算、卫星发射</td>
+            </tr>
+            <tr>
+              <td class="theme">物价高对策・涨薪</td>
+              <td><span class="badge m">M</span></td>
+              <td>暂定税率废止、教育免费化、年收墙提升等已在推进。骨太2026也会明记家计支援继续。可支配收入+1.5个百分点对消费形成顺风。</td>
+              <td>零售、餐饮、消费品、住宅、育儿相关</td>
+            </tr>
+            <tr>
+              <td class="theme">人才培养・技能再造</td>
+              <td><span class="badge l">L</span></td>
+              <td>纳入"分野横断性课题"8项之一。新设高专、扩充技能再造项目。受益范围广但对个股直接影响有限。</td>
+              <td>教育・人才服务、技能再造、HRTech</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RISKS -->
+    <section>
+      <span class="section-label">PART 6 ｜ 下行风险监测</span>
+      <h2>风险与监测指标</h2>
+      <p class="section-intro">骨太方針2026的乐观叙事下，几个不可忽视的下行风险。这些是需要持续监测的关键变量。</p>
+
+      <div class="risk-grid">
+        <div class="risk-card">
+          <h4>① 长期利率上行＝"<span class="jp">日本売り</span>"</h4>
+          <p>10年期JGB（日本国债）在2026年1月20日触及2.38%（27年来新高）。如果PB目标弱化被解读为"财政纪律松懈"，存在利率急升风险。财务省试算：利率+1个百分点，2028年度国债费将达38.9万亿日元。</p>
+          <div class="risk-meta">监测指标：10年JGB利率、超长期利率、CDS、日元汇率</div>
+        </div>
+        <div class="risk-card">
+          <h4>② 通胀加速</h4>
+          <p>与安倍时代不同，现在是<span class="hl">通胀下的积极财政</span>。供需缺口几乎为零的情况下21万亿日元规模支出，会推升核心CPI。日银加息节奏加快会增大财政成本。</p>
+          <div class="risk-meta">监测指标：核心CPI、服务价格、薪资、日银加息节奏</div>
+        </div>
+        <div class="risk-card">
+          <h4>③ 中东局势・原油</h4>
+          <p>伊朗局势紧张化已在骨太2026的4月諮問会议明记。WTI・迪拜原油价格走势可能抵消暂定税率废止的效果。能源补贴再扩大的压力。</p>
+          <div class="risk-meta">监测指标：迪拜原油、汽油补贴、电力・燃气费支援延长</div>
+        </div>
+        <div class="risk-card">
+          <h4>④ 特朗普关税</h4>
+          <p>骨太2025中PB目标柔軟化的主因。美国关税对日本企业北美业务和出口的影响仍不确定。骨太2026中预计会留下应对关税的政策余地的表述。</p>
+          <div class="risk-meta">监测指标：汽车・电子零件对美出口、相关企业指引</div>
+        </div>
+        <div class="risk-card">
+          <h4>⑤ 少数与党下的谈判成本</h4>
+          <p>衆议院自民+维新过半，但参议院仍不确定。立宪・国民民主・公明的要求（给付金、年收墙、育儿补贴）可能额外纳入骨太。形成财政膨胀矢量。</p>
+          <div class="risk-meta">监测指标：与野党的修正协商、参议院预算审议</div>
+        </div>
+        <div class="risk-card">
+          <h4>⑥ 政策与招牌的乖离</h4>
+          <p>17分野是"实物投资3项目（防灾・港湾・防卫）+研发14项目"，性质混杂。"成长战略"招牌下传统公共事业膨胀的风险。市场・海外评级机构的评价可能分化。</p>
+          <div class="risk-meta">监测指标：S&P・Moody's评级、IMF第4条磋商报告</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOTTOM VERDICT -->
+    <div class="bottom-verdict">
+      <h3>从投资者视角的最终判断</h3>
+      <p>骨太方針2026很可能成为过去10年来最大政策范式转换的文书。作为投资者应该关注3点：</p>
+      <ul>
+        <li><strong>① 文字的温度差：</strong>"PB黑字化"是否从中核目标降为"复数指标之一"。降级则积极财政制度性确立；未降级则继续降温，主题性减弱。</li>
+        <li><strong>② 投资枠的规模感：</strong>新设"投资枠"是否明示年度规模。跨年度承诺的预算化让战略17分野的资金流向更易把握。</li>
+        <li><strong>③ 61品目的具体化进度：</strong>夏季前先行27品目的官民投资路线图会公布具体金额・时期。这是2027年度预算（2026年末内阁会议决定）的基础。个股可能在7〜9月反应。</li>
+      </ul>
+      <p style="margin-top:16px;">受益度的浓淡明确：<strong style="color:#fff;">防卫・AI半导体・造船・海洋・重要鉱物・信息通信</strong>是核心。另一方面，<strong style="color:#fff;">长期利率和日元汇率</strong>可能成为逆风指标。骨太内阁会议决定（6月中下旬预定）前后，是仓位调整的好时机。</p>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- ===== TAB 2: WATCHLIST ===== -->
+  <!-- ============================================ -->
+  <div class="tab-content" id="tab-watchlist">
+
+    <!-- METHODOLOGY -->
+    <div class="methodology">
+      <h3>整理原则与阅读方式</h3>
+      <p><strong>这是"初筛候选名单"，不是"买入推荐"。</strong>用途是为接下来对每个先行品目做深入个股研究时的起点（观察名单）。每只候选股票的<strong>关联度</strong>来自三类公开信息源：（1）日米共同情况说明等政府公开资料明示的企业；（2）野村・SBI・三井住友DS等主要证券公司研报中明确作为受益股提及的企业；（3）<span class="jp">株探・みんかぶ・四季报</span>等股票媒体中作为相关主题股被广泛认知的企业。</p>
+      <p>Tier分级是"政策结合强度+既有业务关联浓度"的综合判断。<strong>Tier S/A不等于推荐买入，Tier B/C也不等于应回避</strong>。中小型股因主题性反应而波动较大，需要从另一维度做检查。</p>
+      <p style="margin-top:12px;font-size:12.5px;background:#F0E4CE;padding:10px 14px;border-left:3px solid var(--accent-gold);">⚠ <strong>注意：</strong>大型重机（三菱重工・川崎重工・IHI等）跨防卫・造船・宇宙・航空等多个分野。同一只标的在多个品目中出现，意味着对高市政策的综合受益度高；但反过来，市场已经较为充分价格化的可能性也高。</p>
+
+      <div class="tier-legend">
+        <div class="tier-item"><span class="tier-badge s">S</span><span>政府文件点名 / 中核玩家</span></div>
+        <div class="tier-item"><span class="tier-badge a">A</span><span>主要券商研报明示 / 直接受益浓</span></div>
+        <div class="tier-item"><span class="tier-badge b">B</span><span>主题股广泛认知 / 有相关业务</span></div>
+        <div class="tier-item"><span class="tier-badge c">C</span><span>中小型・专项 / 投机性高</span></div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-num">12</div>
+        <div class="stat-label">主要分野覆盖</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">60+</div>
+        <div class="stat-label">候选标的列出</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">6-7月</div>
+        <div class="stat-label">官民投资路线图最终版公布</div>
+      </div>
+    </div>
+
+    <!-- FIELD 01: AI・半导体 -->
+    <div class="field-block">
+      <div class="field-header">
+        <div class="field-header-left">
+          <h3><span class="field-code">FIELD 01</span> AI・半导体</h3>
+          <div class="subtitle">先行检讨品目：物理AI（AI机器人）/ 半导体 / AI基础</div>
+        </div>
+        <div class="field-header-right">3个先行品目</div>
+      </div>
+      <div class="field-body">
+
+        <div class="item-block">
+          <div class="item-title">▼ 物理AI（AI机器人）</div>
+          <div class="item-desc">先行27品目之首。<span class="gov">经产省AI机器人检讨会2025年10月骨子→2026年3月底战略制定</span>。"先行官需"方式（灾害对应・防卫・宇宙・基础设施保养）由政府主导制造需求。2040年60万亿日元市场中目标拿下20万亿日元份额。</div>
+          <table class="stock-table">
+            <thead><tr><th class="col-tier">Tier</th><th class="col-ticker">代码</th><th class="col-name">公司名称</th><th>政策关联・相关业务</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">6954</td><td class="stock-name">ファナック</td><td>工业机器人世界顶级。与英伟达物理AI协业（25年10月），与谷歌"Gemini Enterprise"搭载机器人协业（26年5月）。Bloomberg/野村等视为代表本命。</td></tr>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">9984</td><td class="stock-name">软银集团</td><td>25年10月收购瑞士ABB机器人事业。对波士顿动力出资20%。AI重点投资领域（半导体・数据中心・电力・机器人）明确定位。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">6506</td><td class="stock-name">安川电机</td><td>与英伟达・富士通协业发表。与安斯泰来制药在细胞医疗领域合资。野村证券名单本命。25年10月对Rt出资。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">6701</td><td class="stock-name">日本电气（NEC）</td><td>3月10日成长战略会议资料中假设的官需侧企业。与数字・网络安全分野的交叉受益。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">6503</td><td class="stock-name">三菱电机</td><td>"<span class="jp">ニューロフィジカルAI</span>（神经物理AI）"独自开发。出展CEATEC2025。FA和通用型双面。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">7012</td><td class="stock-name">川崎重工业</td><td>与美国Dexterity共同开发"Mech"（卡车自动装载）。在物流・防卫两面展开AI机器人。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">6268</td><td class="stock-name">ナブテスコ</td><td>工业机器人精密减速机高份额。野村・智剣Oskar名单主要标的。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">6141</td><td class="stock-name">DMG森精机</td><td>机床大手。AI带来的工序效率化的代表性应用对象。</td></tr>
+              <tr><td><span class="tier-badge c">C</span></td><td class="stock-ticker">6217</td><td class="stock-name">津田驹工业</td><td>纺织机械顶级，但近年事业化机器人SIer业务。物理AI话题中曾急涨。后入・急涨两面都有的标的。</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="item-block">
+          <div class="item-title">▼ 半导体・AI半导体</div>
+          <div class="item-desc">国内先端・下一代半导体的设计・制造技术强化。HBM・面向AI的先端封装。经济安保推进法的特定重要物资指定流。</div>
+          <table class="stock-table">
+            <thead><tr><th class="col-tier">Tier</th><th class="col-ticker">代码</th><th class="col-name">公司名称</th><th>政策关联・相关业务</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">6857</td><td class="stock-name">爱德万测试</td><td>半导体测试机世界大手。AI机器人・数据中心需求直接受益。野村物理AI名单榜首。</td></tr>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">8035</td><td class="stock-name">东京电子</td><td>半导体制造装置世界顶级。先端节点投资的中核。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">285A</td><td class="stock-name">铠侠HD</td><td>国内NAND/HBM。经济安保上国内制造能力确保的象征性标的。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">6920</td><td class="stock-name">Lasertec</td><td>EUV掩模检查装置独占。先端半导体国内回归的受益者。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">6963</td><td class="stock-name">罗姆</td><td>功率半导体・SiC。经济安保上国内供应链强化对象。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">6702</td><td class="stock-name">富士通</td><td>与英伟达机器人・AI半导体协业。与量子・超算的交叉。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIELD 02: 造船 -->
+    <div class="field-block">
+      <div class="field-header">
+        <div class="field-header-left">
+          <h3><span class="field-code">FIELD 02</span> 造船</h3>
+          <div class="subtitle">先行检讨品目：下一代船舶 / 船舶修缮</div>
+        </div>
+        <div class="field-header-right">2个先行品目</div>
+      </div>
+      <div class="field-body">
+
+        <div class="item-block">
+          <div class="item-title">▼ 下一代船舶（氨・液化CO2燃料船等）/ 船舶修缮</div>
+          <div class="item-desc"><span class="gov">国土交通省"造船业再生路线图"2025年12月发布</span>。2024年907万总吨→2035年1800万总吨目标，官民1万亿日元以上投资。<span class="gov">2025年度补正预算列入造船业再生基金1200亿日元</span>。船体被经济安保推进法指定为"特定重要物资"。日美5500亿美元战略投资中也纳入造船协力（25年10月备忘录）。</div>
+          <table class="stock-table">
+            <thead><tr><th class="col-tier">Tier</th><th class="col-ticker">代码</th><th class="col-name">公司名称</th><th>政策关联・相关业务</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">7011</td><td class="stock-name">三菱重工业</td><td>三大重工之首。商船・舰船两面，对MILES（标准设计）出资。下一代船・防卫舰艇双重受益。日本最大综合重机。</td></tr>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">7013</td><td class="stock-name">IHI</td><td>氨混烧・船用氨发动机开发。航空发动机强项。在驱动船舶一侧也是本命。</td></tr>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">7003</td><td class="stock-name">三井E&S</td><td>船用推进系统・船用发动机。美国加州港湾起重机受订实绩（替代中国制）。日美港湾协力的直接受益者。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">7012</td><td class="stock-name">川崎重工业</td><td>三大重工之一。舰艇・潜水艇・氢运输船。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">7014</td><td class="stock-name">名村造船所</td><td>国内专业大手。生产能力扩大投资的直接对象。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">9101</td><td class="stock-name">日本邮船</td><td>海运大手，对MILES出资。检讨向国内造船所优先发包。氨・LNG船投资。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">9104</td><td class="stock-name">商船三井</td><td>对MILES出资。风力辅助推进"Wind Challenger"。下一代船采购成本下降的受益者。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">9107</td><td class="stock-name">川崎汽船</td><td>海运三大手之一，对MILES出资。脱碳船投资。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">5631</td><td class="stock-name">日本制钢所</td><td>护卫舰搭载炮・坦克炮。上期防卫相关占受订额4成。造船和防卫的重叠领域。</td></tr>
+              <tr><td><span class="tier-badge c">C</span></td><td class="stock-ticker">5830</td><td class="stock-name">伊予银行HD</td><td>爱媛・今治的地方银行。与当地造船业的交易基础。地域受益的间接角度。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIELD 03: 防卫 -->
+    <div class="field-block">
+      <div class="field-header">
+        <div class="field-header-left">
+          <h3><span class="field-code">FIELD 03</span> 防卫</h3>
+          <div class="subtitle">先行检讨品目：小型无人航空机 / 舰艇 / 两用技术</div>
+        </div>
+        <div class="field-header-right">3个先行品目</div>
+      </div>
+      <div class="field-body">
+
+        <div class="item-block">
+          <div class="item-title">▼ 小型无人航空机（军用无人机）</div>
+          <div class="item-desc"><span class="gov">2026年度防卫预算中无人机相关2773亿日元（同比约2.5倍）</span>。国产化政策强化。战略17分野中防卫的首席先行品目。市场规模：2030年世界1.5万亿日元，国内2700亿日元预期。</div>
+          <table class="stock-table">
+            <thead><tr><th class="col-tier">Tier</th><th class="col-ticker">代码</th><th class="col-name">公司名称</th><th>政策关联・相关业务</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">6232</td><td class="stock-name">ACSL</td><td>国产无人机纯粹玩家之首。防卫省招标拿下小型空拍机体（26年4月，3.5亿+0.7亿日元）。国产化政策的象征。</td></tr>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">278A</td><td class="stock-name">Terra Drone</td><td>26年3月发表进入防卫装备品事业。与乌克兰防卫科技公司资本合作，发售新型拦截无人机。股价进入空天圈（创新高）。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">7012</td><td class="stock-name">川崎重工业</td><td>活用直升机・发动机技术的大型无人机。三大重工。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">7011</td><td class="stock-name">三菱重工业</td><td>防卫・宇宙事业受订急增（21年→24年从6651亿→1兆8768亿日元）。含无人机的装备全方位。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">7272</td><td class="stock-name">雅马哈发动机</td><td>工业无人机有实绩。发动机技术。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">6807</td><td class="stock-name">日本航空电子工业</td><td>航空・宇宙・防卫用连接器。NEC系。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">6946</td><td class="stock-name">日本Avionics</td><td>无人机搭载红外热成像实证。NEC系防卫电子。</td></tr>
+              <tr><td><span class="tier-badge c">C</span></td><td class="stock-ticker">218A</td><td class="stock-name">Liberaware</td><td>工业用小型无人机专项（狭隘空间点检）。下水道维护的存在感。但持续赤字。</td></tr>
+              <tr><td><span class="tier-badge c">C</span></td><td class="stock-ticker">6986</td><td class="stock-name">双叶电子工业</td><td>工业用无人机发射机・无线设备。遥控技术应用。</td></tr>
+              <tr><td><span class="tier-badge c">C</span></td><td class="stock-ticker">5036</td><td class="stock-name">蓝色创新</td><td>无人机平台。赤字持续中但事业领域贴近。</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="item-block">
+          <div class="item-title">▼ 舰艇 / 两用技术</div>
+          <div class="item-desc">2026年度防卫预算首次突破9万亿日元（含驻日美军重组）。<span class="gov">防卫费年11万亿日元目标从2027年度提前到2025年度</span>。4月战略3文书修订提言也包括放宽出口管制。</div>
+          <table class="stock-table">
+            <thead><tr><th class="col-tier">Tier</th><th class="col-ticker">代码</th><th class="col-name">公司名称</th><th>政策关联・相关业务</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">7011</td><td class="stock-name">三菱重工业</td><td>防卫装备采购额第1。水上舰艇・战斗机・直升机。"防卫・宇宙"事业受订急扩。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">7012</td><td class="stock-name">川崎重工业</td><td>潜艇・哨戒机・固定翼机。三大重工。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">5631</td><td class="stock-name">日本制钢所</td><td>坦克炮・5英寸炮。防卫比率上升中（上期受订4成）。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">6702</td><td class="stock-name">富士通</td><td>防卫通信・信息系统。两用技术。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">6701</td><td class="stock-name">NEC</td><td>通信・雷达・卫星防卫。社会基础设施事业的一环。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">6503</td><td class="stock-name">三菱电机</td><td>雷达・制导弹相关。社会基础设施防卫。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIELD 04: 海洋・港湾 -->
+    <div class="field-block">
+      <div class="field-header">
+        <div class="field-header-left">
+          <h3><span class="field-code">FIELD 04</span> 海洋 ＆ 港湾物流</h3>
+          <div class="subtitle">先行检讨品目：海洋相关基础设施 / 港湾机能强化</div>
+        </div>
+        <div class="field-header-right">2个先行品目</div>
+      </div>
+      <div class="field-body">
+
+        <div class="item-block">
+          <div class="item-title">▼ 海洋・港湾</div>
+          <div class="item-desc"><span class="gov">自民党战略3文书修订提言（26年4月）预计纳入"太平洋的港湾机能强化"</span>。海洋・港湾是2-5月路线图素案制定的先行分野之一。日美港湾协力。</div>
+          <table class="stock-table">
+            <thead><tr><th class="col-tier">Tier</th><th class="col-ticker">代码</th><th class="col-name">公司名称</th><th>政策关联・相关业务</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">7003</td><td class="stock-name">三井E&S</td><td>美国加州近零排放型门式起重机受订（替代中国制）。日美港湾协力本命。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">9101</td><td class="stock-name">日本邮船</td><td>海运大手。综合物流（陆海空）展开。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">9104</td><td class="stock-name">商船三井</td><td>海运大手，多元化至不动产・风电。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">9107</td><td class="stock-name">川崎汽船</td><td>海运三大手之一。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">1885</td><td class="stock-name">东亚建设工业</td><td>海洋土木大手。参加SIP海洋资源调查。下期中计投资计划扩充至500亿日元。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">5631</td><td class="stock-name">日本制钢所</td><td>海洋相关特殊钢。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIELD 05: 重要鉱物 -->
+    <div class="field-block">
+      <div class="field-header">
+        <div class="field-header-left">
+          <h3><span class="field-code">FIELD 05</span> 重要鉱物（材料）</h3>
+          <div class="subtitle">先行检讨品目：稀土・希土类加工</div>
+        </div>
+        <div class="field-header-right">1个先行品目</div>
+      </div>
+      <div class="field-body">
+
+        <div class="item-block">
+          <div class="item-title">▼ 稀土・希土类加工</div>
+          <div class="item-desc"><span class="gov">26年3月19日日米首脑会谈"重要鉱物供应链韧性日米行动计划"发布</span>。共同情况说明中明记13个项目+具体企业名。26年1月JAMSTEC开始南鸟岛海域试掘。被经济安保推进法指定为特定重要物资。</div>
+          <table class="stock-table">
+            <thead><tr><th class="col-tier">Tier</th><th class="col-ticker">代码</th><th class="col-name">公司名称</th><th>政策关联・相关业务</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">8058</td><td class="stock-name">三菱商事</td><td>日米共同情况说明明示。资源调达网络。</td></tr>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">8031</td><td class="stock-name">三井物产</td><td>日米共同情况说明明示。资源・鉱物事业强化。</td></tr>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">8053</td><td class="stock-name">住友商事</td><td>日米共同情况说明明示。重要鉱物项目参与。</td></tr>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">5711</td><td class="stock-name">三菱マテリアル</td><td>日米共同情况说明明示。26年4月在美国发表重要鉱物回收。</td></tr>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">5713</td><td class="stock-name">住友金属矿山</td><td>日米共同情况说明明示。有色精炼・希土类加工。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">6330</td><td class="stock-name">东洋工程</td><td>受JAMSTEC委托设计稀土泥回收系统。深海6000米采矿成功实绩。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">4082</td><td class="stock-name">第一稀元素化学工业</td><td>锆化合物大手。希土类相关专业度高。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">5563</td><td class="stock-name">日本电工</td><td>锰合金・希土类再生利用。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">5714</td><td class="stock-name">DOWA HD</td><td>电子材料・再生利用。都市矿山活用本命。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">5471</td><td class="stock-name">大同特殊钢</td><td>钕磁石。希土类应用下游。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">4063</td><td class="stock-name">信越化学工业</td><td>希土类磁石・硅。供给侧实际利润贡献预期。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">1605</td><td class="stock-name">INPEX</td><td>石油・天然气开发。深海钻探技术可应用。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">1662</td><td class="stock-name">石油资源开发</td><td>海底资源开发的技术基础。</td></tr>
+              <tr><td><span class="tier-badge c">C</span></td><td class="stock-ticker">7746</td><td class="stock-name">冈本硝子</td><td>玻璃・光学。稀土相关易被关注（业绩影响要细查）。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIELD 06: 信息通信 -->
+    <div class="field-block">
+      <div class="field-header">
+        <div class="field-header-left">
+          <h3><span class="field-code">FIELD 06</span> 信息通信</h3>
+          <div class="subtitle">先行检讨品目：全光网络（IOWN）</div>
+        </div>
+        <div class="field-header-right">1个先行品目</div>
+      </div>
+      <div class="field-body">
+
+        <div class="item-block">
+          <div class="item-title">▼ 全光网络（APN / IOWN）</div>
+          <div class="item-desc"><span class="gov">总务省定位为"低耗电・低延迟・大容量"下一代信息通信基础的中核技术</span>。是AI普及带来数据中心电力消费问题的解决方案。<span class="gov">2024年经产省对光电融合提供最大452亿日元支援</span>。25年大阪万博APN实证成功。</div>
+          <table class="stock-table">
+            <thead><tr><th class="col-tier">Tier</th><th class="col-ticker">代码</th><th class="col-name">公司名称</th><th>政策关联・相关业务</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">9432</td><td class="stock-name">NTT</td><td>IOWN构想的提出者・主导企业。日本台湾间IOWN通信网开通（24年8月）。与Intel・SK海力士光电融合合作。最重要本命。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">6701</td><td class="stock-name">NEC</td><td>"开放光传输装置SpectralWave WX"2027年度目标份额25%。海底电缆・光传输世界级。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">6702</td><td class="stock-name">富士通</td><td>在德国杜塞尔多夫开设开放APN实验室。光传输世界份额。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">5803</td><td class="stock-name">フジクラ</td><td>光纤・熔接器顶级份额。"SWR""WTC"高密度光缆。电线御三家独立系。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">5802</td><td class="stock-name">住友电气工业</td><td>光纤世界顶级。IOWN赞助会员。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">5801</td><td class="stock-name">古河电气工业</td><td>光纤・相关元件。支撑IOWN物理层。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">6754</td><td class="stock-name">安立</td><td>通信系测量仪器大手。5G/6G通信设备受订期待，IOWN通用会员。</td></tr>
+              <tr><td><span class="tier-badge c">C</span></td><td class="stock-ticker">4813</td><td class="stock-name">ACCESS</td><td>与NTT在IOWN业务合作（21年7月）。中小型，主题反应大。</td></tr>
+              <tr><td><span class="tier-badge c">C</span></td><td class="stock-ticker">4485</td><td class="stock-name">JTOWER</td><td>通信基础设施。参加IOWN Global Forum。中小型。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIELD 07: 创药・先端医疗 -->
+    <div class="field-block">
+      <div class="field-header">
+        <div class="field-header-left">
+          <h3><span class="field-code">FIELD 07</span> 创药・先端医疗</h3>
+          <div class="subtitle">先行检讨品目：再生・细胞医疗・基因治疗 / 革新性新药</div>
+        </div>
+        <div class="field-header-right">2个先行品目</div>
+      </div>
+      <div class="field-body">
+
+        <div class="item-block">
+          <div class="item-title">▼ 再生医疗・CDMO・革新性新药</div>
+          <div class="item-desc"><span class="gov">经济对策中明记"CDMO设备投资支援""再生・细胞医疗・基因治疗研发促进"</span>。26年厚劳省对iPS再生医疗等2个产品给予世界首次条件付承认。<span class="gov">2025年4月经产省发布"再生医疗等产品CDMO企业名单"</span>（26家）。经济安保推进法检讨追加医疗分野。</div>
+          <table class="stock-table">
+            <thead><tr><th class="col-tier">Tier</th><th class="col-ticker">代码</th><th class="col-name">公司名称</th><th>政策关联・相关业务</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">4894</td><td class="stock-name">クオリプス</td><td>iPS来源心肌片世界首次承认。再生医疗实用化的象征性标的。</td></tr>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">4506</td><td class="stock-name">住友制药</td><td>クオリプス的iPS产品的销售合作方。再生医疗pipeline丰富。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">4502</td><td class="stock-name">武田药品工业</td><td>与京大CiRA iPS创药共同研究、CAR-T癌症治疗"iCART"。革新性新药之首。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">4503</td><td class="stock-name">安斯泰来制药</td><td>与安川电机细胞医疗自动化合资。再生医疗×AI机器人融合。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">4552</td><td class="stock-name">JCRファーマ</td><td>与希森美康再生医疗合资。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">4543</td><td class="stock-name">泰尔茂</td><td>医疗设备・心脏血管。再生医疗相关产品。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">4974</td><td class="stock-name">タカラバイオ</td><td>基因治疗CDMO。日本CDMO名单上位。</td></tr>
+              <tr><td><span class="tier-badge c">C</span></td><td class="stock-ticker">4593</td><td class="stock-name">ヘリオス</td><td>iPSC再生医药生物科技公司。主题性高，业绩看pipeline。</td></tr>
+              <tr><td><span class="tier-badge c">C</span></td><td class="stock-ticker">4587</td><td class="stock-name">ペプチドリーム</td><td>创药平台。革新性新药相关。</td></tr>
+              <tr><td><span class="tier-badge c">C</span></td><td class="stock-ticker">4592</td><td class="stock-name">サンバイオ</td><td>再生医疗生物科技。中小型波动大。</td></tr>
+              <tr><td><span class="tier-badge c">C</span></td><td class="stock-ticker">7777</td><td class="stock-name">3D Matrix</td><td>肽组织再生。</td></tr>
+              <tr><td><span class="tier-badge c">C</span></td><td class="stock-ticker">4978</td><td class="stock-name">リプロセル</td><td>iPS细胞相关生物科技。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIELD 08: 量子 -->
+    <div class="field-block">
+      <div class="field-header">
+        <div class="field-header-left">
+          <h3><span class="field-code">FIELD 08</span> 量子</h3>
+          <div class="subtitle">先行检讨品目：量子计算相关</div>
+        </div>
+        <div class="field-header-right">1个先行品目</div>
+      </div>
+      <div class="field-body">
+
+        <div class="item-block">
+          <div class="item-title">▼ 量子计算机・量子技术</div>
+          <div class="item-desc"><span class="gov">日本政府将2025年定位为"量子产业化元年"</span>。25年也是联合国"国际量子科学技术年"。经济对策明记"量子技术创新据点（QIH）""G-QuAT"。市场：24年11.7亿美元→33年119.4亿美元（CAGR 29.5%）。</div>
+          <table class="stock-table">
+            <thead><tr><th class="col-tier">Tier</th><th class="col-ticker">代码</th><th class="col-name">公司名称</th><th>政策关联・相关业务</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">6702</td><td class="stock-name">富士通</td><td>与理研共同开发国产超导量子计算机。25年5月公开外部可用的世界最大级256量子位机。中核玩家。</td></tr>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">9432</td><td class="stock-name">NTT</td><td>光量子计算机（室温运行）。24年11月与理研发表世界首个通用型光量子计算平台。IOWN中核技术。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">6501</td><td class="stock-name">日立制作所</td><td>硅量子计算机。25年10月与理研・imec备忘录。2027年度试制机目标。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">6701</td><td class="stock-name">NEC</td><td>量子退火・量子加密研究。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">6857</td><td class="stock-name">爱德万测试</td><td>量子位运行确认用测量仪器应用。"卖铲子"标的。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">3687</td><td class="stock-name">フィックスターズ</td><td>D-Wave日本首发合作。提供"Fixstars Amplify"云端服务。中小型量子本命。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">6613</td><td class="stock-name">QDレーザ</td><td>量子点激光专项。中小型。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">6807</td><td class="stock-name">日本航空电子工业</td><td>量子计算机用非磁性同轴连接器试制。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIELD 09: 航空・宇宙 -->
+    <div class="field-block">
+      <div class="field-header">
+        <div class="field-header-left">
+          <h3><span class="field-code">FIELD 09</span> 航空・宇宙</h3>
+          <div class="subtitle">先行检讨品目：卫星・宇宙相关</div>
+        </div>
+        <div class="field-header-right">1个先行品目</div>
+      </div>
+      <div class="field-body">
+
+        <div class="item-block">
+          <div class="item-title">▼ 卫星・火箭・宇宙基础设施</div>
+          <div class="item-desc">防卫省构建情报收集中民间卫星活用体制。宇宙基本计划延续。"宇宙×防卫"两用属性高。</div>
+          <table class="stock-table">
+            <thead><tr><th class="col-tier">Tier</th><th class="col-ticker">代码</th><th class="col-name">公司名称</th><th>政策关联・相关业务</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tier-badge s">S</span></td><td class="stock-ticker">7011</td><td class="stock-name">三菱重工业</td><td>H3火箭、卫星、宇宙基础设施。防卫・宇宙事业急扩。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">7013</td><td class="stock-name">IHI</td><td>航空发动机・火箭发动机。宇宙相关广泛。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">7012</td><td class="stock-name">川崎重工业</td><td>航空・宇宙、防卫机器。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">6701</td><td class="stock-name">NEC</td><td>人造卫星・地面站系统。防卫省项目多。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">6503</td><td class="stock-name">三菱电机</td><td>卫星制造・地面系统。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">9412</td><td class="stock-name">SKY Perfect JSAT</td><td>与NTT设立"Space Compass"。宇宙光通信网络。平流层移动。</td></tr>
+              <tr><td><span class="tier-badge c">C</span></td><td class="stock-ticker">5595</td><td class="stock-name">QPS研究所</td><td>小型SAR卫星。防卫省项目受订实绩。中小型波动大。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIELD 10-11: バイオ・GX -->
+    <div class="field-block">
+      <div class="field-header">
+        <div class="field-header-left">
+          <h3><span class="field-code">FIELD 10-11</span> 生物・资源能源GX</h3>
+          <div class="subtitle">先行检讨品目：合成生物学 / GX相关</div>
+        </div>
+        <div class="field-header-right">2个先行品目</div>
+      </div>
+      <div class="field-body">
+
+        <div class="item-block">
+          <div class="item-title">▼ 合成生物学（生物）</div>
+          <div class="item-desc">经济对策中明记"合成生物学据点"。新兴分野中大手参与有限，但特定技术企业值得关注。</div>
+          <table class="stock-table">
+            <thead><tr><th class="col-tier">Tier</th><th class="col-ticker">代码</th><th class="col-name">公司名称</th><th>政策关联・相关业务</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">4974</td><td class="stock-name">タカラバイオ</td><td>基因・细胞工具。合成生物学基础技术。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">4901</td><td class="stock-name">富士胶片HD</td><td>生物CDMO・合成生物学投资。FUJIFILM Diosynth Biotechnologies。</td></tr>
+              <tr><td><span class="tier-badge c">C</span></td><td class="stock-ticker">2160</td><td class="stock-name">GNI集团</td><td>生物科技。中小型。</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="item-block">
+          <div class="item-title">▼ 资源能源GX</div>
+          <div class="item-desc">高市政権对再生能源消极姿态有指摘。可能转向核电重启・下一代堆・氢・蓄电池。骨太2026中的写法要观察。</div>
+          <table class="stock-table">
+            <thead><tr><th class="col-tier">Tier</th><th class="col-ticker">代码</th><th class="col-name">公司名称</th><th>政策关联・相关业务</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">7011</td><td class="stock-name">三菱重工业</td><td>大型燃气轮机・核电・SMR。能源综合玩家。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">9501</td><td class="stock-name">东京电力HD</td><td>柏崎刈羽重启的象征。</td></tr>
+              <tr><td><span class="tier-badge a">A</span></td><td class="stock-ticker">9503</td><td class="stock-name">关西电力</td><td>核电运行的领跑公用事业。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">7013</td><td class="stock-name">IHI</td><td>氨混烧・氢相关。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">5631</td><td class="stock-name">日本制钢所</td><td>反应堆容器。</td></tr>
+              <tr><td><span class="tier-badge b">B</span></td><td class="stock-ticker">6674</td><td class="stock-name">GS汤浅</td><td>蓄电池・工业用电池。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTION PLAN -->
+    <div class="action-plan">
+      <h3>使用方式建议流程</h3>
+      <p>此清单只是"观察名单候选的起点"。建议按以下步骤根据自己的风格深入挖掘：</p>
+      <ol>
+        <li><strong>Step 1：三层筛选。</strong>从Tier S/A中，用自己的三层框架（估值／变化／催化剂）做一级筛选。Tier B/C作为政策发表时观察价格反应的watch-only对象。</li>
+        <li><strong>Step 2：政府公开资料交叉验证。</strong>在内阁官房日本成长战略本部页面（cas.go.jp/jp/seisaku/nipponseichosenryaku/）直接阅读各品目素案PDF。检查目标个股是否在政府文书中点名。</li>
+        <li><strong>Step 3：等待6-7月路线图最终版。</strong>各分野工作组陆续给出"官民投资具体形态""定量影响"。投资额・时期被明示的时点就是个股材料化的窗口。</li>
+        <li><strong>Step 4：盯住3个催化剂窗口。</strong>① 6月中下旬 骨太内阁会议决定前后／② 7-8月 内阁府中长期试算公布／③ 8月下旬 各省厅2027年度概算要求。这3个时点政策主题股最易反应。</li>
+        <li><strong>Step 5：优先复合受益者。</strong>三菱重工・川崎重工・IHI・NTT・NEC・富士通等横跨多个分野的大手综合受益度高，但也可能已被市场充分定价。可以与中小型纯粹玩家组合配置。</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="brand">东韬日股研究室</div>
+    <p style="margin-top:8px;">本文档基于内阁府・首相官邸・日本经济新闻・第一生命经济研究所・野村ウェルスタイル・NRI木内登英報告・三井住友DSアセットマネジメント・SBI证券等公开资料整理分析。截稿日：2026年5月17日。</p>
+
+    <p style="margin-top:12px;"><strong>主要参考资料：</strong></p>
+    <p>・经济财政运营与改革的基本方针2025（令和7年6月13日内阁会议决定）</p>
+    <p>・经济财政諮問会議 民间议员提案资料（2026年4月13日"骨太方针2026策定向"）</p>
+    <p>・高市内阁 施政方针演说（2026年2月20日 第221届国会）</p>
+    <p>・综合经济对策（2025年11月21日内阁会议决定，事业规模42.8万亿日元・国费21.3万亿日元）</p>
+    <p>・日本成长战略会议（2025年11月10日设置，2026年3月10日 战略17分野61品目公布）</p>
+
+    <div class="disclaimer">
+      <strong>重要免责事项：</strong>本文档用于教育・信息提供目的，不是特定个股的买卖推荐。骨太方針2026预定2026年6月中下旬内阁会议决定，内容可能变更。
+      <br>① 个股清单中各标的的政策结合强度基于公开信息的判断，与实际业绩影响可能不同。
+      <br>② Tier分类基于2026年5月17日时点公开信息整理，根据路线图最终版（6-7月）内容可能大幅调整。
+      <br>③ 证券代码存在误记可能，交易前请务必通过东证官方信息・四季报等核实。
+      <br>④ 主题性人气导致波动大的中小型股，需要从业绩支撑和供需两方面慎重判断。
+      <br>⑤ 高市政権政策方向虽然确定性较高，但骨太方针2026最终内容（PB目标处理、战略17分野记述强度、新投资枠规模感）在内阁会议决定前仍流动。
+      <br>⑥ 投资判断请基于最新公开信息和自己的判断进行。
+    </div>
+  </footer>
+
+</div>
+
+<script>
+// === Tab switching ===
+const tabButtons = document.querySelectorAll('.tab-button');
+const tabContents = document.querySelectorAll('.tab-content');
+
+tabButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const targetTab = button.dataset.tab;
+
+    tabButtons.forEach(b => b.classList.remove('active'));
+    tabContents.forEach(c => c.classList.remove('active'));
+
+    button.classList.add('active');
+    document.getElementById('tab-' + targetTab).classList.add('active');
+
+    // Scroll to top of content area for better UX
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+// === Chart 1: 21.3万亿经济对策构成 ===
+const ctx1 = document.getElementById('econPackageChart').getContext('2d');
+new Chart(ctx1, {
+  type: 'doughnut',
+  data: {
+    labels: ['物价高对策・家计支援 (5.1万亿)', '投资促进策 (7.2万亿)', '安保・防卫 (1.7万亿)', '地方交付金・预备费 (3.1万亿)', '减税・特会等 (4.2万亿)'],
+    datasets: [{
+      data: [5.1, 7.2, 1.7, 3.1, 4.2],
+      backgroundColor: ['#A8323F', '#B08D3F', '#2C3E5E', '#4F6B4C', '#8A7E6C'],
+      borderColor: '#FBF8F0',
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          font: { family: 'Noto Sans SC', size: 11 },
+          color: '#54493C',
+          padding: 8,
+          boxWidth: 12
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: function(ctx) { return ctx.label + ': ' + ctx.parsed + '万亿日元'; }
+        }
+      }
+    }
+  }
+});
+
+// === Chart 2: PB黑字化目标演变 ===
+const ctx2 = document.getElementById('pbTargetChart').getContext('2d');
+new Chart(ctx2, {
+  type: 'line',
+  data: {
+    labels: ['骨太2018', '骨太2021', '骨太2024', '骨太2025', '骨太2026\n(预测)'],
+    datasets: [{
+      label: 'PB黑字化目标年度',
+      data: [2025, 2025, 2025, 2026, 2027],
+      borderColor: '#A8323F',
+      backgroundColor: 'rgba(168, 50, 63, 0.15)',
+      borderWidth: 3,
+      tension: 0.3,
+      pointRadius: 6,
+      pointBackgroundColor: '#A8323F',
+      pointBorderColor: '#FBF8F0',
+      pointBorderWidth: 2,
+      fill: true
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function(ctx) { return 'PB黑字化目标: ' + ctx.parsed.y + '年度'; }
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: false,
+        min: 2024,
+        max: 2028,
+        ticks: {
+          stepSize: 1,
+          color: '#54493C',
+          font: { family: 'JetBrains Mono', size: 11 },
+          callback: function(v) { return v + '年度'; }
+        },
+        grid: { color: '#DCD2BA' }
+      },
+      x: {
+        ticks: {
+          color: '#54493C',
+          font: { family: 'Noto Sans SC', size: 11 }
+        },
+        grid: { display: false }
+      }
+    }
+  }
+});
+
+// === Chart 3: 17分野性质分类 ===
+const ctx3 = document.getElementById('fieldsTypeChart').getContext('2d');
+new Chart(ctx3, {
+  type: 'bar',
+  data: {
+    labels: ['实物投资・公共事业色', '科学技术振兴・研发色'],
+    datasets: [{
+      label: '分野数',
+      data: [3, 14],
+      backgroundColor: ['#A8323F', '#B08D3F'],
+      borderRadius: 4,
+      borderSkipped: false
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function(ctx) { return ctx.parsed.x + '个分野'; }
+        }
+      },
+      title: {
+        display: true,
+        text: '实物投资=防灾・港湾・防卫 / 研发=AI半导体・造船・量子・生物・宇宙等',
+        color: '#8A7E6C',
+        font: { family: 'Noto Sans SC', size: 11 }
+      }
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+        max: 17,
+        ticks: { color: '#54493C', font: { family: 'JetBrains Mono' } },
+        grid: { color: '#DCD2BA' }
+      },
+      y: {
+        ticks: { color: '#54493C', font: { family: 'Noto Sans SC', size: 12 } },
+        grid: { display: false }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
