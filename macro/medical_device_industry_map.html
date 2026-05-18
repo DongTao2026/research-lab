@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>医療機器産業地図 ─ 全球視角と日本上場企業</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&family=Shippori+Mincho:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#f4ece1;
+    --bg-deep:#ede2cf;
+    --paper:#faf5ea;
+    --ink:#2a2118;
+    --ink-soft:#4a3e2e;
+    --ink-mute:#7a6a52;
+    --line:#c9b89a;
+    --line-soft:#dccfb3;
+    --accent:#8b2a1f;        /* 朱泥 */
+    --accent-soft:#b8473a;
+    --gold:#a8843a;
+    --green:#4d6b3e;
+    --blue:#385878;
+    --positive:#2f6b4d;
+    --negative:#9a3a2a;
+    --warning:#b8843a;
+    --grid-gap:24px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Noto Sans JP','Noto Serif JP',serif;
+    font-size:15px;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  body{
+    background-image:
+      radial-gradient(rgba(139,42,31,0.025) 1px,transparent 1px),
+      radial-gradient(rgba(42,33,24,0.018) 1px,transparent 1px);
+    background-size:24px 24px,8px 8px;
+    background-position:0 0,4px 4px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:40px 28px 80px;}
+
+  /* ===== Header ===== */
+  .hd{
+    position:relative;
+    padding:28px 0 36px;
+    border-bottom:1px double var(--line);
+    margin-bottom:48px;
+  }
+  .hd .stamp{
+    position:absolute;top:32px;right:0;
+    width:88px;height:88px;border:2px solid var(--accent);
+    border-radius:6px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-family:'Shippori Mincho',serif;color:var(--accent);
+    font-weight:700;line-height:1.2;
+    transform:rotate(4deg);
+    background:rgba(250,245,234,0.6);
+    box-shadow:0 2px 8px rgba(139,42,31,0.12);
+  }
+  .hd .stamp span:first-child{font-size:14px;letter-spacing:2px;}
+  .hd .stamp span:last-child{font-size:11px;margin-top:4px;letter-spacing:1px;}
+  .hd .kicker{
+    font-family:'Shippori Mincho',serif;
+    font-size:13px;color:var(--ink-mute);
+    letter-spacing:6px;
+    margin-bottom:14px;
+    text-transform:uppercase;
+  }
+  .hd h1{
+    font-family:'Shippori Mincho','Noto Serif JP',serif;
+    font-size:42px;font-weight:700;
+    color:var(--ink);
+    letter-spacing:1px;
+    line-height:1.25;
+    margin-bottom:14px;
+  }
+  .hd h1 .accent{color:var(--accent);}
+  .hd .subtitle{
+    font-family:'Noto Sans JP',sans-serif;
+    color:var(--ink-soft);font-size:16px;
+    max-width:780px;
+  }
+  .hd .meta{
+    display:flex;gap:28px;margin-top:24px;
+    font-size:12px;color:var(--ink-mute);
+    font-family:'JetBrains Mono',monospace;
+    letter-spacing:1px;
+  }
+  .hd .meta span b{color:var(--ink-soft);font-weight:600;}
+
+  /* ===== Section ===== */
+  .sec{margin-bottom:56px;}
+  .sec-hd{
+    display:flex;align-items:baseline;gap:18px;
+    margin-bottom:28px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--line);
+  }
+  .sec-num{
+    font-family:'Shippori Mincho',serif;
+    font-size:34px;color:var(--accent);font-weight:700;
+    line-height:1;letter-spacing:1px;
+  }
+  .sec-title{
+    font-family:'Shippori Mincho',serif;
+    font-size:24px;font-weight:700;color:var(--ink);
+    letter-spacing:1px;
+  }
+  .sec-jp{
+    font-family:'Noto Serif JP',serif;
+    font-size:13px;color:var(--ink-mute);
+    margin-left:auto;
+    letter-spacing:2px;
+  }
+
+  /* ===== Cards ===== */
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    padding:24px;
+    position:relative;
+  }
+  .card.deco::before{
+    content:"";
+    position:absolute;top:8px;left:8px;right:8px;bottom:8px;
+    border:1px solid var(--line-soft);
+    pointer-events:none;
+  }
+  .grid{display:grid;gap:var(--grid-gap);}
+  .grid-2{grid-template-columns:repeat(2,1fr);}
+  .grid-3{grid-template-columns:repeat(3,1fr);}
+  .grid-4{grid-template-columns:repeat(4,1fr);}
+  @media(max-width:900px){
+    .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}
+  }
+
+  /* ===== KPI ===== */
+  .kpi{
+    background:var(--paper);
+    border:1px solid var(--line);
+    padding:20px 22px;position:relative;
+  }
+  .kpi-label{
+    font-size:11px;color:var(--ink-mute);
+    letter-spacing:3px;text-transform:uppercase;
+    font-family:'JetBrains Mono',monospace;
+    margin-bottom:10px;
+  }
+  .kpi-val{
+    font-family:'Shippori Mincho',serif;
+    font-size:30px;font-weight:700;
+    color:var(--ink);line-height:1.1;
+  }
+  .kpi-val .unit{
+    font-size:13px;color:var(--ink-mute);
+    margin-left:4px;font-weight:400;
+  }
+  .kpi-sub{
+    margin-top:8px;font-size:12px;
+    color:var(--ink-soft);
+  }
+  .kpi-sub.up{color:var(--positive);}
+  .kpi-sub.down{color:var(--negative);}
+
+  /* ===== Text ===== */
+  p{margin-bottom:14px;color:var(--ink-soft);}
+  strong{color:var(--ink);font-weight:600;}
+  .lead{
+    font-size:16px;color:var(--ink);
+    line-height:1.85;
+  }
+  .lead::first-letter{
+    font-family:'Shippori Mincho',serif;
+    font-size:42px;font-weight:700;
+    color:var(--accent);
+    float:left;line-height:0.9;
+    padding:6px 8px 0 0;
+  }
+  .jp-term{
+    font-family:'Noto Serif JP',serif;
+    color:var(--ink);font-weight:500;
+  }
+  .num{
+    font-family:'JetBrains Mono',monospace;
+    color:var(--ink);font-weight:500;
+  }
+  .tag{
+    display:inline-block;
+    padding:2px 8px;
+    font-size:11px;
+    border:1px solid var(--line);
+    background:var(--bg-deep);
+    color:var(--ink-soft);
+    margin-right:4px;
+    font-family:'Noto Sans JP',sans-serif;
+    letter-spacing:1px;
+  }
+  .tag.accent{border-color:var(--accent);color:var(--accent);}
+  .tag.green{border-color:var(--green);color:var(--green);}
+  .tag.gold{border-color:var(--gold);color:var(--gold);}
+
+  /* ===== Table ===== */
+  table{
+    width:100%;border-collapse:collapse;
+    background:var(--paper);
+    font-size:14px;
+  }
+  th,td{
+    padding:12px 14px;text-align:left;
+    border-bottom:1px solid var(--line-soft);
+  }
+  th{
+    background:var(--bg-deep);
+    color:var(--ink);font-weight:600;
+    font-size:12px;letter-spacing:1.5px;
+    text-transform:uppercase;
+    border-bottom:2px solid var(--line);
+  }
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:rgba(168,132,58,0.04);}
+  td.right,th.right{text-align:right;font-family:'JetBrains Mono',monospace;}
+  td.center,th.center{text-align:center;}
+  .rank{
+    display:inline-block;
+    width:24px;height:24px;
+    background:var(--accent);color:#fff;
+    border-radius:50%;
+    text-align:center;line-height:24px;
+    font-size:12px;font-weight:600;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .rank.gold{background:var(--gold);}
+  .rank.silver{background:var(--ink-mute);}
+
+  /* ===== Charts ===== */
+  .chart-box{
+    background:var(--paper);
+    border:1px solid var(--line);
+    padding:24px;
+    position:relative;
+  }
+  .chart-title{
+    font-family:'Shippori Mincho',serif;
+    font-size:15px;font-weight:600;
+    color:var(--ink);
+    margin-bottom:6px;
+    letter-spacing:1px;
+  }
+  .chart-sub{
+    font-size:11px;color:var(--ink-mute);
+    margin-bottom:18px;
+    font-family:'JetBrains Mono',monospace;
+    letter-spacing:1px;
+  }
+  .chart-wrap{position:relative;height:300px;}
+
+  /* ===== Industry Map ===== */
+  .map-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:12px;
+  }
+  @media(max-width:900px){.map-grid{grid-template-columns:repeat(2,1fr);}}
+  .map-cell{
+    background:var(--paper);
+    border:1px solid var(--line);
+    padding:14px 12px;
+    position:relative;
+    min-height:120px;
+  }
+  .map-cell .seg{
+    font-family:'Shippori Mincho',serif;
+    font-size:13px;font-weight:600;
+    color:var(--ink);
+    margin-bottom:6px;
+    padding-bottom:6px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .map-cell .seg .pct{
+    color:var(--accent);font-family:'JetBrains Mono',monospace;
+    float:right;font-size:12px;
+  }
+  .map-cell ul{list-style:none;font-size:11px;color:var(--ink-soft);line-height:1.7;}
+  .map-cell ul li::before{content:"・";color:var(--accent);margin-right:2px;}
+  .map-cell.tier-jp{background:#f0e8d6;border-color:var(--gold);}
+  .map-cell.tier-jp .seg{color:var(--accent);}
+
+  /* ===== Company verdict ===== */
+  .verdict{
+    background:var(--paper);
+    border:1px solid var(--line);
+    padding:24px 26px;
+    margin-bottom:18px;
+    position:relative;
+  }
+  .verdict-head{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    margin-bottom:16px;
+    padding-bottom:14px;
+    border-bottom:1px dashed var(--line);
+  }
+  .verdict-name{
+    font-family:'Shippori Mincho',serif;
+    font-size:22px;font-weight:700;color:var(--ink);
+  }
+  .verdict-name .ticker{
+    color:var(--accent);font-family:'JetBrains Mono',monospace;
+    font-size:16px;margin-left:8px;
+  }
+  .verdict-name .jp{
+    display:block;
+    font-size:13px;color:var(--ink-mute);
+    font-weight:400;margin-top:2px;
+    letter-spacing:1px;
+  }
+  .verdict-badge{
+    padding:6px 14px;
+    font-size:12px;font-weight:600;
+    border-radius:2px;
+    letter-spacing:2px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .verdict-badge.buy{background:var(--positive);color:#faf5ea;}
+  .verdict-badge.watch{background:var(--gold);color:#faf5ea;}
+  .verdict-badge.hold{background:var(--ink-mute);color:#faf5ea;}
+  .verdict-badge.turnaround{background:var(--accent);color:#faf5ea;}
+
+  .three-layer{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin:14px 0;
+  }
+  @media(max-width:900px){.three-layer{grid-template-columns:1fr;}}
+  .layer{
+    background:var(--bg-deep);
+    border-left:3px solid var(--gold);
+    padding:12px 14px;
+  }
+  .layer-label{
+    font-size:10px;letter-spacing:3px;
+    color:var(--ink-mute);
+    font-family:'JetBrains Mono',monospace;
+    margin-bottom:6px;
+    text-transform:uppercase;
+  }
+  .layer-verdict{
+    font-family:'Shippori Mincho',serif;
+    font-size:14px;color:var(--ink);
+    font-weight:600;
+    margin-bottom:4px;
+  }
+  .layer-verdict.pos{color:var(--positive);}
+  .layer-verdict.neg{color:var(--negative);}
+  .layer-verdict.neu{color:var(--ink-soft);}
+  .layer-detail{
+    font-size:12px;color:var(--ink-soft);
+    line-height:1.6;
+  }
+
+  .vmetrics{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--line-soft);
+    margin:14px 0;
+    border:1px solid var(--line-soft);
+  }
+  @media(max-width:700px){.vmetrics{grid-template-columns:repeat(2,1fr);}}
+  .vmetric{
+    background:var(--paper);
+    padding:10px 12px;
+    text-align:center;
+  }
+  .vmetric-l{
+    font-size:10px;color:var(--ink-mute);
+    letter-spacing:2px;
+    font-family:'JetBrains Mono',monospace;
+    margin-bottom:4px;
+  }
+  .vmetric-v{
+    font-family:'JetBrains Mono',monospace;
+    font-size:14px;color:var(--ink);font-weight:600;
+  }
+
+  /* ===== Risk matrix ===== */
+  .risk-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+  }
+  @media(max-width:900px){.risk-grid{grid-template-columns:1fr;}}
+  .risk{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-left:4px solid var(--negative);
+    padding:14px 18px;
+  }
+  .risk.mid{border-left-color:var(--warning);}
+  .risk.low{border-left-color:var(--ink-mute);}
+  .risk-name{
+    font-family:'Shippori Mincho',serif;
+    font-size:14px;font-weight:600;color:var(--ink);
+    margin-bottom:4px;
+  }
+  .risk-level{
+    display:inline-block;
+    font-size:10px;
+    padding:1px 6px;
+    border:1px solid var(--negative);
+    color:var(--negative);
+    margin-left:6px;
+    letter-spacing:1px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .risk.mid .risk-level{border-color:var(--warning);color:var(--warning);}
+  .risk.low .risk-level{border-color:var(--ink-mute);color:var(--ink-mute);}
+  .risk-detail{
+    font-size:12px;color:var(--ink-soft);
+    margin-top:6px;line-height:1.6;
+  }
+
+  /* ===== Quote / callout ===== */
+  .callout{
+    background:var(--bg-deep);
+    border-left:4px solid var(--accent);
+    padding:18px 24px;
+    margin:20px 0;
+    font-family:'Noto Serif JP',serif;
+    font-size:15px;color:var(--ink);
+    line-height:1.85;
+  }
+  .callout::before{
+    content:"※";color:var(--accent);
+    font-size:18px;margin-right:8px;
+  }
+
+  /* ===== Footer ===== */
+  .ft{
+    margin-top:60px;padding-top:30px;
+    border-top:1px double var(--line);
+    text-align:center;
+    color:var(--ink-mute);
+    font-size:11px;letter-spacing:2px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .ft .brand{
+    font-family:'Shippori Mincho',serif;
+    font-size:14px;color:var(--accent);
+    letter-spacing:4px;margin-bottom:8px;
+    font-weight:700;
+  }
+
+  /* ===== Trend cards ===== */
+  .trend{
+    background:var(--paper);
+    border:1px solid var(--line);
+    padding:18px 20px;
+    position:relative;
+    height:100%;
+  }
+  .trend-num{
+    position:absolute;top:14px;right:18px;
+    font-family:'Shippori Mincho',serif;
+    font-size:42px;color:var(--line);
+    font-weight:700;line-height:1;
+    opacity:0.7;
+  }
+  .trend-title{
+    font-family:'Shippori Mincho',serif;
+    font-size:16px;font-weight:600;color:var(--accent);
+    margin-bottom:8px;
+    letter-spacing:1px;
+  }
+  .trend-text{
+    font-size:13px;color:var(--ink-soft);
+    line-height:1.7;
+  }
+
+  /* ===== Top bar with feedback button ===== */
+  .topbar{
+    display:flex;justify-content:flex-end;align-items:center;
+    padding:14px 0 0;
+    margin-bottom:-8px;
+  }
+  .feedback-btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 18px;
+    background:var(--paper);
+    border:1px solid var(--accent);
+    color:var(--accent);
+    font-family:'Shippori Mincho','Noto Serif JP',serif;
+    font-size:13px;font-weight:600;
+    letter-spacing:2px;
+    text-decoration:none;
+    cursor:pointer;
+    transition:all 0.2s ease;
+    position:relative;
+  }
+  .feedback-btn::before{
+    content:"";
+    position:absolute;
+    top:3px;left:3px;right:3px;bottom:3px;
+    border:1px solid var(--accent);
+    opacity:0.3;
+    pointer-events:none;
+    transition:opacity 0.2s ease;
+  }
+  .feedback-btn:hover{
+    background:var(--accent);
+    color:var(--paper);
+    box-shadow:0 4px 12px rgba(139,42,31,0.2);
+  }
+  .feedback-btn:hover::before{
+    border-color:var(--paper);
+    opacity:0.5;
+  }
+  .feedback-btn .icon{
+    font-size:14px;
+    line-height:1;
+  }
+  .feedback-btn .arrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:14px;
+    margin-right:2px;
+    transition:transform 0.2s ease;
+  }
+  .feedback-btn:hover .arrow{
+    transform:translateX(-3px);
+  }
+
+  /* tier label */
+  .tier-label{
+    display:flex;align-items:center;gap:14px;
+    margin:24px 0 14px;
+  }
+  .tier-label .num-circle{
+    width:32px;height:32px;
+    background:var(--accent);color:#faf5ea;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:600;font-size:14px;
+  }
+  .tier-label h3{
+    font-family:'Shippori Mincho',serif;
+    font-size:18px;color:var(--ink);font-weight:700;
+    letter-spacing:1px;
+  }
+  .tier-label .desc{
+    color:var(--ink-mute);font-size:12px;
+    margin-left:auto;
+    font-family:'JetBrains Mono',monospace;
+    letter-spacing:1px;
+  }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ============ TOP BAR ============ -->
+<div class="topbar">
+  <a href="https://dongtao2026.github.io/research-lab/" class="feedback-btn" id="returnBtn">
+    <span class="arrow">←</span>
+    <span>返回日股资料库</span>
+    <span class="icon">⌂</span>
+  </a>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header class="hd">
+  <div class="kicker">SECTOR DEEP-DIVE ─ MEDICAL DEVICES</div>
+  <h1>医療機器産業地図<br>──<span class="accent">全球視角と日本の競争位置</span></h1>
+  <p class="subtitle">从全球宏观角度梳理医疗器械产业格局，定位日本上市企业在产业链中的位置，并基于三层判断框架（估值·变化·催化剂）筛选值得关注的标的。</p>
+  <div class="meta">
+    <span><b>REPORT</b> ─ 2026.05</span>
+    <span><b>UNIVERSE</b> ─ Global MedTech / Japan Listed</span>
+    <span><b>FRAMEWORK</b> ─ Valuation × Change × Catalyst</span>
+  </div>
+</header>
+
+<!-- ============ SECTION 1: 核心观点 ============ -->
+<section class="sec">
+  <div class="sec-hd">
+    <div class="sec-num">01</div>
+    <div class="sec-title">核心观点</div>
+    <div class="sec-jp">エグゼクティブ・サマリー</div>
+  </div>
+
+  <p class="lead">医疗器械是<strong>"高龄化×慢性病×AI"三重结构性顺风</strong>的最干净表达方式。全球市场规模 <span class="num">7,000-7,400亿美元</span>（2026E），CAGR <span class="num">6-7%</span>，约为全球 GDP 增速的两倍。相比制药行业的"专利悬崖"二元结果，器械企业依靠手术量、慢性病监测、医院产能爬升获得更平稳的收益曲线，是高龄化主题中风险/收益最均衡的子领域。</p>
+
+  <div class="grid grid-4" style="margin-top:20px;">
+    <div class="kpi">
+      <div class="kpi-label">GLOBAL MARKET</div>
+      <div class="kpi-val">$735<span class="unit">B</span></div>
+      <div class="kpi-sub up">▲ 2026E 全球規模・CAGR 7.3%</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">JAPAN MARKET</div>
+      <div class="kpi-val">世界<span class="unit">4位</span></div>
+      <div class="kpi-sub">全球市场约 10% 份额</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">AI MEDICAL DEVICE CAGR</div>
+      <div class="kpi-val">44.5<span class="unit">%</span></div>
+      <div class="kpi-sub up">▲ 2025-2034 高速增长</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">JAPAN 65+ RATIO</div>
+      <div class="kpi-val">29<span class="unit">%</span></div>
+      <div class="kpi-sub">2023 实际值・世界最高</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>日本的产业位置</strong>：欧美巨头（Medtronic、J&amp;J、Abbott、Siemens Healthineers）占据 Top 10 的全部，日本企业最大的 Olympus 也仅排第 18 位左右。但日本在 <span class="jp-term">内視鏡（消化器系统）</span>、<span class="jp-term">血液分析</span>、<span class="jp-term">心血管導管</span>、<span class="jp-term">眼科</span>等细分赛道拥有 <strong>"全球第一"或"前三"</strong> 的隐形冠军，这是日股投资者最值得深挖的角度。
+  </div>
+</section>
+
+<!-- ============ SECTION 2: 全球产业地图 ============ -->
+<section class="sec">
+  <div class="sec-hd">
+    <div class="sec-num">02</div>
+    <div class="sec-title">全球产业地图</div>
+    <div class="sec-jp">グローバル産業地図</div>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom:24px;">
+    <div class="chart-box">
+      <div class="chart-title">全球医疗器械市场规模（USD bn）</div>
+      <div class="chart-sub">2025-2031E · MULTIPLE SOURCES BLENDED</div>
+      <div class="chart-wrap"><canvas id="chartSize"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">地区分布</div>
+      <div class="chart-sub">2025 GLOBAL REVENUE SHARE BY REGION</div>
+      <div class="chart-wrap"><canvas id="chartRegion"></canvas></div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Shippori Mincho',serif;font-size:18px;color:var(--ink);margin-bottom:14px;letter-spacing:1px;">▍ 产品细分图谱（按全球收入贡献）</h3>
+  <div class="map-grid">
+    <div class="map-cell">
+      <div class="seg">診断機器<span class="pct">24.4%</span></div>
+      <ul>
+        <li>影像診断（CT/MRI/超音波）</li>
+        <li>体外診断（IVD）</li>
+        <li>POCT 検査キット</li>
+        <li>AI 画像解析</li>
+      </ul>
+    </div>
+    <div class="map-cell">
+      <div class="seg">治療機器<span class="pct">~22%</span></div>
+      <ul>
+        <li>心血管・カテーテル</li>
+        <li>整形外科インプラント</li>
+        <li>手術ロボット</li>
+        <li>透析・呼吸器</li>
+      </ul>
+    </div>
+    <div class="map-cell">
+      <div class="seg">內視鏡・低侵襲<span class="pct">~10%</span></div>
+      <ul>
+        <li>消化器内視鏡</li>
+        <li>気管支鏡・尿管鏡</li>
+        <li>処置具・エネルギー</li>
+        <li>洗浄・滅菌装置</li>
+      </ul>
+    </div>
+    <div class="map-cell">
+      <div class="seg">モニタリング<span class="pct">~12%</span></div>
+      <ul>
+        <li>生体情報モニター</li>
+        <li>ウェアラブル</li>
+        <li>遠隔患者モニタリング</li>
+        <li>除細動器・AED</li>
+      </ul>
+    </div>
+    <div class="map-cell tier-jp">
+      <div class="seg">日本が強い領域<span class="pct">★</span></div>
+      <ul>
+        <li>消化器内視鏡（世界70%）</li>
+        <li>PCI ガイドワイヤー</li>
+        <li>血球分析・血液凝固</li>
+        <li>眼科レンズ・コンタクト</li>
+      </ul>
+    </div>
+    <div class="map-cell">
+      <div class="seg">糖尿病ケア<span class="pct">高成長</span></div>
+      <ul>
+        <li>CGM 連続血糖測定</li>
+        <li>インスリンポンプ</li>
+        <li>※GLP-1 で需要分岐</li>
+      </ul>
+    </div>
+    <div class="map-cell">
+      <div class="seg">整形外科<span class="pct">CAGR 4.5%</span></div>
+      <ul>
+        <li>人工関節・脊椎</li>
+        <li>手術ロボット（Mako）</li>
+        <li>オルソバイオロジクス</li>
+      </ul>
+    </div>
+    <div class="map-cell">
+      <div class="seg">再生医療<span class="pct">新興</span></div>
+      <ul>
+        <li>細胞治療デバイス</li>
+        <li>臓器保存（OrganOx 等）</li>
+        <li>iPS 関連</li>
+      </ul>
+    </div>
+    <div class="map-cell">
+      <div class="seg">手術ロボット<span class="pct">高単価</span></div>
+      <ul>
+        <li>Intuitive da Vinci</li>
+        <li>Medtronic Hugo</li>
+        <li>Stryker Mako</li>
+        <li>J&J 参入予定</li>
+      </ul>
+    </div>
+    <div class="map-cell">
+      <div class="seg">医療消耗品<span class="pct">安定</span></div>
+      <ul>
+        <li>注射器・カテーテル</li>
+        <li>縫合糸・手術キット</li>
+        <li>創傷ケア</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION 3: 全球Top10 ============ -->
+<section class="sec">
+  <div class="sec-hd">
+    <div class="sec-num">03</div>
+    <div class="sec-title">全球 Top 13 玩家</div>
+    <div class="sec-jp">グローバル・トッププレーヤー</div>
+  </div>
+
+  <p>欧美企业垄断全球 Top 10，<strong>日本最大的 Olympus 在全球榜单约处于第 18 位</strong>，这一相对位置短期内难以根本改变。但日本企业在内视镜、IVD、心血管耗材等领域拥有不可替代的细分壁垒。</p>
+
+  <div class="card deco" style="padding:0;margin-top:18px;">
+    <table>
+      <thead>
+        <tr>
+          <th class="center">RK</th>
+          <th>企業名</th>
+          <th>国・本社</th>
+          <th>主要領域</th>
+          <th class="right">医療機器売上(USD B)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="center"><span class="rank gold">1</span></td><td><strong>Medtronic</strong></td><td>米国（アイルランド籍）</td><td>心血管・神経・外科</td><td class="right">33.5</td></tr>
+        <tr><td class="center"><span class="rank silver">2</span></td><td><strong>Johnson &amp; Johnson MedTech</strong></td><td>米国</td><td>整形・外科・心血管</td><td class="right">31.9</td></tr>
+        <tr><td class="center"><span class="rank">3</span></td><td><strong>Abbott Laboratories</strong></td><td>米国</td><td>診断・心血管・糖尿病</td><td class="right">28.3</td></tr>
+        <tr><td class="center"><span class="rank">4</span></td><td><strong>Siemens Healthineers</strong></td><td>独国</td><td>画像診断・IVD</td><td class="right">25.7</td></tr>
+        <tr><td class="center"><span class="rank">5</span></td><td>Medline Industries</td><td>米国（非上場）</td><td>医療消耗品</td><td class="right">25.2</td></tr>
+        <tr><td class="center"><span class="rank">6</span></td><td><strong>Stryker</strong></td><td>米国</td><td>整形・手術ロボット Mako</td><td class="right">22.6</td></tr>
+        <tr><td class="center"><span class="rank">7</span></td><td><strong>Becton Dickinson</strong></td><td>米国</td><td>診断・薬剤デリバリー</td><td class="right">21.7</td></tr>
+        <tr><td class="center"><span class="rank">8</span></td><td><strong>GE HealthCare</strong></td><td>米国</td><td>画像診断・モニタリング</td><td class="right">19.7</td></tr>
+        <tr><td class="center"><span class="rank">9</span></td><td><strong>Roche Diagnostics</strong></td><td>スイス</td><td>IVD・分子診断</td><td class="right">17.7</td></tr>
+        <tr><td class="center"><span class="rank">10</span></td><td><strong>Boston Scientific</strong></td><td>米国</td><td>心血管・低侵襲</td><td class="right">16.7</td></tr>
+        <tr><td class="center"><span class="rank">11</span></td><td>Philips</td><td>オランダ</td><td>画像診断・コネクテッド</td><td class="right">16.1</td></tr>
+        <tr><td class="center"><span class="rank">12</span></td><td>Baxter</td><td>米国</td><td>透析・栄養</td><td class="right">10.6</td></tr>
+        <tr><td class="center"><span class="rank">13</span></td><td>B. Braun</td><td>独国（非上場）</td><td>外科・消耗品</td><td class="right">10.4</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:11px;color:var(--ink-mute);margin-top:8px;letter-spacing:1px;">※ 数据基于 2024-2025 公开财报，按医療機器セグメント収入排序。汇率参考 2025/11/01。</p>
+</section>
+
+<!-- ============ SECTION 4: 五大趋势 ============ -->
+<section class="sec">
+  <div class="sec-hd">
+    <div class="sec-num">04</div>
+    <div class="sec-title">五大产业趋势</div>
+    <div class="sec-jp">5 つの構造的トレンド</div>
+  </div>
+
+  <div class="grid grid-3">
+    <div class="trend">
+      <div class="trend-num">01</div>
+      <div class="trend-title">AI ─ 第一大技术驱动</div>
+      <div class="trend-text">AI 医疗器械以 <span class="num">CAGR 44.5%</span> 增长，2026 年技术分类中份额已达 <span class="num">33%</span>。监管侧 FDA / PMDA 加速审批"AI as Medical Device"，影像诊断、心电分析、病理识别是头部战场。</div>
+    </div>
+    <div class="trend">
+      <div class="trend-num">02</div>
+      <div class="trend-title">手术机器人多寡头化</div>
+      <div class="trend-text">Intuitive da Vinci 一家独大的格局正在打破。Medtronic Hugo、Stryker Mako、J&amp;J 即将推出 Ottava 形成多极化竞争。日本企业目前缺位，但 Sony、Kawasaki Heavy 等通过<span class="jp-term">医療スタートアップ</span>切入。</div>
+    </div>
+    <div class="trend">
+      <div class="trend-num">03</div>
+      <div class="trend-title">高齢化 ─ 日本是先行者</div>
+      <div class="trend-text">日本 65 岁以上占 <span class="num">29%</span>，2040 年将达 <span class="num">4,000 万人</span>。中国 65+ 已超过日本总人口。日本医疗器械市场作为"成熟模板"，是中国、东南亚未来 10-15 年的预演。</div>
+    </div>
+    <div class="trend">
+      <div class="trend-num">04</div>
+      <div class="trend-title">GLP-1 减肥药的二阶效应</div>
+      <div class="trend-text">GLP-1 减少肥胖→减少糖尿病并发症→<span class="jp-term">糖尿病ケア</span>设备短期承压（CGM 等）。但同时手术量回升（睡眠呼吸/关节）+ 心血管事件减少，对整形/睡眠呼吸/CPAP 影响差异化。</div>
+    </div>
+    <div class="trend">
+      <div class="trend-num">05</div>
+      <div class="trend-title">中国本土化与"反腐"</div>
+      <div class="trend-text">中国市场预计 2026→2035 从 <span class="num">$483 亿→$1,090 亿</span>，CAGR <span class="num">9.45%</span>，但本土厂商（Mindray 等）崛起，叠加反腐运动，欧美日企业在华增长放缓，是 Sysmex、Nihon Kohden 的主要拖累。</div>
+    </div>
+    <div class="trend">
+      <div class="trend-num">06</div>
+      <div class="trend-title">监管收紧（FDA Compliance）</div>
+      <div class="trend-text">FDA 对 GMP/QMS 的执法标准持续提高，Olympus 因质量系统问题被发"输入警告"是典型案例。对日本企业是<strong>"治理改革"催化剂</strong>—Olympus 已投入 600 亿日元应对，FY2027 是兑现关键年。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION 5: 日本上市企业地图 ============ -->
+<section class="sec">
+  <div class="sec-hd">
+    <div class="sec-num">05</div>
+    <div class="sec-title">日本上市医療機器企業地図</div>
+    <div class="sec-jp">日本上場医療機器企業マップ</div>
+  </div>
+
+  <p>日本上市医疗器械企业按业务集中度可分为四层。<strong>Tier 1 是医疗器械专业化巨头</strong>，是机构投资人重点配置对象；<strong>Tier 2 是细分龙头</strong>，往往拥有高 ROE 与利基壁垒；<strong>Tier 3 是技术能力溢出型多元化集团</strong>，医疗只占整体收入一部分；<strong>Tier 4 是新兴/小型选手</strong>，弹性大但研究门槛高。</p>
+
+  <!-- TIER 1 -->
+  <div class="tier-label">
+    <div class="num-circle">Ⅰ</div>
+    <h3>Tier 1 ─ グローバル専業大手</h3>
+    <span class="desc">PURE-PLAY GLOBAL LEADERS</span>
+  </div>
+  <div class="card deco" style="padding:0;">
+    <table>
+      <thead>
+        <tr><th>銘柄</th><th>コード</th><th>専門領域</th><th>世界での位置</th><th class="right">時価総額目安</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>テルモ</strong><span style="color:var(--ink-mute);font-size:11px;"> Terumo</span></td><td><span class="num">4543</span></td><td>カテーテル・心血管・血液</td><td>北米血漿事業で第2位グループ</td><td class="right">~4.5兆円</td></tr>
+        <tr><td><strong>HOYA</strong></td><td><span class="num">7741</span></td><td>眼科レンズ・内視鏡部品・半導体マスク基板</td><td>眼内レンズ世界トップ級</td><td class="right">~5兆円</td></tr>
+        <tr><td><strong>オリンパス</strong><span style="color:var(--ink-mute);font-size:11px;"> Olympus</span></td><td><span class="num">7733</span></td><td>消化器内視鏡（FY26→FY27 復帰局面）</td><td>消化器内視鏡 世界シェア70%超</td><td class="right">~2.4兆円</td></tr>
+        <tr><td><strong>シスメックス</strong><span style="color:var(--ink-mute);font-size:11px;"> Sysmex</span></td><td><span class="num">6869</span></td><td>血球計数・血液凝固（IVD）</td><td>ヘマトロジー世界首位</td><td class="right">~3兆円</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TIER 2 -->
+  <div class="tier-label">
+    <div class="num-circle">Ⅱ</div>
+    <h3>Tier 2 ─ 専門領域リーダー</h3>
+    <span class="desc">SPECIALIST CHAMPIONS</span>
+  </div>
+  <div class="card deco" style="padding:0;">
+    <table>
+      <thead>
+        <tr><th>銘柄</th><th>コード</th><th>専門領域</th><th>強み</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>朝日インテック</strong><span style="color:var(--ink-mute);font-size:11px;"> Asahi Intecc</span></td><td><span class="num">7747</span></td><td>PCI ガイドワイヤー</td><td>世界市場で圧倒的シェア・営業利益率30%超</td></tr>
+        <tr><td><strong>日本光電</strong></td><td><span class="num">6849</span></td><td>生体情報モニタ・AED・脳波計</td><td>国内首位・北米拡大途上</td></tr>
+        <tr><td><strong>ニプロ</strong></td><td><span class="num">8086</span></td><td>透析機器・使い捨て医療機器</td><td>国内透析シェア・ジェネリック医薬品兼業</td></tr>
+        <tr><td><strong>マニー</strong></td><td><span class="num">7730</span></td><td>歯科・外科用縫合針</td><td>ニッチ高シェア・営業利益率高い</td></tr>
+        <tr><td><strong>ナカニシ</strong></td><td><span class="num">7716</span></td><td>歯科切削機器</td><td>歯科ハンドピース世界シェア40%超</td></tr>
+        <tr><td><strong>メニコン</strong></td><td><span class="num">7780</span></td><td>コンタクトレンズ・定額制サービス</td><td>国内独自のサブスク型ビジネスモデル</td></tr>
+        <tr><td><strong>ホギメディカル</strong></td><td><span class="num">3593</span></td><td>手術キット・不織布</td><td>キットパック・カスタマイズキット</td></tr>
+        <tr><td><strong>日本ライフライン</strong></td><td><span class="num">7575</span></td><td>不整脈・心臓カテーテル</td><td>専門商社+自社製品ハイブリッド</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TIER 3 -->
+  <div class="tier-label">
+    <div class="num-circle">Ⅲ</div>
+    <h3>Tier 3 ─ 兼業大手・技術波及</h3>
+    <span class="desc">DIVERSIFIED CONGLOMERATES WITH MEDTECH ARM</span>
+  </div>
+  <div class="card deco" style="padding:0;">
+    <table>
+      <thead>
+        <tr><th>銘柄</th><th>コード</th><th>医療機器領域</th><th>注意点（医療比率）</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>キヤノン</strong></td><td><span class="num">7751</span></td><td>キヤノンメディカル（旧東芝メディカル）CT/MRI</td><td>医療は連結の十数%</td></tr>
+        <tr><td><strong>富士フイルム HD</strong></td><td><span class="num">4901</span></td><td>画像診断・再生医療・内視鏡</td><td>ヘルスケアセグメント拡大中</td></tr>
+        <tr><td><strong>島津製作所</strong></td><td><span class="num">7701</span></td><td>分析機器・X 線・LC/MS</td><td>医療は分析の延長線</td></tr>
+        <tr><td><strong>オムロン</strong></td><td><span class="num">6645</span></td><td>家庭用血圧計・ネブライザー</td><td>ヘルスケア事業は連結の十数%</td></tr>
+        <tr><td><strong>コニカミノルタ</strong></td><td><span class="num">4902</span></td><td>X 線/超音波・遺伝子診断</td><td>事業ポートフォリオ整理中</td></tr>
+        <tr><td><strong>ニコン</strong></td><td><span class="num">7731</span></td><td>眼科診断・顕微鏡</td><td>映像事業からの転換期</td></tr>
+        <tr><td><strong>ソニー G</strong></td><td><span class="num">6758</span></td><td>医療用カメラ・モニター・Olympus 提携</td><td>規模小さいが技術深い</td></tr>
+        <tr><td><strong>日立製作所</strong></td><td><span class="num">6501</span></td><td>MRI・粒子線治療（一部 Fujifilm へ譲渡）</td><td>領域整理中</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TIER 4 -->
+  <div class="tier-label">
+    <div class="num-circle">Ⅳ</div>
+    <h3>Tier 4 ─ ニッチ・新興・周辺</h3>
+    <span class="desc">SPECIALTY · EMERGING · ADJACENT</span>
+  </div>
+  <div class="card deco" style="padding:0;">
+    <table>
+      <thead>
+        <tr><th>銘柄</th><th>コード</th><th>カテゴリ</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>JMDC</td><td><span class="num">4483</span></td><td>医療データプラットフォーム（情報・SaaS）</td></tr>
+        <tr><td>メドピア</td><td><span class="num">6095</span></td><td>医師プラットフォーム・DX</td></tr>
+        <tr><td>エムスリー</td><td><span class="num">2413</span></td><td>製薬マーケティング DX（医療機器ではないが隣接）</td></tr>
+        <tr><td>メディキット</td><td><span class="num">7749</span></td><td>カテーテル（透析・PTA）</td></tr>
+        <tr><td>松風</td><td><span class="num">7979</span></td><td>歯科材料</td></tr>
+        <tr><td>リオン</td><td><span class="num">6823</span></td><td>補聴器・聴覚検査機器</td></tr>
+        <tr><td>フクダ電子</td><td><span class="num">6960</span></td><td>循環器系・在宅医療機器</td></tr>
+        <tr><td>JMS</td><td><span class="num">7702</span></td><td>輸液セット・透析回路</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ SECTION 6: 重点关注 ============ -->
+<section class="sec">
+  <div class="sec-hd">
+    <div class="sec-num">06</div>
+    <div class="sec-title">重点关注名单 ─ 三層判断框架</div>
+    <div class="sec-jp">フォーカスリスト ─ 三層フレームワーク</div>
+  </div>
+
+  <p>从 <strong>"便宜か？変化しているか？カタリストはあるか？"</strong> 三层框架，从 Tier 1/2 中挑出 6 个最值得跟踪的标的。注意：以下不是"现在就买"的推荐，而是"按怎样的逻辑跟踪、什么催化剂触发动手"的研究地图。</p>
+
+  <!-- 1. Asahi Intecc -->
+  <div class="verdict">
+    <div class="verdict-head">
+      <div class="verdict-name">
+        朝日インテック<span class="ticker">7747</span>
+        <span class="jp">Asahi Intecc Co., Ltd. ─ 循環器ガイドワイヤー世界トップ</span>
+      </div>
+      <span class="verdict-badge buy">CORE LONG</span>
+    </div>
+    <p style="margin-bottom:14px;">PCI（経皮的冠動脈形成術）ガイドワイヤーで圧倒的シェア。<strong>FY2026 6 月期 H1：売上 +15.9%、営業利益 +40.1%</strong>、通期業績・配当を上方修正。海外（米国・中国・欧州）が成長を牽引。</p>
+    <div class="three-layer">
+      <div class="layer">
+        <div class="layer-label">① VALUATION 估值</div>
+        <div class="layer-verdict neu">成长溢价已经反映</div>
+        <div class="layer-detail">理论价 2,100 円台に対し株価 3,400 円超。"便宜" ではないが、業績上方修正後のアナリスト目標 平均 3,700 円。割高でもバブルでもない、<strong>"成長プレミアム枠"</strong>。</div>
+      </div>
+      <div class="layer">
+        <div class="layer-label">② CHANGE 变化</div>
+        <div class="layer-verdict pos">業績モメンタム加速</div>
+        <div class="layer-detail">過去 12 四半期で利益率が継続改善。自己資本比率高水準、有利子負債縮小。中長期で売上 2 桁成長を継続できる稀有な日本医療機器。</div>
+      </div>
+      <div class="layer">
+        <div class="layer-label">③ CATALYST 触发</div>
+        <div class="layer-verdict pos">通期上方修正＋配当増</div>
+        <div class="layer-detail">2026/5/15 の本決算が次のカタリスト。米中での新規 SKU 拡販・神経血管 (NV) 領域の伸びがテーマ。</div>
+      </div>
+    </div>
+    <div class="vmetrics">
+      <div class="vmetric"><div class="vmetric-l">SEGMENT</div><div class="vmetric-v">心血管 PCI</div></div>
+      <div class="vmetric"><div class="vmetric-l">H1 OP GROWTH</div><div class="vmetric-v">+40.1%</div></div>
+      <div class="vmetric"><div class="vmetric-l">ANALYST TP</div><div class="vmetric-v">¥3,702</div></div>
+      <div class="vmetric"><div class="vmetric-l">BUY RATING</div><div class="vmetric-v">12 / 12</div></div>
+    </div>
+  </div>
+
+  <!-- 2. Terumo -->
+  <div class="verdict">
+    <div class="verdict-head">
+      <div class="verdict-name">
+        テルモ<span class="ticker">4543</span>
+        <span class="jp">Terumo Corporation ─ 心血管+血液テクノロジーの両輪</span>
+      </div>
+      <span class="verdict-badge buy">CORE LONG</span>
+    </div>
+    <p style="margin-bottom:14px;">時価総額 4 兆円超、東証上位 41 位前後。<strong>FY26 1Q：売上 +0.7%、営業利益 +25.2%、純利益 +23.5%</strong>。北米血漿事業が成長エンジン。2025/8 に臓器保存「OrganOx」買収、臓器移植領域へ参入。</p>
+    <div class="three-layer">
+      <div class="layer">
+        <div class="layer-label">① VALUATION 估值</div>
+        <div class="layer-verdict neu">グロース型ディフェンシブの妥当水準</div>
+        <div class="layer-detail">日本医療機器のベンチマーク。"便宜" ではないが歴史的に PER 25-30 倍レンジで取引。営業利益率改善が PER の正当性を支える構造。</div>
+      </div>
+      <div class="layer">
+        <div class="layer-label">② CHANGE 变化</div>
+        <div class="layer-verdict pos">利益率の継続改善</div>
+        <div class="layer-detail">心血管カンパニーと血液・細胞テクノロジーカンパニーが好調。<strong>北米血漿イノベーション</strong>が二桁成長を牽引。OrganOx 買収で TAM 拡大。</div>
+      </div>
+      <div class="layer">
+        <div class="layer-label">③ CATALYST 触发</div>
+        <div class="layer-verdict pos">5 月本決算＋臓器移植展開</div>
+        <div class="layer-detail">2026/5/19 通期決算予定。OrganOx 統合進捗・北米血漿シェア拡大が中期物色テーマ。</div>
+      </div>
+    </div>
+    <div class="vmetrics">
+      <div class="vmetric"><div class="vmetric-l">SEGMENT</div><div class="vmetric-v">心血管+血液</div></div>
+      <div class="vmetric"><div class="vmetric-l">1Q OP GROWTH</div><div class="vmetric-v">+25.2%</div></div>
+      <div class="vmetric"><div class="vmetric-l">市場ランク</div><div class="vmetric-v">時総 41 位</div></div>
+      <div class="vmetric"><div class="vmetric-l">直近 M&amp;A</div><div class="vmetric-v">OrganOx (2025/8)</div></div>
+    </div>
+  </div>
+
+  <!-- 3. Olympus -->
+  <div class="verdict">
+    <div class="verdict-head">
+      <div class="verdict-name">
+        オリンパス<span class="ticker">7733</span>
+        <span class="jp">Olympus Corporation ─ FDA 問題からのターンアラウンド候補</span>
+      </div>
+      <span class="verdict-badge turnaround">TURNAROUND</span>
+    </div>
+    <p style="margin-bottom:14px;">消化器内視鏡で世界 70% シェアを持つ"内視鏡王者"。2025/6 に FDA から会津工場製の一部機器について<strong>輸入警告（Import Alert）</strong>を受け、FY26 で約 300 億円の純逆風。ただし<strong>4Q に売上 +9% で回復基調</strong>、FY27 が「執行で結果を出す年」と位置付け。</p>
+    <div class="three-layer">
+      <div class="layer">
+        <div class="layer-label">① VALUATION 估值</div>
+        <div class="layer-verdict pos">減益で割安感が出ている</div>
+        <div class="layer-detail">FY26 通期：売上 1.01 兆円 (+1%)、調整後 OP 1,433 億円 (▲24%)、EPS 92 円 (▲21%)。FDA 影響剥落＋コスト削減の "底打ち" 局面で PER 修正余地。</div>
+      </div>
+      <div class="layer">
+        <div class="layer-label">② CHANGE 变化</div>
+        <div class="layer-verdict pos">FY27 = 執行の年</div>
+        <div class="layer-detail">新方針 "Growth/Simplify/Act Responsibly"、FY29 までに売上 CAGR 3-4-5%、営業利益率年 +100bps を目標。<strong>4Q 売上 +9%</strong> は復活シグナル。</div>
+      </div>
+      <div class="layer">
+        <div class="layer-label">③ CATALYST 触发</div>
+        <div class="layer-verdict neu">FDA 解除タイミング次第</div>
+        <div class="layer-detail">輸入警告解除、FY27 1Q 進捗が最大の催化。中国・欧州での競合（FUJIFILM・Pentax）動向もウォッチ。失敗リスクは依然残る。</div>
+      </div>
+    </div>
+    <div class="vmetrics">
+      <div class="vmetric"><div class="vmetric-l">SEGMENT</div><div class="vmetric-v">消化器内視鏡</div></div>
+      <div class="vmetric"><div class="vmetric-l">FY26 ADJ OP</div><div class="vmetric-v">▲24%</div></div>
+      <div class="vmetric"><div class="vmetric-l">4Q REV</div><div class="vmetric-v">+9% YoY</div></div>
+      <div class="vmetric"><div class="vmetric-l">RECOVERY YR</div><div class="vmetric-v">FY27</div></div>
+    </div>
+  </div>
+
+  <!-- 4. Sysmex -->
+  <div class="verdict">
+    <div class="verdict-head">
+      <div class="verdict-name">
+        シスメックス<span class="ticker">6869</span>
+        <span class="jp">Sysmex ─ 血球計数 IVD グローバル首位</span>
+      </div>
+      <span class="verdict-badge watch">WATCH</span>
+    </div>
+    <p style="margin-bottom:14px;">ヘマトロジー（血球計数）で世界首位。リカーリング（試薬・サービス）型の安定ビジネスモデル。<strong>足元の懸念は中国市場の反腐運動と医療機器設備投資の慎重化</strong>。</p>
+    <div class="three-layer">
+      <div class="layer">
+        <div class="layer-label">① VALUATION 估值</div>
+        <div class="layer-verdict neu">高 PER だが回復で正当化可能</div>
+        <div class="layer-detail">歴史的に高 PER ストック（30-40 倍）。中国懸念で 2024-2025 にバリュエーション調整、リスクとリターンのバランスが改善傾向。</div>
+      </div>
+      <div class="layer">
+        <div class="layer-label">② CHANGE 变化</div>
+        <div class="layer-verdict neu">中国底打ち＋アルツハイマー血液診断</div>
+        <div class="layer-detail">アルツハイマー病血液バイオマーカー（Lumipulse 提携）が新ドライバー。中国売上はまだ弱含み、FY26-27 で正常化を期待。</div>
+      </div>
+      <div class="layer">
+        <div class="layer-label">③ CATALYST 触发</div>
+        <div class="layer-verdict neu">中国回復＋アルツハイマー診断普及</div>
+        <div class="layer-detail">中国売上の前年比プラス転換、アルツハイマー血液検査の米国保険償還拡大がツインカタリスト。</div>
+      </div>
+    </div>
+    <div class="vmetrics">
+      <div class="vmetric"><div class="vmetric-l">SEGMENT</div><div class="vmetric-v">IVD・血球</div></div>
+      <div class="vmetric"><div class="vmetric-l">CHINA EXPOSURE</div><div class="vmetric-v">~15%</div></div>
+      <div class="vmetric"><div class="vmetric-l">RECURRING %</div><div class="vmetric-v">~75%</div></div>
+      <div class="vmetric"><div class="vmetric-l">時総</div><div class="vmetric-v">~3兆円</div></div>
+    </div>
+  </div>
+
+  <!-- 5. HOYA -->
+  <div class="verdict">
+    <div class="verdict-head">
+      <div class="verdict-name">
+        HOYA<span class="ticker">7741</span>
+        <span class="jp">HOYA Corporation ─ "高 ROE 純血族" の代表</span>
+      </div>
+      <span class="verdict-badge buy">QUALITY CORE</span>
+    </div>
+    <p style="margin-bottom:14px;">眼科レンズ・内視鏡部品・半導体 EUV マスクブランクスの三本柱。<strong>営業利益率 30%、ROE 20% 級</strong> の日本屈指のクオリティ企業。医療単体ではないが内視鏡 OEM／眼内レンズの軸でメドテック性が高い。</p>
+    <div class="three-layer">
+      <div class="layer">
+        <div class="layer-label">① VALUATION 估值</div>
+        <div class="layer-verdict neu">クオリティ・プレミアム水準</div>
+        <div class="layer-detail">PER 30 倍前後。"安く買う" 銘柄ではなく "持つことが重要" な銘柄。バリュエーション調整局面で押し目買いの定番。</div>
+      </div>
+      <div class="layer">
+        <div class="layer-label">② CHANGE 变化</div>
+        <div class="layer-verdict pos">EUV マスクブランクスが構造的成長</div>
+        <div class="layer-detail">半導体ハイテク事業（マスクブランクス）が AI 投資で構造的にスケール。眼内レンズ事業は高齢化・新興国で安定成長。</div>
+      </div>
+      <div class="layer">
+        <div class="layer-label">③ CATALYST 触发</div>
+        <div class="layer-verdict pos">4 月本決算＋自社株買い継続</div>
+        <div class="layer-detail">2026/4/30 の本決算が次のカタリスト。長期にわたる連続自社株買い＋増配が下値を支える。</div>
+      </div>
+    </div>
+    <div class="vmetrics">
+      <div class="vmetric"><div class="vmetric-l">SEGMENT</div><div class="vmetric-v">眼科+半導体</div></div>
+      <div class="vmetric"><div class="vmetric-l">OPM</div><div class="vmetric-v">~30%</div></div>
+      <div class="vmetric"><div class="vmetric-l">ROE</div><div class="vmetric-v">~20%</div></div>
+      <div class="vmetric"><div class="vmetric-l">時総</div><div class="vmetric-v">~5兆円</div></div>
+    </div>
+  </div>
+
+  <!-- 6. Nihon Kohden ─ UPDATED with FY26 actual & FY27 guidance -->
+  <div class="verdict">
+    <div class="verdict-head">
+      <div class="verdict-name">
+        日本光電工業<span class="ticker">6849</span>
+        <span class="jp">Nihon Kohden ─ FY27 は OP +25% 反転、北米黒字化が完成</span>
+      </div>
+      <span class="verdict-badge turnaround">RECOVERY</span>
+    </div>
+    <p style="margin-bottom:14px;">2026/5/14 発表の本決算で構図が大きく変わった。<strong>FY26 通期は売上 2,351 億円 (+4.3%)、営業利益 187 億円 (▲9.5%) で底入れ</strong>。一方、<strong>FY27 会社予想は営業利益 235 億円 (+25.4%) と大幅増益ガイダンス</strong>。さらに特筆すべきは、北米セグメント利益が FY25 ▲9.4 億 (赤字) → FY26 +28.6 億 (黒字転換) を達成、構造改革が結実したシグナル。</p>
+    <div class="three-layer">
+      <div class="layer">
+        <div class="layer-label">① VALUATION 估值</div>
+        <div class="layer-verdict pos">FY27 予想 EPS で PER 一段低下</div>
+        <div class="layer-detail">FY27 予想 EPS 93.77 円、株価 ¥1,477 で PER 約 16 倍と医療機器セクターでは依然割安。ROE 目標 12%（実績 8.1%）への接近余地大。配当 32→33 円増配＋自社株消却 300 万株（6/18 実施）で還元性向 70%。</div>
+      </div>
+      <div class="layer">
+        <div class="layer-label">② CHANGE 变化</div>
+        <div class="layer-verdict pos">北米黒字化＋海外二桁成長で構造転換</div>
+        <div class="layer-detail">海外売上 FY26 +13.1%（全地域プラス）、北米 +18.9%、欧州 +8.7%、アジア +6.3%。国内アボット製品終了で売上は ▲7.6% 見込みだが、自社品シフトで売上総利益率改善。<strong>アボット影響除く実質ベース：治療機器は二桁成長</strong>。</div>
+      </div>
+      <div class="layer">
+        <div class="layer-label">③ CATALYST 触发</div>
+        <div class="layer-verdict pos">FY27 ガイダンス＋自社株消却＋増配のトリプル</div>
+        <div class="layer-detail">5/14 決算で OP +25% ガイダンス、増配（32→33 円）、自社株消却 300 万株決議の "完全リセット" 内容。BEACON 2030 Phase II 最終年度（FY27）で OP マージン 15% 目標達成までは距離あるも、方向性は明確。</div>
+      </div>
+    </div>
+    <div class="vmetrics">
+      <div class="vmetric"><div class="vmetric-l">FY27 OP GUIDANCE</div><div class="vmetric-v">+25.4%</div></div>
+      <div class="vmetric"><div class="vmetric-l">NA SEGMENT</div><div class="vmetric-v">赤字→黒字</div></div>
+      <div class="vmetric"><div class="vmetric-l">OVERSEAS FY26</div><div class="vmetric-v">+13.1%</div></div>
+      <div class="vmetric"><div class="vmetric-l">FY27 EPS</div><div class="vmetric-v">¥93.77</div></div>
+    </div>
+    <div class="callout" style="margin-top:14px;margin-bottom:0;">
+      <strong>判定変更ノート</strong>：5/14 本決算を受け、当初の "UNDER OBSERVATION" から "RECOVERY" に格上げ。減益期 (FY26) が終わり、OP +25% の反転ガイダンスと北米黒字化が出揃った。Olympus と並ぶ「医療機器ターンアラウンド・ペア」として比較投資する価値が出てきた。
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION 7: Risks ============ -->
+<section class="sec">
+  <div class="sec-hd">
+    <div class="sec-num">07</div>
+    <div class="sec-title">リスク・マトリックス</div>
+    <div class="sec-jp">RISK MATRIX</div>
+  </div>
+
+  <div class="risk-grid">
+    <div class="risk">
+      <div class="risk-name">FDA / 規制リスク <span class="risk-level">HIGH</span></div>
+      <div class="risk-detail">Olympus の Import Alert がモデルケース。日本企業の品質管理体制と FDA 査察対応能力は構造的弱点。Sysmex、Terumo にも波及リスク。</div>
+    </div>
+    <div class="risk mid">
+      <div class="risk-name">中国市場リスク <span class="risk-level">MID</span></div>
+      <div class="risk-detail">反腐運動＋景気減速＋本土厂商（迈瑞医疗 Mindray 等）崛起。シスメックス・日本光電・テルモ等の中国売上が継続的に逆風。</div>
+    </div>
+    <div class="risk mid">
+      <div class="risk-name">為替リスク <span class="risk-level">MID</span></div>
+      <div class="risk-detail">医療機器主要銘柄は北米売上が大きく、円高転換がトップライン圧縮要因。2026 年日銀追加利上げ観測が円高材料。</div>
+    </div>
+    <div class="risk mid">
+      <div class="risk-name">米国関税・トランプ政策 <span class="risk-level">MID</span></div>
+      <div class="risk-detail">医療機器に対する関税適用範囲が不透明。日本→米国輸出比率が高い銘柄（Olympus、テルモ、朝日インテック）は感応度が高い。</div>
+    </div>
+    <div class="risk low">
+      <div class="risk-name">GLP-1 ディスラプション <span class="risk-level">LOW</span></div>
+      <div class="risk-detail">糖尿病ケア・CPAP・整形外科で差異化された影響。日本主要医療機器の直接エクスポージャーは比較的小さいが、間接効果は監視必要。</div>
+    </div>
+    <div class="risk low">
+      <div class="risk-name">日本国内薬価/診療報酬改定 <span class="risk-level">LOW</span></div>
+      <div class="risk-detail">日本国内売上比率が高い銘柄（ニプロ、フクダ電子等）は隔年の診療報酬改定で薬価引き下げの逆風。海外比率が高い銘柄は感応度低い。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION 8: Conclusion ============ -->
+<section class="sec">
+  <div class="sec-hd">
+    <div class="sec-num">08</div>
+    <div class="sec-title">結論 ─ 投資ストーリーの整理</div>
+    <div class="sec-jp">CONCLUSION</div>
+  </div>
+
+  <div class="card deco">
+    <p>整体而言，<strong>日本医疗器械板块在 2026 年的投资逻辑可以拆成三条主线</strong>：</p>
+    <ol style="margin:14px 0 20px 24px;color:var(--ink-soft);">
+      <li style="margin-bottom:10px;"><strong>成长主线（Asahi Intecc · Terumo）</strong>：海外（特别是北米）业务拉动 OP 双位数增长，是机构持仓的"成长 Core"，难以"便宜买"但<strong>逻辑最清晰</strong>。</li>
+      <li style="margin-bottom:10px;"><strong>反转主线（Olympus · Nihon Kohden）</strong>：Olympus 是 FDA Import Alert 后的 FY27 兑现年；<strong>Nihon Kohden 已在 5/14 本决算给出 OP +25% 反转指引</strong>，北米黒字化完成。两家形成"日本医療機器ターンアラウンド・ペア"，可比较投资。</li>
+      <li style="margin-bottom:10px;"><strong>质量主线（HOYA · Sysmex）</strong>：高 ROE、强护城河、利基垄断。不便宜，但在调整时是<strong>长期复合资本的优质载体</strong>。中国敞口是 Sysmex 的关键变量。</li>
+    </ol>
+    <p style="margin-top:14px;"><strong>欧美巨头（Medtronic、J&amp;J、Stryker 等）</strong>对日本相对仓位的影响也值得注意─如果美股出现板块轮动（手术机器人/AI 医疗），日股医疗器械可能会出现联动行情，可以作为板块β的辅助指标。</p>
+  </div>
+
+  <div class="callout">
+    <strong>三层判断框架的总结应用</strong>：在医疗器械板块，"<span class="jp-term">便宜</span>"的标的稀少（行业本身估值偏高），所以重点更应该放在"<span class="jp-term">変化</span>"和"<span class="jp-term">カタリスト</span>"上。Asahi Intecc 的业绩上方修正、Olympus 的 FDA 进展、Sysmex 的中国底打ち，是三个最值得跟踪的"变化信号"。
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="ft">
+  <div class="brand">東涛 日股研究室 · DONGTAO RESEARCH LAB</div>
+  <div>SECTOR ANALYSIS · MEDICAL DEVICES · 2026.05</div>
+  <div style="margin-top:10px;color:var(--ink-mute);font-family:'Noto Sans JP',sans-serif;letter-spacing:0;">本资料仅为基于公开信息的研究汇总，不构成投资建议。投资决策请结合自身风险承受能力。</div>
+</footer>
+
+</div>
+
+<script>
+// ============ Chart 1: Market Size ============
+const ctx1 = document.getElementById('chartSize').getContext('2d');
+new Chart(ctx1, {
+  type: 'bar',
+  data: {
+    labels: ['2025', '2026E', '2027E', '2028E', '2029E', '2030E', '2031E'],
+    datasets: [{
+      label: '市場規模 (USD bn)',
+      data: [680, 735, 790, 850, 910, 970, 1020],
+      backgroundColor: 'rgba(139,42,31,0.75)',
+      borderColor: '#8b2a1f',
+      borderWidth: 1,
+      borderRadius: 0,
+      barThickness: 38
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {display:false},
+      tooltip: {
+        backgroundColor: '#2a2118',
+        bodyFont: {family:"'JetBrains Mono'", size:12},
+        titleFont: {family:"'Shippori Mincho'", size:13},
+        padding:10
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {color:'rgba(122,106,82,0.15)', drawBorder:false},
+        ticks: {color:'#7a6a52', font:{family:"'JetBrains Mono'", size:11}, callback:v=>'$'+v+'B'}
+      },
+      x: {
+        grid: {display:false},
+        ticks: {color:'#7a6a52', font:{family:"'JetBrains Mono'", size:11}}
+      }
+    }
+  }
+});
+
+// ============ Chart 2: Region Distribution ============
+const ctx2 = document.getElementById('chartRegion').getContext('2d');
+new Chart(ctx2, {
+  type: 'doughnut',
+  data: {
+    labels: ['北米', '欧州', '日本', '中国', 'その他 APAC', 'LATAM / MEA'],
+    datasets: [{
+      data: [40, 27, 10, 8, 10, 5],
+      backgroundColor: [
+        '#8b2a1f', '#b8473a', '#a8843a', '#385878', '#4d6b3e', '#7a6a52'
+      ],
+      borderColor: '#faf5ea',
+      borderWidth: 2,
+      hoverOffset: 8
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'right',
+        labels: {
+          color: '#4a3e2e',
+          font: {family:"'Noto Sans JP'", size:12},
+          padding:12,
+          usePointStyle:true,
+          pointStyle:'circle'
+        }
+      },
+      tooltip: {
+        backgroundColor: '#2a2118',
+        bodyFont: {family:"'JetBrains Mono'", size:12},
+        callbacks: {
+          label: c => `${c.label}: ${c.parsed}%`
+        }
+      }
+    },
+    cutout: '55%'
+  }
+});
+</script>
+
+</body>
+</html>
